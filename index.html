@@ -19,432 +19,143 @@
       justify-content: center;
       align-items: center;
       padding: 20px;
-      position: relative;
-      overflow: hidden;
-    }
-    
-    /* Partículas de fundo */
-    body::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: 
-        radial-gradient(circle at 20% 30%, rgba(56, 189, 248, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 80% 70%, rgba(239, 68, 68, 0.08) 0%, transparent 50%),
-        radial-gradient(circle at 40% 80%, rgba(16, 185, 129, 0.08) 0%, transparent 50%);
-      z-index: -1;
-      animation: pulseBackground 15s ease-in-out infinite alternate;
-    }
-    
-    @keyframes pulseBackground {
-      0% { opacity: 0.7; }
-      100% { opacity: 1; }
     }
     
     .login-container {
-      background: rgba(2, 6, 23, 0.92);
-      padding: 45px 40px;
-      border-radius: 24px;
+      background: rgba(2, 6, 23, 0.95);
+      padding: 40px;
+      border-radius: 20px;
       width: 100%;
-      max-width: 420px;
-      box-shadow: 
-        0 12px 40px rgba(0, 0, 0, 0.6),
-        0 0 0 1px rgba(56, 189, 248, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(56, 189, 248, 0.15);
-      position: relative;
-      overflow: hidden;
-    }
-    
-    /* Brilho suave no container */
-    .login-container::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle, rgba(56, 189, 248, 0.03) 0%, transparent 70%);
-      z-index: -1;
+      max-width: 400px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(56, 189, 248, 0.1);
     }
     
     .logo {
       text-align: center;
-      margin-bottom: 35px;
-      position: relative;
+      margin-bottom: 30px;
     }
     
     .logo h1 {
       color: #38bdf8;
-      font-size: 2.1rem;
+      font-size: 1.8rem;
       margin-bottom: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 12px;
-      letter-spacing: -0.5px;
-      position: relative;
-    }
-    
-    .logo h1 i {
-      background: linear-gradient(135deg, #38bdf8, #0ea5e9);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      font-size: 2.2rem;
-      animation: heartbeat 2s ease-in-out infinite;
-    }
-    
-    @keyframes heartbeat {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.1); }
+      gap: 10px;
     }
     
     .logo p {
       color: #94a3b8;
-      font-size: 0.95rem;
-      line-height: 1.5;
-      font-weight: 300;
-      letter-spacing: 0.3px;
+      font-size: 0.9rem;
     }
     
     .form-group {
-      margin-bottom: 26px;
-      position: relative;
+      margin-bottom: 20px;
     }
     
     .form-group label {
       display: block;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
       font-weight: 600;
       color: #e2e8f0;
-      font-size: 0.95rem;
-      letter-spacing: 0.3px;
-    }
-    
-    .form-group i {
-      color: #38bdf8;
-      margin-right: 8px;
     }
     
     .form-group input {
       width: 100%;
-      padding: 16px 18px;
-      background: rgba(30, 41, 59, 0.75);
-      border: 1.5px solid rgba(56, 189, 248, 0.25);
-      border-radius: 12px;
+      padding: 14px;
+      background: rgba(30, 41, 59, 0.7);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      border-radius: 10px;
       color: white;
       font-size: 15px;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      font-weight: 400;
-      letter-spacing: 0.2px;
+      transition: all 0.3s;
     }
     
     .form-group input:focus {
       outline: none;
       border-color: #38bdf8;
-      box-shadow: 
-        0 0 0 4px rgba(56, 189, 248, 0.15),
-        inset 0 1px 3px rgba(0, 0, 0, 0.3);
-      background: rgba(30, 41, 59, 0.9);
-      transform: translateY(-1px);
-    }
-    
-    .form-group input:hover:not(:focus) {
-      border-color: rgba(56, 189, 248, 0.45);
-      background: rgba(30, 41, 59, 0.85);
-    }
-    
-    .form-group input::placeholder {
-      color: #64748b;
-      font-weight: 300;
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.1);
     }
     
     .remember-forgot {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 28px;
+      margin-bottom: 25px;
       font-size: 14px;
     }
     
     .remember {
       display: flex;
       align-items: center;
-      gap: 10px;
-      cursor: pointer;
-      user-select: none;
-    }
-    
-    .remember input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
-      border-radius: 4px;
-      accent-color: #38bdf8;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    
-    .remember input[type="checkbox"]:hover {
-      transform: scale(1.1);
+      gap: 8px;
     }
     
     .forgot {
       color: #38bdf8;
       text-decoration: none;
-      transition: all 0.3s;
-      font-weight: 500;
-      position: relative;
-      padding: 4px 0;
-    }
-    
-    .forgot::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 0;
-      height: 1px;
-      background: #38bdf8;
-      transition: width 0.3s;
-    }
-    
-    .forgot:hover {
-      color: #0ea5e9;
-    }
-    
-    .forgot:hover::after {
-      width: 100%;
     }
     
     .btn-login {
       width: 100%;
-      padding: 17px;
+      padding: 15px;
       background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%);
       color: white;
       border: none;
-      border-radius: 12px;
+      border-radius: 10px;
       font-size: 16px;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.3s;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 12px;
-      position: relative;
-      overflow: hidden;
-      letter-spacing: 0.5px;
-    }
-    
-    .btn-login::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-      transition: 0.5s;
+      gap: 10px;
     }
     
     .btn-login:hover {
       background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
-      transform: translateY(-3px);
-      box-shadow: 
-        0 6px 20px rgba(56, 189, 248, 0.4),
-        0 0 0 1px rgba(56, 189, 248, 0.2);
-    }
-    
-    .btn-login:hover::before {
-      left: 100%;
-    }
-    
-    .btn-login:active {
-      transform: translateY(-1px);
-      box-shadow: 
-        0 3px 12px rgba(56, 189, 248, 0.3),
-        0 0 0 1px rgba(56, 189, 248, 0.2);
+      transform: translateY(-2px);
     }
     
     .error-message {
-      background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.05));
+      background: rgba(239, 68, 68, 0.1);
       color: #ef4444;
-      padding: 14px 16px;
-      border-radius: 10px;
-      margin-bottom: 24px;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
       font-size: 14px;
       display: none;
       align-items: center;
-      gap: 12px;
-      border: 1px solid rgba(239, 68, 68, 0.2);
-      backdrop-filter: blur(5px);
-      animation: shake 0.5s ease-in-out;
-    }
-    
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-5px); }
-      75% { transform: translateX(5px); }
+      gap: 10px;
     }
     
     .error-message.show {
       display: flex;
-      animation: shake 0.5s ease-in-out;
     }
     
     .footer {
       text-align: center;
-      margin-top: 35px;
+      margin-top: 30px;
       color: #94a3b8;
       font-size: 13px;
-      line-height: 1.6;
-      border-top: 1px solid rgba(56, 189, 248, 0.1);
-      padding-top: 20px;
     }
     
-    .footer p {
-      opacity: 0.8;
-      font-weight: 300;
-    }
-    
-    /* Animações de entrada */
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px) scale(0.95);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
-    }
-    
-    @keyframes float {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-10px); }
-    }
-    
-    .login-container {
-      animation: fadeInUp 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
-    }
-    
-    .logo h1 {
-      animation: float 6s ease-in-out infinite;
-    }
-    
-    /* Efeito de foco nos inputs */
-    .form-group {
-      animation: slideIn 0.6s ease-out forwards;
-      opacity: 0;
-    }
-    
-    .form-group:nth-child(1) { animation-delay: 0.1s; }
-    .form-group:nth-child(2) { animation-delay: 0.2s; }
-    .remember-forgot { animation-delay: 0.3s; }
-    .btn-login { animation-delay: 0.4s; }
-    .footer { animation-delay: 0.5s; }
-    
-    @keyframes slideIn {
-      from {
-        opacity: 0;
-        transform: translateX(-20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateX(0);
-      }
-    }
-    
-    /* Responsividade melhorada */
     @media (max-width: 480px) {
       .login-container {
-        padding: 35px 25px;
-        border-radius: 20px;
-        max-width: 90vw;
-      }
-      
-      .logo h1 {
-        font-size: 1.8rem;
-      }
-      
-      .logo p {
-        font-size: 0.9rem;
-      }
-      
-      .form-group input {
-        padding: 14px 16px;
-      }
-      
-      .remember-forgot {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 18px;
-      }
-      
-      .btn-login {
-        padding: 16px;
-      }
-    }
-    
-    /* Para telas muito pequenas */
-    @media (max-height: 600px) {
-      body {
-        align-items: flex-start;
-        padding-top: 30px;
-        padding-bottom: 30px;
-      }
-    }
-    
-    /* Efeito de partículas */
-    .particles {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: -2;
-    }
-    
-    .particle {
-      position: absolute;
-      background: rgba(56, 189, 248, 0.1);
-      border-radius: 50%;
-      animation: floatParticle 20s infinite linear;
-    }
-    
-    @keyframes floatParticle {
-      0% {
-        transform: translateY(100vh) translateX(0) rotate(0deg);
-        opacity: 0;
-      }
-      10% {
-        opacity: 0.5;
-      }
-      90% {
-        opacity: 0.5;
-      }
-      100% {
-        transform: translateY(-100px) translateX(100px) rotate(360deg);
-        opacity: 0;
+        padding: 30px 20px;
       }
     }
   </style>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-  <!-- Partículas de fundo -->
-  <div class="particles" id="particles"></div>
-  
   <div class="login-container">
     <div class="logo">
       <h1><i class="fas fa-heart-pulse"></i> MonitorMed</h1>
-      <p>Sistema Inteligente de Monitoramento de Pacientes</p>
+      <p>Sistema de Monitoramento de Pacientes</p>
     </div>
     
     <div class="error-message" id="errorMessage">
@@ -461,7 +172,6 @@
           placeholder="Digite seu nome de usuário"
           required
           autocomplete="username"
-          autofocus
         >
       </div>
       
@@ -479,7 +189,7 @@
       <div class="remember-forgot">
         <label class="remember">
           <input type="checkbox" id="remember">
-          <span>Lembrar-me</span>
+          Lembrar-me
         </label>
         <a href="#" class="forgot">Esqueceu a senha?</a>
       </div>
@@ -491,9 +201,6 @@
     
     <div class="footer">
       <p>© 2024 MonitorMed. Acesso restrito a profissionais de saúde.</p>
-      <p style="margin-top: 8px; font-size: 12px; opacity: 0.6;">
-        Sistema de monitoramento em tempo real
-      </p>
     </div>
   </div>
 
@@ -514,42 +221,6 @@
     const errorMessage = document.getElementById('errorMessage');
     const errorText = document.getElementById('errorText');
 
-    // Criar partículas de fundo
-    function criarParticulas() {
-      const particlesContainer = document.getElementById('particles');
-      const particleCount = 20;
-      
-      for (let i = 0; i < particleCount; i++) {
-        const particle = document.createElement('div');
-        particle.classList.add('particle');
-        
-        // Tamanho aleatório
-        const size = Math.random() * 5 + 2;
-        particle.style.width = `${size}px`;
-        particle.style.height = `${size}px`;
-        
-        // Posição inicial aleatória
-        particle.style.left = `${Math.random() * 100}%`;
-        
-        // Atraso aleatório na animação
-        const delay = Math.random() * 20;
-        particle.style.animationDelay = `${delay}s`;
-        
-        // Duração aleatória
-        const duration = Math.random() * 10 + 15;
-        particle.style.animationDuration = `${duration}s`;
-        
-        // Opacidade aleatória
-        const opacity = Math.random() * 0.3 + 0.1;
-        particle.style.opacity = opacity;
-        
-        particlesContainer.appendChild(particle);
-      }
-    }
-
-    // Inicializar partículas
-    criarParticulas();
-
     // Verificar se há credenciais salvas
     window.addEventListener('DOMContentLoaded', () => {
       const savedUsername = localStorage.getItem('savedUsername');
@@ -559,20 +230,7 @@
         usernameInput.value = savedUsername;
         passwordInput.value = savedPassword;
         rememberCheckbox.checked = true;
-        
-        // Animação suave para campos preenchidos
-        usernameInput.style.animation = 'none';
-        passwordInput.style.animation = 'none';
-        setTimeout(() => {
-          usernameInput.style.animation = 'slideIn 0.6s ease-out';
-          passwordInput.style.animation = 'slideIn 0.6s ease-out';
-        }, 10);
       }
-      
-      // Efeito de foco no primeiro campo
-      setTimeout(() => {
-        usernameInput.focus();
-      }, 600);
     });
 
     // Processar login
@@ -582,124 +240,65 @@
       const username = usernameInput.value.trim();
       const password = passwordInput.value;
       
-      // Efeito de carregamento no botão
-      const btn = e.target.querySelector('.btn-login');
-      const originalText = btn.innerHTML;
-      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Autenticando...';
-      btn.disabled = true;
+      // Validar credenciais
+      const usuarioValido = usuariosValidos.find(
+        user => user.username === username && user.password === password
+      );
       
-      // Simular delay de rede
-      setTimeout(() => {
-        // Validar credenciais
-        const usuarioValido = usuariosValidos.find(
-          user => user.username === username && user.password === password
-        );
+      if (usuarioValido) {
+        // Login bem-sucedido
+        console.log(`✅ Login bem-sucedido: ${usuarioValido.nome} (${usuarioValido.perfil})`);
         
-        if (usuarioValido) {
-          // Login bem-sucedido
-          console.log(`✅ Login bem-sucedido: ${usuarioValido.nome} (${usuarioValido.perfil})`);
-          
-          // Efeito visual de sucesso
-          loginForm.style.opacity = '0.7';
-          btn.innerHTML = '<i class="fas fa-check"></i> Login realizado!';
-          btn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
-          
-          // Salvar credenciais se "Lembrar-me" estiver marcado
-          if (rememberCheckbox.checked) {
-            localStorage.setItem('savedUsername', username);
-            localStorage.setItem('savedPassword', password);
-          } else {
-            localStorage.removeItem('savedUsername');
-            localStorage.removeItem('savedPassword');
-          }
-          
-          // Salvar sessão
-          sessionStorage.setItem('usuarioLogado', JSON.stringify(usuarioValido));
-          sessionStorage.setItem('loginTime', new Date().toISOString());
-          
-          // Redirecionar para página de monitoramento
-          setTimeout(() => {
-            window.location.href = 'monitoramento.html';
-          }, 800);
-          
+        // Salvar credenciais se "Lembrar-me" estiver marcado
+        if (rememberCheckbox.checked) {
+          localStorage.setItem('savedUsername', username);
+          localStorage.setItem('savedPassword', password);
         } else {
-          // Login falhou
-          console.log('❌ Login falhou');
-          errorText.textContent = 'Usuário ou senha incorretos. Tente novamente.';
-          errorMessage.classList.add('show');
-          
-          // Efeito de erro nos campos
-          usernameInput.style.borderColor = '#ef4444';
-          passwordInput.style.borderColor = '#ef4444';
-          usernameInput.style.transform = 'scale(1.02)';
-          passwordInput.style.transform = 'scale(1.02)';
-          
-          // Restaurar botão
-          btn.innerHTML = originalText;
-          btn.disabled = false;
-          
-          // Limpar efeito após alguns segundos
-          setTimeout(() => {
-            errorMessage.classList.remove('show');
-            usernameInput.style.borderColor = '';
-            passwordInput.style.borderColor = '';
-            usernameInput.style.transform = '';
-            passwordInput.style.transform = '';
-          }, 4000);
+          localStorage.removeItem('savedUsername');
+          localStorage.removeItem('savedPassword');
         }
-      }, 1000); // Delay de 1 segundo para simular autenticação
+        
+        // Salvar sessão
+        sessionStorage.setItem('usuarioLogado', JSON.stringify(usuarioValido));
+        sessionStorage.setItem('loginTime', new Date().toISOString());
+        
+        // Redirecionar para página de monitoramento
+        window.location.href = 'monitoramento.html';
+        
+      } else {
+        // Login falhou
+        console.log('❌ Login falhou');
+        errorText.textContent = 'Usuário ou senha incorretos. Tente novamente.';
+        errorMessage.classList.add('show');
+        
+        // Efeito de erro nos campos
+        usernameInput.style.borderColor = '#ef4444';
+        passwordInput.style.borderColor = '#ef4444';
+        
+        // Limpar efeito após alguns segundos
+        setTimeout(() => {
+          errorMessage.classList.remove('show');
+          usernameInput.style.borderColor = '';
+          passwordInput.style.borderColor = '';
+        }, 5000);
+      }
     });
 
     // Limpar erro ao digitar
     usernameInput.addEventListener('input', () => {
       errorMessage.classList.remove('show');
       usernameInput.style.borderColor = '';
-      usernameInput.style.transform = '';
     });
     
     passwordInput.addEventListener('input', () => {
       errorMessage.classList.remove('show');
       passwordInput.style.borderColor = '';
-      passwordInput.style.transform = '';
     });
 
     // Link "Esqueceu a senha"
     document.querySelector('.forgot').addEventListener('click', (e) => {
       e.preventDefault();
-      
-      // Efeito visual
-      const forgotLink = e.target;
-      forgotLink.style.transform = 'scale(0.95)';
-      setTimeout(() => {
-        forgotLink.style.transform = '';
-      }, 200);
-      
-      alert('Funcionalidade de recuperação de senha em desenvolvimento.\n\nEntre em contato com o administrador do sistema:\nadmin@monitormed.com\n\nCredenciais de teste:\n👨‍⚕️ Médico: medico / saude123\n👩‍⚕️ Enfermeiro: enfermeiro / cuidado456\n👤 Admin: admin / admin2024\n👁️ Visitante: visitante / monitor');
-    });
-
-    // Efeito de hover nos campos
-    usernameInput.addEventListener('mouseenter', () => {
-      if (document.activeElement !== usernameInput) {
-        usernameInput.style.transform = 'translateY(-2px)';
-      }
-    });
-    
-    usernameInput.addEventListener('mouseleave', () => {
-      if (document.activeElement !== usernameInput) {
-        usernameInput.style.transform = '';
-      }
-    });
-    
-    passwordInput.addEventListener('mouseenter', () => {
-      if (document.activeElement !== passwordInput) {
-        passwordInput.style.transform = 'translateY(-2px)';
-      }
-    });
-    
-    passwordInput.addEventListener('mouseleave', () => {
-      if (document.activeElement !== passwordInput) {
-        passwordInput.style.transform = '';
-      }
+      alert('Funcionalidade de recuperação de senha em desenvolvimento.\n\nEntre em contato com o administrador do sistema.');
     });
   </script>
 </body>
