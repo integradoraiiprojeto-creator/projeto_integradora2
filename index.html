@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Login - Sistema de Monitoramento</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: #e5e7eb;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    
+    .login-container {
+      background: rgba(2, 6, 23, 0.95);
+      padding: 40px;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(56, 189, 248, 0.1);
+    }
+    
+    .logo {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .logo h1 {
+      color: #38bdf8;
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    
+    .logo p {
+      color: #94a3b8;
+      font-size: 0.9rem;
+    }
+    
+    .form-group {
+      margin-bottom: 24px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #e2e8f0;
+    }
+    
+    .form-group input {
+      width: 100%;
+      padding: 14px 16px;
+      background: rgba(30, 41, 59, 0.7);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      border-radius: 10px;
+      color: white;
+      font-size: 15px;
+      transition: all 0.3s;
+    }
+    
+    .form-group input:focus {
+      outline: none;
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.1);
+    }
+    
+    .form-group input:hover {
+      border-color: rgba(56, 189, 248, 0.4);
+    }
+    
+    .remember-forgot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      font-size: 14px;
+    }
+    
+    .remember {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .remember input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: #38bdf8;
+    }
+    
+    .forgot {
+      color: #38bdf8;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    
+    .forgot:hover {
+      color: #0ea5e9;
+      text-decoration: underline;
+    }
+    
+    .btn-login {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    
+    .btn-login:hover {
+      background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+    }
+    
+    .btn-login:active {
+      transform: translateY(0);
+    }
+    
+    .error-message {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      display: none;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .error-message.show {
+      display: flex;
+    }
+    
+    .footer {
+      text-align: center;
+      margin-top: 30px;
+      color: #94a3b8;
+      font-size: 13px;
+    }
+    
+    @media (max-width: 480px) {
+      .login-container {
+        padding: 30px 20px;
+      }
+      
+      .remember-forgot {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+      }
+    }
+    
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .login-container {
+      animation: fadeIn 0.6s ease-out;
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="login-container">
+    <div class="logo">
+      <h1><i class="fas fa-heart-pulse"></i> MonitorMed</h1>
+      <p>Sistema de Monitoramento de Pacientes</p>
+    </div>
+    
+    <div class="error-message" id="errorMessage">
+      <i class="fas fa-exclamation-circle"></i>
+      <span id="errorText">Usuário ou senha incorretos</span>
+    </div>
+    
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="username"><i class="fas fa-user"></i> Usuário</label>
+        <input 
+          type="text" 
+          id="username" 
+          placeholder="Digite seu nome de usuário"
+          required
+          autocomplete="username"
+        >
+      </div>
+      
+      <div class="form-group">
+        <label for="password"><i class="fas fa-lock"></i> Senha</label>
+        <input 
+          type="password" 
+          id="password" 
+          placeholder="Digite sua senha"
+          required
+          autocomplete="current-password"
+        >
+      </div>
+      
+      <div class="remember-forgot">
+        <label class="remember">
+          <input type="checkbox" id="remember">
+          Lembrar-me
+        </label>
+        <a href="#" class="forgot">Esqueceu a senha?</a>
+      </div>
+      
+      <button type="submit" class="btn-login">
+        <i class="fas fa-sign-in-alt"></i> Entrar no Sistema
+      </button>
+    </form>
+    
+    <div class="footer">
+      <p>© 2024 MonitorMed. Acesso restrito a profissionais de saúde.</p>
+    </div>
+  </div>
+
+  <script>
+    // Credenciais válidas
+    const usuariosValidos = [
+      { username: "medico", password: "saude123", nome: "Dr. Silva", perfil: "Médico" },
+      { username: "enfermeiro", password: "cuidado456", nome: "Enf. Oliveira", perfil: "Enfermeiro" },
+      { username: "admin", password: "admin2024", nome: "Administrador", perfil: "Admin" },
+      { username: "visitante", password: "monitor", nome: "Visitante", perfil: "Visitante" }
+    ];
+
+    // Elementos da página
+    const loginForm = document.getElementById('loginForm');
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+    const rememberCheckbox = document.getElementById('remember');
+    const errorMessage = document.getElementById('errorMessage');
+    const errorText = document.getElementById('errorText');
+
+    // Verificar se há credenciais salvas
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedUsername = localStorage.getItem('savedUsername');
+      const savedPassword = localStorage.getItem('savedPassword');
+      
+      if (savedUsername && savedPassword) {
+        usernameInput.value = savedUsername;
+        passwordInput.value = savedPassword;
+        rememberCheckbox.checked = true;
+      }
+    });
+
+    // Processar login
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      const username = usernameInput.value.trim();
+      const password = passwordInput.value;
+      
+      // Validar credenciais
+      const usuarioValido = usuariosValidos.find(
+        user => user.username === username && user.password === password
+      );
+      
+      if (usuarioValido) {
+        // Login bem-sucedido
+        console.log(`✅ Login bem-sucedido: ${usuarioValido.nome} (${usuarioValido.perfil})`);
+        
+        // Salvar credenciais se "Lembrar-me" estiver marcado
+        if (rememberCheckbox.checked) {
+          localStorage.setItem('savedUsername', username);
+          localStorage.setItem('savedPassword', password);
+        } else {
+          localStorage.removeItem('savedUsername');
+          localStorage.removeItem('savedPassword');
+        }
+        
+        // Salvar sessão
+        sessionStorage.setItem('usuarioLogado', JSON.stringify(usuarioValido));
+        sessionStorage.setItem('loginTime', new Date().toISOString());
+        
+        // Redirecionar para página de monitoramento
+        window.location.href = 'monitoramento.html';
+        
+      } else {
+        // Login falhou
+        console.log('❌ Login falhou');
+        errorText.textContent = 'Usuário ou senha incorretos. Tente novamente.';
+        errorMessage.classList.add('show');
+        
+        // Efeito de erro nos campos
+        usernameInput.style.borderColor = '#ef4444';
+        passwordInput.style.borderColor = '#ef4444';
+        
+        // Limpar efeito após alguns segundos
+        setTimeout(() => {
+          errorMessage.classList.remove('show');
+          usernameInput.style.borderColor = '';
+          passwordInput.style.borderColor = '';
+        }, 5000);
+      }
+    });
+
+    // Limpar erro ao digitar
+    usernameInput.addEventListener('input', () => {
+      errorMessage.classList.remove('show');
+      usernameInput.style.borderColor = '';
+    });
+    
+    passwordInput.addEventListener('input', () => {
+      errorMessage.classList.remove('show');
+      passwordInput.style.borderColor = '';
+    });
+
+    // Link "Esqueceu a senha"
+    document.querySelector('.forgot').addEventListener('click', (e) => {
+      e.preventDefault();
+      alert('Funcionalidade de recuperação de senha em desenvolvimento.\n\nEntre em contato com o administrador do sistema.');
+    });
+  </script>
+</body>
+</html>
