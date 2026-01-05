@@ -163,6 +163,59 @@ main{
     const dados = snap.val();
     if (!dados) return;
 
+    const registros = Object.values(dados);
+
+    // Ordenar por timestamp (mais recente primeiro)
+    registros.sort((a, b) => b.timestamp.localeCompare(a.timestamp));
+
+    // Limitar a 20 registros
+    const ultimos = registros.slice(0, 20).reverse();
+
+    const labels = [];
+    const freq = [];
+    el.tbody.innerHTML = '';
+
+    ultimos.forEach(r => {
+      const hora = r.timestamp.split('_')[1].replace(/-/g, ':');
+
+      labels.push(hora);
+      freq.push(r.freq_cardiaca);
+
+      el.tbody.innerHTML += `
+        <tr>
+          <td>${r.timestamp.replace('_', ' ')}</td>
+          <td>${r.freq_cardiaca} bpm</td>
+          <td>${r.oximetria} %</td>
+          <td>${r.temperatura} °C</td>
+        </tr>`;
+    });
+
+    if (chart) chart.destroy();
+
+    chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'Frequência Cardíaca',
+            data: freq,
+            borderColor: '#ef4444',
+            tension: 0.4
+          }
+        ]
+      },
+      options: {
+        plugins: { legend: { labels: { color: '#e5e7eb' } } },
+        scales: {
+          x: { ticks: { color: '#94a3b8' } },
+          y: { ticks: { color: '#94a3b8' } }
+        }
+      }
+    });
+  });
+    if (!dados) return;
+
     const labels = [];
     const freq = [];
     el.tbody.innerHTML = '';
