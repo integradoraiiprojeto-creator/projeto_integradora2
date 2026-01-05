@@ -160,7 +160,69 @@ main{
   let chart;
 
   onValue(ref(db, 'sensores_historico'), snap => {
-    const dados = snap.val();
+  const dados = snap.val();
+  el.tbody.innerHTML = '';
+
+  if (!dados) {
+    el.tbody.innerHTML = `<tr><td colspan="4">Nenhum registro encontrado</td></tr>`;
+    return;
+  }
+
+  // 🔥 converter objeto em array corretamente
+  const registros = Object.keys(dados).map(chave => ({
+    id: chave,
+    ...dados[chave]
+  }));
+
+  // 🔁 ordenar por timestamp (mais recente primeiro)
+  registros.sort((a, b) => b.timestamp.localeCompare(a.timestamp));
+
+  // limitar quantidade
+  const ultimos = registros.slice(0, 30);
+
+  const labels = [];
+  const freq = [];
+
+  ultimos.forEach(r => {
+    const hora = r.timestamp.split('_')[1].replace(/-/g, ':');
+
+    labels.push(hora);
+    freq.push(r.freq_cardiaca);
+
+    el.tbody.innerHTML += `
+      <tr>
+        <td>${r.timestamp.replace('_', ' ')}</td>
+        <td>${r.freq_cardiaca} bpm</td>
+        <td>${r.oximetria} %</td>
+        <td>${r.temperatura} °C</td>
+      </tr>`;
+  });
+
+  if (chart) chart.destroy();
+
+  chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels.reverse(),
+      datasets: [{
+        label: 'Frequência Cardíaca',
+        data: freq.reverse(),
+        borderColor: '#ef4444',
+        tension: 0.4
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { labels: { color: '#e5e7eb' } }
+      },
+      scales: {
+        x: { ticks: { color: '#94a3b8' } },
+        y: { ticks: { color: '#94a3b8' } }
+      }
+    }
+  });
+});
     if (!dados) return;
 
     const registros = Object.values(dados);
