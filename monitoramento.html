@@ -106,61 +106,54 @@ main{
 </main>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-  // 🔥 CONFIGURAÇÃO FIREBASE (a mesma do seu projeto)
-  const firebaseConfig = {
-    apiKey: "AIzaSyDURF1Z7S-O0y1mfc0Sf8sjY9KGLJwkYHY",
-    authDomain: "projeto-integradora-ii.firebaseapp.com",
-    databaseURL: "https://projeto-integradora-ii-default-rtdb.firebaseio.com",
-    projectId: "projeto-integradora-ii",
-    storageBucket: "projeto-integradora-ii.firebasestorage.app",
-    messagingSenderId: "80939508930",
-    appId: "1:80939508930:web:9a2d2f9bf97be9eb98075b"
-  };
+// CONFIG FIREBASE
+const firebaseConfig = {
+  apiKey: "AIzaSyDURF1Z7S-O0y1mfc0Sf8sjY9KGLJwkYHY",
+  authDomain: "projeto-integradora-ii.firebaseapp.com",
+  databaseURL: "https://projeto-integradora-ii-default-rtdb.firebaseio.com",
+  projectId: "projeto-integradora-ii",
+  storageBucket: "projeto-integradora-ii.firebasestorage.app",
+  messagingSenderId: "80939508930",
+  appId: "1:80939508930:web:9a2d2f9bf97be9eb98075b"
+};
 
-  // Inicializar Firebase
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
-  // Logout
-  window.logout = () => {
-    sessionStorage.clear();
-    location.href = 'index.html';
-  };
+// ELEMENTOS
+const el = {
+  paciente: document.getElementById('paciente'),
+  fc: document.getElementById('fc'),
+  oxi: document.getElementById('oxi'),
+  temp: document.getElementById('temp'),
+  tbody: document.getElementById('tbody')
+};
 
-  // Elementos
-  const el = {
-    paciente: document.getElementById('paciente'),
-    fc: document.getElementById('fc'),
-    oxi: document.getElementById('oxi'),
-    temp: document.getElementById('temp'),
-    tbody: document.getElementById('tbody')
-  };
+// PACIENTE
+onValue(ref(db, 'Paciente'), snap => {
+  const p = snap.val();
+  if (p && el.paciente) {
+    el.paciente.textContent = `${p.nome} (${p.id_paciente})`;
+  }
+});
 
-  // 🔹 PACIENTE
-  onValue(ref(db, 'Paciente'), snap => {
-    const p = snap.val();
-    if (p) el.paciente.textContent = `${p.nome} (${p.id_paciente})`;
-  });
+// SENSORES ATUAIS
+onValue(ref(db, 'sensores_atuais'), snap => {
+  const s = snap.val();
+  if (!s) return;
+  if (el.fc) el.fc.textContent = s.freq_cardiaca + ' bpm';
+  if (el.oxi) el.oxi.textContent = s.oximetria + ' %';
+  if (el.temp) el.temp.textContent = s.temperatura + ' °C';
+});
 
-  // 🔹 SENSORES ATUAIS
-  onValue(ref(db, 'sensores_atuais'), snap => {
-    const s = snap.val();
-    if (!s) return;
-
-    el.fc.textContent = s.freq_cardiaca + ' bpm';
-    el.oxi.textContent = s.oximetria + ' %';
-    el.temp.textContent = s.temperatura + ' °C';
-  });
-
-  // 🔹 HISTÓRICO + GRÁFICO
-  const ctx = document.getElementById('grafico');
-  let chart;
-
-  onValue(ref(db, 'sensores_historico'), snap => {
+// HISTÓRICO (ESTRUTURA CORRETA)
+onValue(ref(db, 'sensores_historico'), snap => {
   const dados = snap.val();
+  if (!el.tbody) return;
+
   el.tbody.innerHTML = '';
 
   if (!dados) {
@@ -168,157 +161,23 @@ main{
     return;
   }
 
-  // 🔥 converter objeto em array corretamente
-  const registros = Object.keys(dados).map(chave => ({
-    id: chave,
-    ...dados[chave]
+  const registros = Object.keys(dados).map(key => ({
+    key,
+    ...dados[key]
   }));
 
-  // 🔁 ordenar por timestamp (mais recente primeiro)
-  registros.sort((a, b) => b.timestamp.localeCompare(a.timestamp));
+  registros.sort((a, b) => a.timestamp.localeCompare(b.timestamp));
 
-  // limitar quantidade
-  const ultimos = registros.slice(0, 30);
-
-  const labels = [];
-  const freq = [];
-
-  ultimos.forEach(r => {
-    const hora = r.timestamp.split('_')[1].replace(/-/g, ':');
-
-    labels.push(hora);
-    freq.push(r.freq_cardiaca);
-
+  registros.slice(-30).forEach(r => {
     el.tbody.innerHTML += `
       <tr>
         <td>${r.timestamp.replace('_', ' ')}</td>
-        <td>${r.freq_cardiaca} bpm</td>
-        <td>${r.oximetria} %</td>
-        <td>${r.temperatura} °C</td>
+        <td>${r.freq_cardiaca}</td>
+        <td>${r.oximetria}</td>
+        <td>${r.temperatura}</td>
       </tr>`;
   });
-
-  if (chart) chart.destroy();
-
-  chart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: labels.reverse(),
-      datasets: [{
-        label: 'Frequência Cardíaca',
-        data: freq.reverse(),
-        borderColor: '#ef4444',
-        tension: 0.4
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { labels: { color: '#e5e7eb' } }
-      },
-      scales: {
-        x: { ticks: { color: '#94a3b8' } },
-        y: { ticks: { color: '#94a3b8' } }
-      }
-    }
-  });
 });
-    if (!dados) return;
-
-    const registros = Object.values(dados);
-
-    // Ordenar por timestamp (mais recente primeiro)
-    registros.sort((a, b) => b.timestamp.localeCompare(a.timestamp));
-
-    // Limitar a 20 registros
-    const ultimos = registros.slice(0, 20).reverse();
-
-    const labels = [];
-    const freq = [];
-    el.tbody.innerHTML = '';
-
-    ultimos.forEach(r => {
-      const hora = r.timestamp.split('_')[1].replace(/-/g, ':');
-
-      labels.push(hora);
-      freq.push(r.freq_cardiaca);
-
-      el.tbody.innerHTML += `
-        <tr>
-          <td>${r.timestamp.replace('_', ' ')}</td>
-          <td>${r.freq_cardiaca} bpm</td>
-          <td>${r.oximetria} %</td>
-          <td>${r.temperatura} °C</td>
-        </tr>`;
-    });
-
-    if (chart) chart.destroy();
-
-    chart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels,
-        datasets: [
-          {
-            label: 'Frequência Cardíaca',
-            data: freq,
-            borderColor: '#ef4444',
-            tension: 0.4
-          }
-        ]
-      },
-      options: {
-        plugins: { legend: { labels: { color: '#e5e7eb' } } },
-        scales: {
-          x: { ticks: { color: '#94a3b8' } },
-          y: { ticks: { color: '#94a3b8' } }
-        }
-      }
-    });
-  });
-    if (!dados) return;
-
-    const labels = [];
-    const freq = [];
-    el.tbody.innerHTML = '';
-
-    Object.entries(dados.freq_cardiaca || {}).slice(-10).forEach(([hora, valores]) => {
-      Object.values(valores).forEach(v => {
-        labels.push(hora.split('_')[1].replace(/-/g, ':'));
-        freq.push(v);
-
-        el.tbody.innerHTML += `
-          <tr>
-            <td>${hora.replace('_', ' ')}</td>
-            <td>${v}</td>
-            <td>--</td>
-            <td>--</td>
-          </tr>`;
-      });
-    });
-
-    if (chart) chart.destroy();
-
-    chart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels,
-        datasets: [{
-          label: 'Frequência Cardíaca',
-          data: freq,
-          borderColor: '#ef4444',
-          tension: .4
-        }]
-      },
-      options: {
-        plugins: { legend: { labels: { color: '#e5e7eb' } } },
-        scales: {
-          x: { ticks: { color: '#94a3b8' } },
-          y: { ticks: { color: '#94a3b8' } }
-        }
-      }
-    });
-  });
 </script>
 </body>
 </html>
