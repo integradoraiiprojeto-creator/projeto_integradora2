@@ -1,305 +1,792 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <title>Login - Sistema de Monitoramento</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-    
-    body {
-      font-family: 'Segoe UI', Arial, sans-serif;
-      background: linear-gradient(135deg, #0a0f1a 0%, #1a2238 100%);
-      color: #e5e7eb;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-    }
-    
-    .login-container {
-      background: rgba(2, 6, 23, 0.95);
-      padding: 40px;
-      border-radius: 20px;
-      width: 100%;
-      max-width: 400px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
-      border: 1px solid rgba(56, 189, 248, 0.1);
-    }
-    
-    .logo {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-    
-    .logo h1 {
-      color: #38bdf8;
-      font-size: 1.8rem;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-    }
-    
-    .logo p {
-      color: #94a3b8;
-      font-size: 0.9rem;
-    }
-    
-    .form-group {
-      margin-bottom: 20px;
-    }
-    
-    .form-group label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 600;
-      color: #e2e8f0;
-    }
-    
-    .form-group input {
-      width: 100%;
-      padding: 14px;
-      background: rgba(30, 41, 59, 0.7);
-      border: 1px solid rgba(56, 189, 248, 0.2);
-      border-radius: 10px;
-      color: white;
-      font-size: 15px;
-      transition: all 0.3s;
-    }
-    
-    .form-group input:focus {
-      outline: none;
-      border-color: #38bdf8;
-      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.1);
-    }
-    
-    .remember-forgot {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 25px;
-      font-size: 14px;
-    }
-    
-    .remember {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    
-    .forgot {
-      color: #38bdf8;
-      text-decoration: none;
-    }
-    
-    .btn-login {
-      width: 100%;
-      padding: 15px;
-      background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%);
-      color: white;
-      border: none;
-      border-radius: 10px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-    }
-    
-    .btn-login:hover {
-      background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
-      transform: translateY(-2px);
-    }
-    
-    .error-message {
-      background: rgba(239, 68, 68, 0.1);
-      color: #ef4444;
-      padding: 12px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      font-size: 14px;
-      display: none;
-      align-items: center;
-      gap: 10px;
-    }
-    
-    .error-message.show {
-      display: flex;
-    }
-    
-    .footer {
-      text-align: center;
-      margin-top: 30px;
-      color: #94a3b8;
-      font-size: 13px;
-    }
-    
-    @media (max-width: 480px) {
-      .login-container {
-        padding: 30px 20px;
-      }
-    }
-  </style>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MonitorMed | Login</title>
+    <style>
+        /* ============ RESET & BASE ============ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #0c0f1d 0%, #1a1f3a 100%);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* ============ PARTÍCULAS DE FUNDO ============ */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.3), rgba(147, 51, 234, 0.3));
+            border-radius: 50%;
+            animation: floatParticle 20s infinite linear;
+        }
+
+        @keyframes floatParticle {
+            0% {
+                transform: translateY(100vh) translateX(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.7;
+            }
+            90% {
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(-100px) translateX(100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* ============ CONTAINER PRINCIPAL ============ */
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* ============ CARD DE LOGIN ============ */
+        .login-card {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 50px 40px;
+            width: 100%;
+            max-width: 440px;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            box-shadow: 
+                0 25px 50px -12px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(56, 189, 248, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            animation: slideUp 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* Efeito de brilho no card */
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(56, 189, 248, 0.5), 
+                rgba(147, 51, 234, 0.5), 
+                transparent);
+        }
+
+        .login-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, 
+                rgba(56, 189, 248, 0.05) 0%, 
+                rgba(147, 51, 234, 0.03) 30%, 
+                transparent 70%);
+            z-index: -1;
+        }
+
+        /* ============ LOGO ============ */
+        .logo {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .logo-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #38bdf8, #9333ea);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            box-shadow: 
+                0 10px 30px rgba(56, 189, 248, 0.3),
+                0 0 0 8px rgba(56, 189, 248, 0.1);
+            animation: pulseGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% {
+                box-shadow: 
+                    0 10px 30px rgba(56, 189, 248, 0.3),
+                    0 0 0 8px rgba(56, 189, 248, 0.1);
+            }
+            50% {
+                box-shadow: 
+                    0 10px 40px rgba(56, 189, 248, 0.5),
+                    0 0 0 12px rgba(56, 189, 248, 0.2);
+            }
+        }
+
+        .logo-icon i {
+            font-size: 28px;
+            color: white;
+        }
+
+        .logo h1 {
+            font-size: 32px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #38bdf8, #9333ea);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .logo p {
+            color: #94a3b8;
+            font-size: 15px;
+            font-weight: 300;
+            letter-spacing: 0.3px;
+        }
+
+        /* ============ FORMULÁRIO ============ */
+        .form-group {
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            color: #e2e8f0;
+            font-weight: 600;
+            font-size: 15px;
+            letter-spacing: 0.3px;
+        }
+
+        .form-label i {
+            color: #38bdf8;
+            font-size: 16px;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+            font-size: 16px;
+            transition: color 0.3s;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 16px 16px 16px 48px;
+            background: rgba(30, 41, 59, 0.7);
+            border: 2px solid rgba(71, 85, 105, 0.3);
+            border-radius: 12px;
+            color: #f1f5f9;
+            font-size: 15px;
+            font-weight: 400;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            outline: none;
+        }
+
+        .form-input:focus {
+            border-color: #38bdf8;
+            background: rgba(30, 41, 59, 0.9);
+            box-shadow: 
+                0 0 0 4px rgba(56, 189, 248, 0.15),
+                0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-input:hover:not(:focus) {
+            border-color: rgba(56, 189, 248, 0.5);
+            background: rgba(30, 41, 59, 0.8);
+        }
+
+        /* ============ CHECKBOX ============ */
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .checkbox-container input[type="checkbox"] {
+            display: none;
+        }
+
+        .custom-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #475569;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            background: rgba(30, 41, 59, 0.7);
+        }
+
+        .custom-checkbox i {
+            color: #38bdf8;
+            font-size: 12px;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.3s;
+        }
+
+        .checkbox-container input:checked + .custom-checkbox {
+            border-color: #38bdf8;
+            background: rgba(56, 189, 248, 0.1);
+        }
+
+        .checkbox-container input:checked + .custom-checkbox i {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .checkbox-text {
+            color: #cbd5e1;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .forgot-link {
+            color: #38bdf8;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            position: relative;
+            padding: 4px 0;
+            transition: color 0.3s;
+        }
+
+        .forgot-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: linear-gradient(90deg, #38bdf8, #9333ea);
+            transition: width 0.3s;
+        }
+
+        .forgot-link:hover {
+            color: #60a5fa;
+        }
+
+        .forgot-link:hover::after {
+            width: 100%;
+        }
+
+        /* ============ BOTÃO LOGIN ============ */
+        .login-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #38bdf8 0%, #9333ea 100%);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.5px;
+        }
+
+        .login-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.2), 
+                transparent);
+            transition: 0.5s;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 
+                0 12px 30px rgba(56, 189, 248, 0.4),
+                0 4px 20px rgba(147, 51, 234, 0.3);
+        }
+
+        .login-btn:hover::before {
+            left: 100%;
+        }
+
+        .login-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .login-btn i {
+            font-size: 18px;
+        }
+
+        /* ============ MENSAGEM DE ERRO ============ */
+        .error-message {
+            background: linear-gradient(135deg, 
+                rgba(239, 68, 68, 0.15), 
+                rgba(239, 68, 68, 0.05));
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+            display: none;
+            align-items: center;
+            gap: 14px;
+            backdrop-filter: blur(10px);
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
+        .error-message.show {
+            display: flex;
+        }
+
+        .error-icon {
+            color: #ef4444;
+            font-size: 18px;
+        }
+
+        .error-text {
+            color: #fecaca;
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
+        /* ============ FOOTER ============ */
+        .login-footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 25px;
+            border-top: 1px solid rgba(56, 189, 248, 0.1);
+        }
+
+        .footer-text {
+            color: #94a3b8;
+            font-size: 13px;
+            font-weight: 300;
+            line-height: 1.6;
+        }
+
+        .footer-text strong {
+            color: #cbd5e1;
+            font-weight: 500;
+        }
+
+        /* ============ ANIMAÇÕES ============ */
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .form-group, .remember-forgot, .login-btn, .login-footer {
+            animation: fadeIn 0.8s ease-out forwards;
+            opacity: 0;
+        }
+
+        .form-group:nth-child(1) { animation-delay: 0.2s; }
+        .form-group:nth-child(2) { animation-delay: 0.3s; }
+        .remember-forgot { animation-delay: 0.4s; }
+        .login-btn { animation-delay: 0.5s; }
+        .login-footer { animation-delay: 0.6s; }
+
+        /* ============ RESPONSIVIDADE ============ */
+        @media (max-width: 768px) {
+            .login-card {
+                padding: 40px 30px;
+                margin: 20px;
+            }
+            
+            .logo h1 {
+                font-size: 28px;
+            }
+            
+            .form-input {
+                padding: 14px 14px 14px 44px;
+            }
+            
+            .login-btn {
+                padding: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 35px 25px;
+            }
+            
+            .remember-forgot {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .forgot-link {
+                align-self: flex-end;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-  <div class="login-container">
-    <div class="logo">
-      <h1><i class="fas fa-heart-pulse"></i> MonitorMed</h1>
-      <p>Sistema de Monitoramento de Pacientes</p>
+    <!-- Partículas de fundo -->
+    <div class="particles" id="particles"></div>
+
+    <div class="login-container">
+        <div class="login-card">
+            <!-- Logo -->
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-heart-pulse"></i>
+                </div>
+                <h1>MonitorMed Pro</h1>
+                <p>Sistema Inteligente de Monitoramento de Pacientes</p>
+            </div>
+
+            <!-- Mensagem de erro -->
+            <div class="error-message" id="errorMessage">
+                <i class="fas fa-exclamation-circle error-icon"></i>
+                <span class="error-text" id="errorText">Usuário ou senha incorretos</span>
+            </div>
+
+            <!-- Formulário -->
+            <form id="loginForm">
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-user"></i>
+                        <span>Usuário</span>
+                    </label>
+                    <div class="input-group">
+                        <i class="fas fa-user input-icon"></i>
+                        <input 
+                            type="text" 
+                            class="form-input" 
+                            id="username" 
+                            placeholder="Digite seu usuário"
+                            required
+                            autocomplete="username"
+                        >
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-lock"></i>
+                        <span>Senha</span>
+                    </label>
+                    <div class="input-group">
+                        <i class="fas fa-key input-icon"></i>
+                        <input 
+                            type="password" 
+                            class="form-input" 
+                            id="password" 
+                            placeholder="Digite sua senha"
+                            required
+                            autocomplete="current-password"
+                        >
+                    </div>
+                </div>
+
+                <div class="remember-forgot">
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="remember">
+                        <div class="custom-checkbox">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <span class="checkbox-text">Lembrar-me</span>
+                    </label>
+                    <a href="#" class="forgot-link" id="forgotLink">Esqueceu a senha?</a>
+                </div>
+
+                <button type="submit" class="login-btn">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>Entrar no Sistema</span>
+                </button>
+            </form>
+
+            <!-- Footer -->
+            <div class="login-footer">
+                <p class="footer-text">
+                    <strong>© 2024 MonitorMed Pro</strong> - Acesso restrito a profissionais de saúde<br>
+                    <span style="opacity: 0.7; font-size: 12px; margin-top: 8px; display: block;">
+                        Sistema de monitoramento em tempo real com inteligência artificial
+                    </span>
+                </p>
+            </div>
+        </div>
     </div>
-    
-    <div class="error-message" id="errorMessage">
-      <i class="fas fa-exclamation-circle"></i>
-      <span id="errorText">Usuário ou senha incorretos</span>
-    </div>
-    
-    <form id="loginForm">
-      <div class="form-group">
-        <label for="username"><i class="fas fa-user"></i> Usuário</label>
-        <input 
-          type="text" 
-          id="username" 
-          placeholder="Digite seu nome de usuário"
-          required
-          autocomplete="username"
-        >
-      </div>
-      
-      <div class="form-group">
-        <label for="password"><i class="fas fa-lock"></i> Senha</label>
-        <input 
-          type="password" 
-          id="password" 
-          placeholder="Digite sua senha"
-          required
-          autocomplete="current-password"
-        >
-      </div>
-      
-      <div class="remember-forgot">
-        <label class="remember">
-          <input type="checkbox" id="remember">
-          Lembrar-me
-        </label>
-        <a href="#" class="forgot">Esqueceu a senha?</a>
-      </div>
-      
-      <button type="submit" class="btn-login">
-        <i class="fas fa-sign-in-alt"></i> Entrar no Sistema
-      </button>
-    </form>
-    
-    <div class="footer">
-      <p>© 2024 MonitorMed. Acesso restrito a profissionais de saúde.</p>
-    </div>
-  </div>
 
-  <script>
-    // Credenciais válidas
-    const usuariosValidos = [
-      { username: "medico", password: "saude123", nome: "Dr. Silva", perfil: "Médico" },
-      { username: "enfermeiro", password: "cuidado456", nome: "Enf. Oliveira", perfil: "Enfermeiro" },
-      { username: "admin", password: "admin2024", nome: "Administrador", perfil: "Admin" },
-      { username: "visitante", password: "monitor", nome: "Visitante", perfil: "Visitante" }
-    ];
+    <script>
+        // ============ CONFIGURAÇÕES ============
+        const usuariosValidos = [
+            { username: "medico", password: "saude123", nome: "Dr. Carlos Silva", perfil: "Médico Chefe" },
+            { username: "enfermeiro", password: "cuidado456", nome: "Enf. Ana Oliveira", perfil: "Enfermeira" },
+            { username: "admin", password: "admin2024", nome: "Admin System", perfil: "Administrador" },
+            { username: "visitante", password: "monitor", nome: "Visitante", perfil: "Visitante" }
+        ];
 
-    // Elementos da página
-    const loginForm = document.getElementById('loginForm');
-    const usernameInput = document.getElementById('username');
-    const passwordInput = document.getElementById('password');
-    const rememberCheckbox = document.getElementById('remember');
-    const errorMessage = document.getElementById('errorMessage');
-    const errorText = document.getElementById('errorText');
+        // ============ ELEMENTOS ============
+        const loginForm = document.getElementById('loginForm');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const rememberCheckbox = document.getElementById('remember');
+        const errorMessage = document.getElementById('errorMessage');
+        const errorText = document.getElementById('errorText');
+        const forgotLink = document.getElementById('forgotLink');
 
-    // Verificar se há credenciais salvas
-    window.addEventListener('DOMContentLoaded', () => {
-      const savedUsername = localStorage.getItem('savedUsername');
-      const savedPassword = localStorage.getItem('savedPassword');
-      
-      if (savedUsername && savedPassword) {
-        usernameInput.value = savedUsername;
-        passwordInput.value = savedPassword;
-        rememberCheckbox.checked = true;
-      }
-    });
-
-    // Processar login
-    loginForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      
-      const username = usernameInput.value.trim();
-      const password = passwordInput.value;
-      
-      // Validar credenciais
-      const usuarioValido = usuariosValidos.find(
-        user => user.username === username && user.password === password
-      );
-      
-      if (usuarioValido) {
-        // Login bem-sucedido
-        console.log(`✅ Login bem-sucedido: ${usuarioValido.nome} (${usuarioValido.perfil})`);
-        
-        // Salvar credenciais se "Lembrar-me" estiver marcado
-        if (rememberCheckbox.checked) {
-          localStorage.setItem('savedUsername', username);
-          localStorage.setItem('savedPassword', password);
-        } else {
-          localStorage.removeItem('savedUsername');
-          localStorage.removeItem('savedPassword');
+        // ============ PARTÍCULAS ANIMADAS ============
+        function criarParticulas() {
+            const container = document.getElementById('particles');
+            const cores = ['#38bdf8', '#60a5fa', '#9333ea', '#8b5cf6', '#ec4899'];
+            
+            for (let i = 0; i < 25; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Tamanho aleatório
+                const size = Math.random() * 10 + 5;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                
+                // Posição inicial aleatória
+                particle.style.left = `${Math.random() * 100}%`;
+                
+                // Atraso e duração aleatórios
+                particle.style.animationDelay = `${Math.random() * 20}s`;
+                particle.style.animationDuration = `${Math.random() * 15 + 15}s`;
+                
+                // Cor aleatória
+                const cor = cores[Math.floor(Math.random() * cores.length)];
+                particle.style.background = `linear-gradient(135deg, ${cor}, rgba(255,255,255,0.3))`;
+                
+                // Opacidade aleatória
+                particle.style.opacity = Math.random() * 0.5 + 0.3;
+                
+                container.appendChild(particle);
+            }
         }
-        
-        // Salvar sessão
-        sessionStorage.setItem('usuarioLogado', JSON.stringify(usuarioValido));
-        sessionStorage.setItem('loginTime', new Date().toISOString());
-        
-        // Redirecionar para página de monitoramento
-        window.location.href = 'monitoramento.html';
-        
-      } else {
-        // Login falhou
-        console.log('❌ Login falhou');
-        errorText.textContent = 'Usuário ou senha incorretos. Tente novamente.';
-        errorMessage.classList.add('show');
-        
-        // Efeito de erro nos campos
-        usernameInput.style.borderColor = '#ef4444';
-        passwordInput.style.borderColor = '#ef4444';
-        
-        // Limpar efeito após alguns segundos
-        setTimeout(() => {
-          errorMessage.classList.remove('show');
-          usernameInput.style.borderColor = '';
-          passwordInput.style.borderColor = '';
-        }, 5000);
-      }
-    });
 
-    // Limpar erro ao digitar
-    usernameInput.addEventListener('input', () => {
-      errorMessage.classList.remove('show');
-      usernameInput.style.borderColor = '';
-    });
-    
-    passwordInput.addEventListener('input', () => {
-      errorMessage.classList.remove('show');
-      passwordInput.style.borderColor = '';
-    });
+        // ============ INICIALIZAÇÃO ============
+        window.addEventListener('DOMContentLoaded', () => {
+            // Criar partículas
+            criarParticulas();
+            
+            // Verificar credenciais salvas
+            const savedUsername = localStorage.getItem('savedUsername');
+            const savedPassword = localStorage.getItem('savedPassword');
+            
+            if (savedUsername && savedPassword) {
+                usernameInput.value = savedUsername;
+                passwordInput.value = savedPassword;
+                rememberCheckbox.checked = true;
+                
+                // Animação suave para campos preenchidos
+                usernameInput.style.animation = 'fadeIn 0.5s ease-out';
+                passwordInput.style.animation = 'fadeIn 0.5s ease-out 0.1s';
+            }
+            
+            // Focar no primeiro campo
+            setTimeout(() => {
+                usernameInput.focus();
+            }, 800);
+        });
 
-    // Link "Esqueceu a senha"
-    document.querySelector('.forgot').addEventListener('click', (e) => {
-      e.preventDefault();
-      alert('Funcionalidade de recuperação de senha em desenvolvimento.\n\nEntre em contato com o administrador do sistema.');
-    });
-  </script>
+        // ============ VALIDAÇÃO DE LOGIN ============
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value;
+            
+            // Efeito de carregamento
+            const btn = e.target.querySelector('.login-btn');
+            const originalContent = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Autenticando...</span>';
+            btn.disabled = true;
+            btn.style.opacity = '0.8';
+            
+            // Simular delay de rede
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            const usuarioValido = usuariosValidos.find(
+                user => user.username === username && user.password === password
+            );
+            
+            if (usuarioValido) {
+                // Login bem-sucedido
+                console.log(`✅ Login: ${usuarioValido.nome} (${usuarioValido.perfil})`);
+                
+                // Efeito visual de sucesso
+                btn.innerHTML = '<i class="fas fa-check"></i><span>Login realizado!</span>';
+                btn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+                
+                // Salvar credenciais
+                if (rememberCheckbox.checked) {
+                    localStorage.setItem('savedUsername', username);
+                    localStorage.setItem('savedPassword', password);
+                } else {
+                    localStorage.removeItem('savedUsername');
+                    localStorage.removeItem('savedPassword');
+                }
+                
+                // Salvar sessão
+                sessionStorage.setItem('usuarioLogado', JSON.stringify(usuarioValido));
+                sessionStorage.setItem('loginTime', new Date().toISOString());
+                
+                // Redirecionar
+                setTimeout(() => {
+                    window.location.href = 'monitoramento.html';
+                }, 800);
+                
+            } else {
+                // Login falhou
+                errorText.textContent = 'Usuário ou senha incorretos. Verifique suas credenciais.';
+                errorMessage.classList.add('show');
+                
+                // Efeito de erro
+                usernameInput.style.borderColor = '#ef4444';
+                passwordInput.style.borderColor = '#ef4444';
+                
+                // Restaurar botão
+                setTimeout(() => {
+                    btn.innerHTML = originalContent;
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                }, 300);
+                
+                // Limpar erro após 5 segundos
+                setTimeout(() => {
+                    errorMessage.classList.remove('show');
+                    usernameInput.style.borderColor = '';
+                    passwordInput.style.borderColor = '';
+                }, 5000);
+            }
+        });
+
+        // ============ INTERAÇÕES ============
+        // Limpar erro ao digitar
+        [usernameInput, passwordInput].forEach(input => {
+            input.addEventListener('input', () => {
+                errorMessage.classList.remove('show');
+                input.style.borderColor = '';
+            });
+            
+            // Efeito hover
+            input.addEventListener('mouseenter', () => {
+                if (document.activeElement !== input) {
+                    input.style.transform = 'translateY(-2px)';
+                }
+            });
+            
+            input.addEventListener('mouseleave', () => {
+                if (document.activeElement !== input) {
+                    input.style.transform = '';
+                }
+            });
+        });
+
+        // Esqueci a senha
+        forgotLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            // Efeito visual
+            forgotLink.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                forgotLink.style.transform = '';
+            }, 200);
+            
+            // Modal de credenciais
+            const credenciais = usuariosValidos.map(user => 
+                `👤 ${user.perfil}: ${user.username} / ${user.password}`
+            ).join('\n');
+            
+            alert(`🔐 Credenciais de Teste\n\n${credenciais}\n\nPara mais informações, contate o administrador do sistema.`);
+        });
+
+        // ============ ANIMAÇÃO DO TÍTULO ============
+        const title = document.querySelector('.logo h1');
+        let colors = [
+            'linear-gradient(135deg, #38bdf8, #9333ea)',
+            'linear-gradient(135deg, #60a5fa, #8b5cf6)',
+            'linear-gradient(135deg, #93c5fd, #a78bfa)'
+        ];
+        let currentColor = 0;
+
+        setInterval(() => {
+            title.style.background = colors[currentColor];
+            currentColor = (currentColor + 1) % colors.length;
+        }, 3000);
+    </script>
 </body>
 </html>
