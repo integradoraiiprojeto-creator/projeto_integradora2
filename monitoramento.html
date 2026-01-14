@@ -229,6 +229,36 @@
       background: rgba(56, 189, 248, 0.05);
     }
 
+    /* Status Indicators */
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .status-indicator.normal {
+      background: rgba(34, 197, 94, 0.2);
+      color: #22c55e;
+    }
+
+    .status-indicator.warning {
+      background: rgba(245, 158, 11, 0.2);
+      color: #f59e0b;
+    }
+
+    .status-indicator.critical {
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+    }
+
+    .status-indicator i {
+      font-size: 0.7rem;
+    }
+
     /* Hidden State */
     .hidden {
       display: none !important;
@@ -543,21 +573,43 @@
 
     // Update Chart Data
     function updateChartWithData(records) {
-      const sortedRecords = records.sort((a, b) => 
-        new Date(a.timestamp.replace('_', ' ')) - new Date(b.timestamp.replace('_', ' '))
-      );
+      if (!records || records.length === 0) {
+        if (healthChart) {
+          healthChart.data.labels = ['Sem dados'];
+          healthChart.data.datasets[0].data = [0];
+          healthChart.data.datasets[1].data = [0];
+          healthChart.data.datasets[2].data = [0];
+          healthChart.update();
+        }
+        return;
+      }
 
-      // Get last 30 records for chart
+      // Ordenar por timestamp
+      const sortedRecords = records.sort((a, b) => {
+        try {
+          const dateA = new Date(a.timestamp.replace('_', 'T').replace(/-/g, ':'));
+          const dateB = new Date(b.timestamp.replace('_', 'T').replace(/-/g, ':'));
+          return dateA - dateB;
+        } catch (e) {
+          return 0;
+        }
+      });
+
+      // Pegar últimos 30 registros para o gráfico
       const recentRecords = sortedRecords.slice(-30);
       
+      // Preparar labels para o gráfico (apenas hora)
       chartData.labels = recentRecords.map(r => {
-        const [date, time] = r.timestamp.split('_');
-        return time || r.timestamp;
+        const parts = r.timestamp.split('_');
+        if (parts.length > 1) {
+          return parts[1]; // Retorna apenas "17-51-12"
+        }
+        return r.timestamp;
       });
       
-      chartData.heartRate = recentRecords.map(r => r.bpm);
-      chartData.oxygenLevel = recentRecords.map(r => r.spo2);
-      chartData.temperature = recentRecords.map(r => r.temp);
+      chartData.heartRate = recentRecords.map(r => parseFloat(r.bpm) || 0);
+      chartData.oxygenLevel = recentRecords.map(r => parseFloat(r.spo2) || 0);
+      chartData.temperature = recentRecords.map(r => parseFloat(r.temp) || 0);
 
       if (healthChart) {
         healthChart.data.labels = chartData.labels;
@@ -586,18 +638,21 @@
       } else {
         records.forEach(record => {
           const [date, time] = record.timestamp.split('_');
+          const formattedDate = date ? date : 'Data desconhecida';
+          const formattedTime = time ? time.replace(/-/g, ':') : '';
           const status = getStatus(record);
+          const statusText = getStatusText(status);
           
           html += `
             <tr>
-              <td>${date} ${time || ''}</td>
-              <td><span class="sensor-value">${record.bpm}</span></td>
-              <td><span class="sensor-value">${record.spo2}</span></td>
-              <td><span class="sensor-value">${record.temp}</span></td>
+              <td>${formattedDate} ${formattedTime}</td>
+              <td><span class="sensor-value">${record.bpm || '--'}</span></td>
+              <td><span class="sensor-value">${record.spo2 || '--'}</span></td>
+              <td><span class="sensor-value">${record.temp || '--'}</span></td>
               <td>
                 <span class="status-indicator ${status}">
                   <i class="fas fa-circle"></i>
-                  ${getStatusText(status)}
+                  ${statusText}
                 </span>
               </td>
             </tr>
@@ -610,9 +665,13 @@
 
     // Helper function to determine status
     function getStatus(record) {
-      if (record.oximetria < 90) return 'critical';
-      if (record.bpm < 60 || record.bpm > 100) return 'warning';
-      if (record.temp < 36 || record.temp > 37.5) return 'warning';
+      const bpm = parseFloat(record.bpm);
+      const spo2 = parseFloat(record.spo2);
+      const temp = parseFloat(record.temp);
+      
+      if (isNaN(spo2) || spo2 < 90) return 'critical';
+      if (isNaN(bpm) || bpm < 60 || bpm > 100) return 'warning';
+      if (isNaN(temp) || temp < 36 || temp > 37.5) return 'warning';
       return 'normal';
     }
 
@@ -654,15 +713,31 @@
       const data = snap.val();
       
       if (data) {
-        const records = Object.keys(data).map(key => ({
-          ...data[key],
-          key: key
-        }));
+        // Converter o objeto de histórico em array
+        const records = [];
+        
+        Object.keys(data).forEach(timestamp => {
+          if (data[timestamp] && typeof data[timestamp] === 'object') {
+            // Verificar se é um registro de dados (tem bpm, spo2, temp)
+            if (data[timestamp].bpm !== undefined || 
+                data[timestamp].spo2 !== undefined || 
+                data[timestamp].temp !== undefined) {
+              records.push({
+                timestamp: timestamp,
+                bpm: data[timestamp].bpm,
+                spo2: data[timestamp].spo2,
+                temp: data[timestamp].temp
+              });
+            }
+          }
+        });
 
+        console.log('Registros encontrados:', records.length, 'registro(s)');
+        
         // Update chart
         updateChartWithData(records);
         
-        // Update table (show last 50 records)
+        // Update table (mostrar últimos 50 registros em ordem decrescente)
         const tableRecords = records.slice(-50).reverse();
         updateTable(tableRecords);
       } else {
