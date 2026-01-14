@@ -555,9 +555,9 @@
         return time || r.timestamp;
       });
       
-      chartData.heartRate = recentRecords.map(r => r.freq_cardiaca);
-      chartData.oxygenLevel = recentRecords.map(r => r.oximetria);
-      chartData.temperature = recentRecords.map(r => r.temperatura);
+      chartData.heartRate = recentRecords.map(r => r.bpm);
+      chartData.oxygenLevel = recentRecords.map(r => r.spo2);
+      chartData.temperature = recentRecords.map(r => r.temp);
 
       if (healthChart) {
         healthChart.data.labels = chartData.labels;
@@ -591,9 +591,9 @@
           html += `
             <tr>
               <td>${date} ${time || ''}</td>
-              <td><span class="sensor-value">${record.freq_cardiaca}</span></td>
-              <td><span class="sensor-value">${record.oximetria}</span></td>
-              <td><span class="sensor-value">${record.temperatura}</span></td>
+              <td><span class="sensor-value">${record.bpm}</span></td>
+              <td><span class="sensor-value">${record.spo2}</span></td>
+              <td><span class="sensor-value">${record.temp}</span></td>
               <td>
                 <span class="status-indicator ${status}">
                   <i class="fas fa-circle"></i>
@@ -611,8 +611,8 @@
     // Helper function to determine status
     function getStatus(record) {
       if (record.oximetria < 90) return 'critical';
-      if (record.freq_cardiaca < 60 || record.freq_cardiaca > 100) return 'warning';
-      if (record.temperatura < 36 || record.temperatura > 37.5) return 'warning';
+      if (record.bpm < 60 || record.bpm > 100) return 'warning';
+      if (record.temp < 36 || record.temp > 37.5) return 'warning';
       return 'normal';
     }
 
@@ -643,9 +643,9 @@
     onValue(ref(db, 'atuais'), snap => {
       const sensors = snap.val();
       if (sensors) {
-        elements.heartRate.textContent = `${sensors.freq_cardiaca || '--'} bpm`;
-        elements.oxygenLevel.textContent = `${sensors.oximetria || '--'} %`;
-        elements.temperature.textContent = `${sensors.temperatura || '--'} °C`;
+        elements.heartRate.textContent = `${sensors.bpm || '--'} bpm`;
+        elements.oxygenLevel.textContent = `${sensors.spo2 || '--'} %`;
+        elements.temperature.textContent = `${sensors.temp || '--'} °C`;
         updateLastUpdateTime();
       }
     });
