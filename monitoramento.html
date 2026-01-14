@@ -640,7 +640,7 @@
       }
     });
 
-    onValue(ref(db, 'sensores_atuais'), snap => {
+    onValue(ref(db, 'Sensores-atuais'), snap => {
       const sensors = snap.val();
       if (sensors) {
         elements.heartRate.textContent = `${sensors.freq_cardiaca || '--'} bpm`;
@@ -650,7 +650,7 @@
       }
     });
 
-    onValue(ref(db, 'sensores_historico'), snap => {
+    onValue(ref(db, 'Sensores-historico'), snap => {
       const data = snap.val();
       
       if (data) {
