@@ -8,9 +8,9 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-  <!-- Firebase SDK (compat) -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <!-- Firebase SDK v9 compat — versão estável -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
   <style>
     :root {
@@ -66,11 +66,14 @@
     .or{display:flex;align-items:center;gap:12px;margin:4px 0 18px;color:var(--text-muted);font-size:.76rem;}
     .or::before,.or::after{content:'';flex:1;border-top:1px solid var(--border-soft);}
 
-    .firebase-badge{display:flex;align-items:center;justify-content:center;gap:7px;margin-top:20px;font-size:.72rem;color:var(--text-muted);font-family:'DM Mono',monospace;}
-    .firebase-badge i{color:#f5820d;font-size:.78rem;}
+    .db-status{display:flex;align-items:center;justify-content:center;gap:7px;margin-top:20px;font-size:.72rem;color:var(--text-muted);font-family:'DM Mono',monospace;}
+    .db-dot{width:6px;height:6px;border-radius:50%;background:var(--text-muted);}
+    .db-dot.checking{animation:dbPulse 1.2s infinite;}
+    .db-dot.online{background:var(--green);}
+    .db-dot.offline{background:var(--red);}
+    @keyframes dbPulse{0%,100%{opacity:.25}50%{opacity:1}}
 
-    .footer-note{text-align:center;margin-top:10px;color:var(--text-muted);font-size:.74rem;}
-
+    .footer-note{text-align:center;margin-top:8px;color:var(--text-muted);font-size:.74rem;}
     .spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
     @keyframes spin{to{transform:rotate(360deg)}}
   </style>
@@ -104,36 +107,74 @@
   <div class="or">ou</div>
   <button class="btn-sec" id="btnCadastrar"><i class="fas fa-user-plus"></i> Criar nova conta</button>
 
-  <div class="firebase-badge"><i class="fas fa-database"></i> Banco de dados: Firebase Firestore</div>
+  <div class="db-status">
+    <div class="db-dot checking" id="dbDot"></div>
+    <span id="dbTxt"><i class="fas fa-database" style="margin-right:5px;color:#f5820d;"></i>Firebase Firestore</span>
+  </div>
   <div class="footer-note">© 2026 EWS Sinais Vitais · Acesso restrito</div>
 </div>
 
 <script>
-  // ── Firebase config ──
-  const firebaseConfig = {
-    apiKey: "AIzaSyDURF1Z7S-O0y1mfc0Sf8sjY9KGLJwkYHY",
-    authDomain: "projeto-integradora-ii.firebaseapp.com",
-    databaseURL: "https://projeto-integradora-ii-default-rtdb.firebaseio.com",
-    projectId: "projeto-integradora-ii",
-    storageBucket: "projeto-integradora-ii.firebasestorage.app",
-    messagingSenderId: "80939508930",
-    appId: "1:80939508930:web:9a2d2f9bf97be9eb98075b",
-    measurementId: "G-QNDHVYGZE7"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
+  // ════════════════════════════════════════
+  // FIREBASE — inicialização única e segura
+  // ════════════════════════════════════════
+  let db = null;
 
-  // ── Elementos ──
-  const elUser  = document.getElementById('username');
-  const elPass  = document.getElementById('password');
-  const elRem   = document.getElementById('remember');
-  const elErro  = document.getElementById('msgErro');
-  const elErrT  = document.getElementById('txtErro');
-  const elSuc   = document.getElementById('msgSucesso');
-  const elSucT  = document.getElementById('txtSucesso');
+  function initFirebase() {
+    try {
+      if (!firebase.apps.length) {
+        firebase.initializeApp({
+          apiKey:            "AIzaSyDURF1Z7S-O0y1mfc0Sf8sjY9KGLJwkYHY",
+          authDomain:        "projeto-integradora-ii.firebaseapp.com",
+          projectId:         "projeto-integradora-ii",
+          storageBucket:     "projeto-integradora-ii.firebasestorage.app",
+          messagingSenderId: "80939508930",
+          appId:             "1:80939508930:web:9a2d2f9bf97be9eb98075b"
+        });
+      }
+      // settings() PRECISA ser chamado logo após getFirestore(), antes de qualquer operação
+      db = firebase.firestore();
+      db.settings({ experimentalForceLongPolling: true, merge: true });
+    } catch(e) {
+      // "settings has already been called" = DB já iniciou, apenas reutiliza
+      if (e.message && e.message.includes('settings')) {
+        db = firebase.firestore();
+      } else {
+        console.error('[Firebase] Erro crítico:', e);
+      }
+    }
+  }
+  initFirebase();
+
+  // Testa a conexão e atualiza o indicador visual
+  async function checkConnection() {
+    try {
+      await db.collection('usuarios').limit(1).get();
+      document.getElementById('dbDot').className = 'db-dot online';
+      document.getElementById('dbTxt').innerHTML = '<i class="fas fa-database" style="margin-right:5px;color:#f5820d;"></i>Banco de dados conectado';
+    } catch(e) {
+      const ok = (e.code === 'permission-denied'); // conexão OK, só sem permissão total
+      document.getElementById('dbDot').className = 'db-dot ' + (ok ? 'online' : 'offline');
+      document.getElementById('dbTxt').innerHTML = ok
+        ? '<i class="fas fa-database" style="margin-right:5px;color:#f5820d;"></i>Banco de dados conectado'
+        : '<i class="fas fa-database" style="margin-right:5px;color:#f87171;"></i>Sem conexão com o banco';
+    }
+  }
+  if (db) checkConnection();
+
+  // ════════════════════════════════════════
+  // UI
+  // ════════════════════════════════════════
+  const elUser    = document.getElementById('username');
+  const elPass    = document.getElementById('password');
+  const elRem     = document.getElementById('remember');
+  const elErro    = document.getElementById('msgErro');
+  const elErrT    = document.getElementById('txtErro');
+  const elSuc     = document.getElementById('msgSucesso');
+  const elSucT    = document.getElementById('txtSucesso');
   const btnEntrar = document.getElementById('btnEntrar');
 
-  // ── Flash de cadastro ──
+  // Flash de cadastro bem-sucedido
   window.addEventListener('DOMContentLoaded', () => {
     const flash = sessionStorage.getItem('ews_flash');
     if (flash) {
@@ -142,17 +183,26 @@
       sessionStorage.removeItem('ews_flash');
       setTimeout(() => elSuc.classList.remove('show'), 5000);
     }
+    // Restaura credenciais salvas
     try {
       const saved = localStorage.getItem('ews_creds');
-      if (saved) { const {u,p}=JSON.parse(saved); elUser.value=u; elPass.value=p; elRem.checked=true; }
+      if (saved) {
+        const {u, p} = JSON.parse(saved);
+        elUser.value = u; elPass.value = p; elRem.checked = true;
+      }
     } catch(e) {}
   });
 
   function showErr(msg) {
     elErrT.textContent = msg;
     elErro.classList.add('show');
-    elUser.classList.add('err'); elPass.classList.add('err');
-    setTimeout(() => { elErro.classList.remove('show'); elUser.classList.remove('err'); elPass.classList.remove('err'); }, 4500);
+    elUser.classList.add('err');
+    elPass.classList.add('err');
+    setTimeout(() => {
+      elErro.classList.remove('show');
+      elUser.classList.remove('err');
+      elPass.classList.remove('err');
+    }, 4500);
   }
 
   function setLoading(on) {
@@ -162,47 +212,63 @@
       : '<i class="fas fa-sign-in-alt"></i> Entrar no Sistema';
   }
 
+  // ════════════════════════════════════════
+  // LOGIN
+  // ════════════════════════════════════════
   async function doLogin() {
     const u = elUser.value.trim();
     const p = elPass.value;
+
     if (!u || !p) { showErr('Preencha usuário e senha.'); return; }
+    if (!db)      { showErr('Banco de dados não disponível. Recarregue a página.'); return; }
 
     setLoading(true);
     try {
-      // Busca usuário no Firestore pelo campo "username"
       const snap = await db.collection('usuarios')
         .where('username', '==', u)
         .where('password', '==', p)
-        .limit(1)
-        .get();
+        .limit(1).get();
 
       if (!snap.empty) {
         const user = { id: snap.docs[0].id, ...snap.docs[0].data() };
-        elRem.checked
-          ? localStorage.setItem('ews_creds', JSON.stringify({u,p}))
-          : localStorage.removeItem('ews_creds');
+        if (elRem.checked) {
+          localStorage.setItem('ews_creds', JSON.stringify({u, p}));
+        } else {
+          localStorage.removeItem('ews_creds');
+        }
         sessionStorage.setItem('ews_sessao', JSON.stringify(user));
         window.location.href = 'dashboard.html';
       } else {
-        // Verifica se o usuário existe (senha errada vs usuário inexistente)
-        const snapUser = await db.collection('usuarios').where('username','==',u).limit(1).get();
+        // Diferencia "usuário não existe" de "senha errada"
+        const snapUser = await db.collection('usuarios')
+          .where('username', '==', u).limit(1).get();
         showErr(snapUser.empty
           ? 'Usuário não encontrado. Crie sua conta primeiro.'
           : 'Senha incorreta. Tente novamente.');
       }
     } catch(e) {
-      console.error(e);
-      showErr('Erro de conexão com o banco de dados. Tente novamente.');
+      console.error('[Login] Erro:', e);
+      const msgs = {
+        unavailable:        'Sem conexão com o servidor. Verifique sua internet.',
+        'failed-precondition': 'Banco de dados temporariamente indisponível.',
+        'permission-denied':   'Permissão negada. Contate o administrador.'
+      };
+      showErr(msgs[e.code] || 'Erro ao conectar ao banco de dados. Tente novamente.');
     } finally {
       setLoading(false);
     }
   }
 
   btnEntrar.addEventListener('click', doLogin);
-  document.getElementById('btnCadastrar').addEventListener('click', () => { window.location.href = 'cadastro.html'; });
+  document.getElementById('btnCadastrar').addEventListener('click', () => {
+    window.location.href = 'cadastro.html';
+  });
   [elUser, elPass].forEach(el => {
-    el.addEventListener('keydown', e => { if (e.key==='Enter') doLogin(); });
-    el.addEventListener('input',   () => { elErro.classList.remove('show'); el.classList.remove('err'); });
+    el.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+    el.addEventListener('input',   () => {
+      elErro.classList.remove('show');
+      el.classList.remove('err');
+    });
   });
 </script>
 </body>
