@@ -224,27 +224,54 @@
 
     setLoading(true);
     try {
-      const snap = await db.collection('usuarios')
+      // Tenta login por username+password
+      let snap = await db.collection('usuarios')
         .where('username', '==', u)
         .where('password', '==', p)
         .limit(1).get();
 
+      // Se não achou, tenta por email+password (caso o usuário digitou o email)
+      if (snap.empty) {
+        snap = await db.collection('usuarios')
+          .where('email', '==', u)
+          .where('password', '==', p)
+          .limit(1).get();
+      }
+
       if (!snap.empty) {
-        const user = { id: snap.docs[0].id, ...snap.docs[0].data() };
+        const data = snap.docs[0].data();
+        // Normaliza os campos para garantir que chegam certos no dashboard
+        const user = {
+          id:        snap.docs[0].id,
+          username:  data.username  || data.user     || u,
+          nome:      data.nome      || data.name     || data.nomeCompleto || '',
+          email:     data.email     || '',
+          telefone:  data.telefone  || data.phone    || '',
+          perfil:    data.perfil    || data.role     || data.tipo || '',
+          endereco:  data.endereco  || null,
+          criadoEm:  data.criadoEm  || null,
+          ...data   // mantém todos os outros campos originais
+        };
+
         if (elRem.checked) {
           localStorage.setItem('ews_creds', JSON.stringify({u, p}));
         } else {
           localStorage.removeItem('ews_creds');
         }
-        sessionStorage.setItem('ews_sessao', JSON.stringify(user));
+        const userJson = JSON.stringify(user);
+        sessionStorage.setItem('ews_sessao', userJson);
+        localStorage.setItem('ews_sessao', userJson);
+        console.log('[Login] Sessão salva:', userJson);
         window.location.href = 'dashboard.html';
       } else {
         // Diferencia "usuário não existe" de "senha errada"
         const snapUser = await db.collection('usuarios')
           .where('username', '==', u).limit(1).get();
-        showErr(snapUser.empty
-          ? 'Usuário não encontrado. Crie sua conta primeiro.'
-          : 'Senha incorreta. Tente novamente.');
+        const snapEmail = await db.collection('usuarios')
+          .where('email', '==', u).limit(1).get();
+        showErr((!snapUser.empty || !snapEmail.empty)
+          ? 'Senha incorreta. Tente novamente.'
+          : 'Usuário não encontrado. Crie sua conta primeiro.');
       }
     } catch(e) {
       console.error('[Login] Erro:', e);

@@ -413,16 +413,30 @@
   // SESSÃO — carrega dados do usuário logado
   // ════════════════════════════════════════
   let sessao = {};
-  try { sessao = JSON.parse(sessionStorage.getItem('ews_sessao') || '{}'); } catch(e) {}
+  try {
+    // Tenta sessionStorage primeiro, depois localStorage como fallback (compatível com file://)
+    const raw = sessionStorage.getItem('ews_sessao') || localStorage.getItem('ews_sessao');
+    if (raw) sessao = JSON.parse(raw);
+  } catch(e) {}
 
-  // Se não há sessão, redireciona para login
+  // Se não há sessão válida, volta para o login
   if (!sessao || !sessao.username) {
     window.location.href = 'index.html';
   }
 
+  // DEBUG — mostra no console o que veio do Firestore
+  console.log('[Sessão] Dados carregados:', JSON.stringify(sessao, null, 2));
+
+  // Normaliza campos — suporte a variações de nome do campo
+  const sNome    = sessao.nome    || sessao.name     || sessao.nomeCompleto || '';
+  const sPerfil  = sessao.perfil  || sessao.role     || sessao.tipo         || '';
+  const sEmail   = sessao.email   || '';
+  const sTel     = sessao.telefone|| sessao.telefone || sessao.phone        || '';
+  const sUser    = sessao.username|| sessao.user     || '';
+
   // Preenche header
-  document.getElementById('headerNome').textContent   = sessao.nome   || '—';
-  document.getElementById('headerPerfil').textContent = sessao.perfil || '—';
+  document.getElementById('headerNome').textContent   = sNome   || '—';
+  document.getElementById('headerPerfil').textContent = sPerfil || '—';
 
   // Avatar por perfil
   const avatarClasses = {
@@ -439,12 +453,12 @@
   av.innerHTML = '<i class="fas ' + (avatarIcons[p] || 'fa-user') + '"></i>';
 
   // Preenche card do usuário
-  document.getElementById('userNome').textContent   = sessao.nome     || '—';
-  document.getElementById('userSub').textContent    = '@' + (sessao.username || '—') + ' · ' + (sessao.perfil || '—');
-  document.getElementById('infoEmail').textContent  = sessao.email    || '—';
-  document.getElementById('infoTel').textContent    = sessao.telefone || '—';
-  document.getElementById('infoPerfil').textContent = sessao.perfil   || '—';
-  document.getElementById('infoUser').textContent   = sessao.username || '—';
+  document.getElementById('userNome').textContent   = sNome   || '—';
+  document.getElementById('userSub').textContent    = '@' + (sUser || '—') + ' · ' + (sPerfil || '—');
+  document.getElementById('infoEmail').textContent  = sEmail  || '—';
+  document.getElementById('infoTel').textContent    = sTel    || '—';
+  document.getElementById('infoPerfil').textContent = sPerfil || '—';
+  document.getElementById('infoUser').textContent   = sUser   || '—';
 
   // Endereço — opcional, pode não existir
   if (sessao.endereco) {
@@ -476,6 +490,7 @@
   modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('show'); });
   document.getElementById('btnConfirmarSair').addEventListener('click', () => {
     sessionStorage.removeItem('ews_sessao');
+    localStorage.removeItem('ews_sessao');
     window.location.href = 'index.html';
   });
 
