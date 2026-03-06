@@ -9,10 +9,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <!-- Firebase SDK v9 compat — versão estável -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
   <style>
     :root {
       --primary:#38bdf8;       --primary-dim:rgba(56,189,248,0.12);
@@ -96,7 +92,7 @@
     .info-key{color:var(--text-muted);min-width:80px;flex-shrink:0;}
     .info-val{color:var(--text);font-family:'DM Mono',monospace;font-size:.78rem;word-break:break-all;}
 
-    /* ── FIREBASE TAG ── */
+    /* ── INFO TAG ── */
     .fb-tag{display:flex;align-items:center;gap:6px;padding:8px 12px;border-radius:var(--radius-sm);background:rgba(245,130,13,0.08);border:1px solid rgba(245,130,13,0.2);font-size:.72rem;color:#f5820d;font-family:'DM Mono',monospace;margin-top:14px;}
 
     /* ── SENSOR ITEMS ── */
@@ -138,8 +134,8 @@
     .sensor-tab+.sensor-tab{border-left:1px solid var(--border-soft);}
     .tab-dot{width:8px;height:8px;border-radius:50%;opacity:.4;flex-shrink:0;transition:all .22s;}
     .tab-badge{font-family:'DM Mono',monospace;font-size:.7rem;font-weight:700;padding:2px 7px;border-radius:5px;opacity:0;transition:all .22s;white-space:nowrap;}
-    .sensor-tab.fc   .tab-dot{background:var(--red);}
-    .sensor-tab.oxi  .tab-dot{background:var(--blue);}
+    .sensor-tab.fc  .tab-dot{background:var(--red);}
+    .sensor-tab.oxi .tab-dot{background:var(--blue);}
     .sensor-tab.temp .tab-dot{background:var(--amber);}
     .sensor-tab.fc:hover,.sensor-tab.fc.active{background:var(--red-dim);color:var(--red);}
     .sensor-tab.oxi:hover,.sensor-tab.oxi.active{background:var(--blue-dim);color:var(--blue);}
@@ -244,7 +240,7 @@
         <div class="info-row"><i class="fas fa-city"></i><span class="info-key">Cidade/UF</span><span class="info-val" id="infoCidade">—</span></div>
         <div class="info-row"><i class="fas fa-at"></i><span class="info-key">Usuário</span><span class="info-val" id="infoUser">—</span></div>
         <div class="info-row"><i class="fas fa-calendar"></i><span class="info-key">Desde</span><span class="info-val" id="infoCriado">—</span></div>
-        <div class="fb-tag"><i class="fas fa-database"></i> Dados carregados do Firebase Firestore</div>
+        <div class="fb-tag"><i class="fas fa-save"></i> Dados carregados da sessão local</div>
       </div>
 
       <div class="card">
@@ -350,72 +346,19 @@
   <footer class="footer">
     <span>© 2026 EWS Sinais Vitais · Sistema de Monitoramento em Tempo Real</span>
     <div style="display:flex;align-items:center;gap:20px;">
-      <span class="footer-db"><i class="fas fa-database"></i> Firebase Firestore</span>
-      <span class="footer-clock">
-        <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#34d399;animation:livePulse 2s infinite;"></span>
-        Atualizado às <span id="lastUpdate">--:--:--</span>
-      </span>
+      <span class="footer-db"><i class="fas fa-save"></i> Armazenamento Local</span>
+      <span class="footer-clock"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#34d399;animation:livePulse 2s infinite;"></span>Atualizado às <span id="lastUpdate">--:--:--</span></span>
     </div>
   </footer>
 
 <script>
-  // ════════════════════════════════════════
-  // FIREBASE — inicialização única e segura
-  // ════════════════════════════════════════
-  const FIREBASE_CONFIG = {
-    apiKey:            "AIzaSyDURF1Z7S-O0y1mfc0Sf8sjY9KGLJwkYHY",
-    authDomain:        "projeto-integradora-ii.firebaseapp.com",
-    projectId:         "projeto-integradora-ii",
-    storageBucket:     "projeto-integradora-ii.firebasestorage.app",
-    messagingSenderId: "80939508930",
-    appId:             "1:80939508930:web:9a2d2f9bf97be9eb98075b"
-  };
-
-  let db = null;
-
-  function initFirebase() {
-    try {
-      if (!firebase.apps.length) {
-        firebase.initializeApp({
-          apiKey:            "AIzaSyDURF1Z7S-O0y1mfc0Sf8sjY9KGLJwkYHY",
-          authDomain:        "projeto-integradora-ii.firebaseapp.com",
-          projectId:         "projeto-integradora-ii",
-          storageBucket:     "projeto-integradora-ii.firebasestorage.app",
-          messagingSenderId: "80939508930",
-          appId:             "1:80939508930:web:9a2d2f9bf97be9eb98075b"
-        });
-      }
-      // settings() PRECISA ser chamado logo após getFirestore(), antes de qualquer operação
-      db = firebase.firestore();
-      db.settings({ experimentalForceLongPolling: true, merge: true });
-    } catch(e) {
-      // "settings has already been called" = DB já iniciou, apenas reutiliza
-      if (e.message && e.message.includes('settings')) {
-        db = firebase.firestore();
-      } else {
-        console.error('[Firebase] Erro crítico:', e);
-      }
-    }
-  }
-  initFirebase();
-  } catch(e) {
-    console.error('[Firebase] Init error:', e);
-  }
-
-  // O dashboard não precisa de indicador visual de conexão, mas registramos no console
-  if (db) {
-    db.collection('usuarios').limit(1).get()
-      .then(() => console.log('[Firebase] Conexão OK'))
-      .catch(e => e.code !== 'permission-denied' && console.warn('[Firebase] Sem conexão:', e.code));
-  }
-
-  // ════════════════════════════════════════
+  // ══════════════════════════════════════════════
   // SESSÃO — carrega dados do usuário logado
-  // ════════════════════════════════════════
+  // ══════════════════════════════════════════════
   let sessao = {};
   try { sessao = JSON.parse(sessionStorage.getItem('ews_sessao') || '{}'); } catch(e) {}
 
-  // Se não há sessão, redireciona para login
+  // Se não há sessão válida, volta para o login
   if (!sessao || !sessao.username) {
     window.location.href = 'index.html';
   }
@@ -425,14 +368,8 @@
   document.getElementById('headerPerfil').textContent = sessao.perfil || '—';
 
   // Avatar por perfil
-  const avatarClasses = {
-    'Paciente':'paciente','Médico':'medico','Enfermeiro':'enfermeiro',
-    'Técnico':'tecnico','Fisioterapeuta':'fisioterapeuta','Admin':'admin'
-  };
-  const avatarIcons = {
-    'Paciente':'fa-user','Médico':'fa-user-doctor','Enfermeiro':'fa-user-nurse',
-    'Técnico':'fa-kit-medical','Fisioterapeuta':'fa-person-walking','Admin':'fa-shield-halved'
-  };
+  const avatarClasses = {'Paciente':'paciente','Médico':'medico','Enfermeiro':'enfermeiro','Técnico':'tecnico','Fisioterapeuta':'fisioterapeuta','Admin':'admin'};
+  const avatarIcons   = {'Paciente':'fa-user','Médico':'fa-user-doctor','Enfermeiro':'fa-user-nurse','Técnico':'fa-kit-medical','Fisioterapeuta':'fa-person-walking','Admin':'fa-shield-halved'};
   const p  = sessao.perfil || 'Outro';
   const av = document.getElementById('userAvatar');
   av.className = 'user-avatar ' + (avatarClasses[p] || 'outro');
@@ -446,219 +383,160 @@
   document.getElementById('infoPerfil').textContent = sessao.perfil   || '—';
   document.getElementById('infoUser').textContent   = sessao.username || '—';
 
-  // Endereço — opcional, pode não existir
   if (sessao.endereco) {
     const e = sessao.endereco;
-    const logradouro = [e.rua, e.numero, e.complemento].filter(Boolean).join(', ');
-    const cidadeUF   = [e.cidade, e.estado, e.cep].filter(Boolean).join(' · ');
-    document.getElementById('infoEnd').textContent    = logradouro || '—';
-    document.getElementById('infoCidade').textContent = cidadeUF   || '—';
+    document.getElementById('infoEnd').textContent    = [e.rua, e.numero, e.complemento].filter(Boolean).join(', ') || '—';
+    document.getElementById('infoCidade').textContent = [e.cidade, e.estado, e.cep].filter(Boolean).join(' · ') || '—';
   }
 
-  // Data de criação — Timestamp Firestore ou string ISO
+  // Data de criação — pode vir como Timestamp do Firestore ou string ISO
   if (sessao.criadoEm) {
+    let d;
     try {
-      const d = sessao.criadoEm.seconds
+      d = sessao.criadoEm.seconds
         ? new Date(sessao.criadoEm.seconds * 1000)
         : new Date(sessao.criadoEm);
       document.getElementById('infoCriado').textContent =
-        d.toLocaleDateString('pt-BR') + ' ' +
-        d.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+        d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
     } catch(e) {}
   }
 
-  // ════════════════════════════════════════
+  // ══════════════════════════════════════════════
   // LOGOUT
-  // ════════════════════════════════════════
+  // ══════════════════════════════════════════════
   const modal = document.getElementById('logoutModal');
   document.getElementById('btnSair').addEventListener('click', () => modal.classList.add('show'));
   document.getElementById('btnCancelar').addEventListener('click', () => modal.classList.remove('show'));
-  modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('show'); });
+  modal.addEventListener('click', e => { if (e.target===modal) modal.classList.remove('show'); });
   document.getElementById('btnConfirmarSair').addEventListener('click', () => {
     sessionStorage.removeItem('ews_sessao');
     window.location.href = 'index.html';
   });
 
-  // ════════════════════════════════════════
-  // DADOS SIMULADOS DE MONITORAMENTO
-  // ════════════════════════════════════════
+  // ══════════════════════════════════════════════
+  // DADOS DE MONITORAMENTO SIMULADOS
+  // ══════════════════════════════════════════════
   const hist = [];
   const now  = new Date();
-  for (let i = 29; i >= 0; i--) {
-    const t = new Date(now - i * 30 * 60 * 1000);
-    const pad = n => String(n).padStart(2, '0');
+  for (let i=29; i>=0; i--) {
+    const t = new Date(now - i*30*60*1000);
+    const pad = n => String(n).padStart(2,'0');
     const ts = `${t.getFullYear()}-${pad(t.getMonth()+1)}-${pad(t.getDate())}_${pad(t.getHours())}-${pad(t.getMinutes())}-00`;
-    let fc   = 72 + Math.sin(i * 0.4) * 12 + Math.random() * 4;
-    let oxi  = 97.2 + Math.sin(i * 0.3) * 1.4 - Math.random() * 0.4;
-    let temp = 36.7 + Math.sin(i * 0.2) * 0.35 + Math.random() * 0.08;
-    if (i === 5  || i === 6)  fc   = 108 + Math.random() * 5;
-    if (i === 12)              fc   = 54  + Math.random() * 3;
-    if (i === 8)               oxi  = 88  + Math.random() * 1.5;
-    if (i === 20)              temp = 37.9 + Math.random() * 0.2;
-    if (i === 22)              temp = 35.5 - Math.random() * 0.2;
-    hist.push({ ts, fc: fc.toFixed(2), oxi: oxi.toFixed(2), temp: temp.toFixed(2) });
+    let fc   = 72 + Math.sin(i*0.4)*12 + Math.random()*4;
+    let oxi  = 97.2 + Math.sin(i*0.3)*1.4 - Math.random()*0.4;
+    let temp = 36.7 + Math.sin(i*0.2)*0.35 + Math.random()*0.08;
+    if(i===5||i===6) fc  =108+Math.random()*5;
+    if(i===12)       fc  =54 +Math.random()*3;
+    if(i===8)        oxi =88 +Math.random()*1.5;
+    if(i===20)       temp=37.9+Math.random()*0.2;
+    if(i===22)       temp=35.5-Math.random()*0.2;
+    hist.push({ts, fc:fc.toFixed(2), oxi:oxi.toFixed(2), temp:temp.toFixed(2)});
   }
 
   function fmtTs(ts) {
-    if (!ts?.includes('_')) return ts;
-    const [d, t] = ts.split('_'), [y, m, dd] = d.split('-');
-    return `${dd}/${m}/${y} ${t.replace(/-/g, ':')}`;
+    if(!ts?.includes('_')) return ts;
+    const [d,t]=ts.split('_'), [y,m,dd]=d.split('-');
+    return `${dd}/${m}/${y} ${t.replace(/-/g,':')}`;
   }
   function getStatus(r) {
-    const fc = parseFloat(r.fc), ox = parseFloat(r.oxi), tp = parseFloat(r.temp);
-    if (ox < 90) return {cls:'critical', txt:'Crítico'};
-    if (fc < 60 || fc > 100 || tp < 36 || tp > 37.5) return {cls:'warning', txt:'Atenção'};
-    return {cls:'normal', txt:'Normal'};
+    const fc=parseFloat(r.fc), ox=parseFloat(r.oxi), tp=parseFloat(r.temp);
+    if(ox<90) return {cls:'critical',txt:'Crítico'};
+    if(fc<60||fc>100||tp<36||tp>37.5) return {cls:'warning',txt:'Atenção'};
+    return {cls:'normal',txt:'Normal'};
   }
 
-  const labels   = hist.map(r => fmtTs(r.ts).split(' ')[1]);
-  const fcData   = hist.map(r => parseFloat(r.fc));
-  const oxiData  = hist.map(r => parseFloat(r.oxi));
-  const tempData = hist.map(r => parseFloat(r.temp));
+  const labels   = hist.map(r=>fmtTs(r.ts).split(' ')[1]);
+  const fcData   = hist.map(r=>parseFloat(r.fc));
+  const oxiData  = hist.map(r=>parseFloat(r.oxi));
+  const tempData = hist.map(r=>parseFloat(r.temp));
 
-  const last = hist[hist.length - 1];
-  const fcV  = parseFloat(last.fc);
-  const oxV  = parseFloat(last.oxi);
-  const tpV  = parseFloat(last.temp);
+  const last=hist[hist.length-1];
+  const fcV=parseFloat(last.fc), oxV=parseFloat(last.oxi), tpV=parseFloat(last.temp);
 
-  document.getElementById('svFC').innerHTML   = fcV.toFixed(1) + '<span class="unit">bpm</span>';
-  document.getElementById('svOxi').innerHTML  = oxV.toFixed(1) + '<span class="unit">%</span>';
-  document.getElementById('svTemp').innerHTML = tpV.toFixed(1) + '<span class="unit">°C</span>';
+  document.getElementById('svFC').innerHTML   = fcV.toFixed(1)+'<span class="unit">bpm</span>';
+  document.getElementById('svOxi').innerHTML  = oxV.toFixed(1)+'<span class="unit">%</span>';
+  document.getElementById('svTemp').innerHTML = tpV.toFixed(1)+'<span class="unit">°C</span>';
 
-  function setStatus(id, val, lo, hi) {
-    const el = document.getElementById(id);
-    if (val < lo || val > hi) { el.textContent = 'Atenção'; el.className = 'sensor-status warning'; }
-    else                      { el.textContent = 'Normal';  el.className = 'sensor-status normal';  }
+  function setStatus(id,val,lo,hi) {
+    const el=document.getElementById(id);
+    if(val<lo||val>hi){el.textContent='Atenção';el.className='sensor-status warning';}
+    else{el.textContent='Normal';el.className='sensor-status normal';}
   }
-  setStatus('stFC',  fcV, 60,  100);
-  setStatus('stOxi', oxV, 95,  101);
-  setStatus('stTemp',tpV, 36, 37.5);
-
+  setStatus('stFC',fcV,60,100); setStatus('stOxi',oxV,95,101); setStatus('stTemp',tpV,36,37.5);
   document.getElementById('cur-fc').textContent   = fcV.toFixed(2);
   document.getElementById('cur-oxi').textContent  = oxV.toFixed(2);
   document.getElementById('cur-temp').textContent = tpV.toFixed(2);
-  document.getElementById('badge-fc').textContent   = (fcV < 60 || fcV > 100)   ? '⚠ Atenção' : 'Normal';
-  document.getElementById('badge-oxi').textContent  = oxV < 95                  ? '⚠ Atenção' : 'Normal';
-  document.getElementById('badge-temp').textContent = (tpV < 36 || tpV > 37.5) ? '⚠ Atenção' : 'Normal';
+  document.getElementById('badge-fc').textContent   = (fcV<60||fcV>100)   ? '⚠ Atenção' : 'Normal';
+  document.getElementById('badge-oxi').textContent  = oxV<95              ? '⚠ Atenção' : 'Normal';
+  document.getElementById('badge-temp').textContent = (tpV<36||tpV>37.5) ? '⚠ Atenção' : 'Normal';
 
-  // ════════════════════════════════════════
-  // GRÁFICOS
-  // ════════════════════════════════════════
-  function dangerPlugin(lo, hi, dc, lc) {
-    return { id:'dz', beforeDatasetsDraw(chart) {
-      const ca = chart.chartArea; if (!ca) return;
-      const {ctx} = chart, sc = chart.scales.y; if (!sc) return;
-      const {left:L, right:R, top:T, bottom:B} = ca, W = R - L;
-      const pH = sc.getPixelForValue(hi), pL = sc.getPixelForValue(lo);
-      const pT = sc.getPixelForValue(sc.max), pB = sc.getPixelForValue(sc.min);
-      ctx.save(); ctx.beginPath(); ctx.rect(L, T, W, B - T); ctx.clip();
-      if (pH > pT) { ctx.fillStyle=dc; ctx.fillRect(L,pT,W,pH-pT); ctx.strokeStyle=lc; ctx.lineWidth=1.5; ctx.setLineDash([6,4]); ctx.beginPath(); ctx.moveTo(L,pH); ctx.lineTo(R,pH); ctx.stroke(); ctx.setLineDash([]); }
-      if (pL < pB) { ctx.fillStyle=dc; ctx.fillRect(L,pL,W,pB-pL); ctx.strokeStyle=lc; ctx.lineWidth=1.5; ctx.setLineDash([6,4]); ctx.beginPath(); ctx.moveTo(L,pL); ctx.lineTo(R,pL); ctx.stroke(); ctx.setLineDash([]); }
-      const sT = Math.max(pH, pT), sB = Math.min(pL, pB);
-      if (sB > sT) { ctx.fillStyle = 'rgba(52,211,153,0.07)'; ctx.fillRect(L, sT, W, sB - sT); }
+  // ── Gráficos ──
+  function dangerPlugin(lo,hi,dc,lc){
+    return{id:'dz',beforeDatasetsDraw(chart){
+      const ca=chart.chartArea;if(!ca)return;
+      const{ctx}=chart,sc=chart.scales.y;if(!sc)return;
+      const{left:L,right:R,top:T,bottom:B}=ca,W=R-L;
+      const pH=sc.getPixelForValue(hi),pL=sc.getPixelForValue(lo);
+      const pT=sc.getPixelForValue(sc.max),pB=sc.getPixelForValue(sc.min);
+      ctx.save();ctx.beginPath();ctx.rect(L,T,W,B-T);ctx.clip();
+      if(pH>pT){ctx.fillStyle=dc;ctx.fillRect(L,pT,W,pH-pT);ctx.strokeStyle=lc;ctx.lineWidth=1.5;ctx.setLineDash([6,4]);ctx.beginPath();ctx.moveTo(L,pH);ctx.lineTo(R,pH);ctx.stroke();ctx.setLineDash([]);}
+      if(pL<pB){ctx.fillStyle=dc;ctx.fillRect(L,pL,W,pB-pL);ctx.strokeStyle=lc;ctx.lineWidth=1.5;ctx.setLineDash([6,4]);ctx.beginPath();ctx.moveTo(L,pL);ctx.lineTo(R,pL);ctx.stroke();ctx.setLineDash([]);}
+      const sT=Math.max(pH,pT),sB=Math.min(pL,pB);
+      if(sB>sT){ctx.fillStyle='rgba(52,211,153,0.07)';ctx.fillRect(L,sT,W,sB-sT);}
       ctx.restore();
     }};
   }
-
-  function baseOpts(color, unit, dec) {
-    return {
-      responsive:true, maintainAspectRatio:false, animation:{duration:380},
-      plugins:{
-        legend:{display:false},
-        tooltip:{mode:'index',intersect:false,backgroundColor:'rgba(4,13,26,0.97)',borderColor:'rgba(56,189,248,.18)',borderWidth:1,padding:14,caretSize:5,titleColor:'#6b87a8',titleFont:{family:"'DM Mono'",size:10.5},bodyColor:'#e2eaf4',bodyFont:{family:"'DM Mono'",size:12.5},callbacks:{label(c){return`  ${c.parsed.y.toFixed(dec)} ${unit}`;}}}
-      },
-      scales:{
-        x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#3d5470',font:{family:"'DM Mono'",size:9.5},maxRotation:45,minRotation:45,maxTicksLimit:10}},
-        y:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{color,font:{family:"'DM Mono'",size:10.5},callback:v=>v.toFixed(dec)+' '+unit,maxTicksLimit:7}}
-      },
-      interaction:{mode:'index',intersect:false}
-    };
+  function baseOpts(color,unit,dec){
+    return{responsive:true,maintainAspectRatio:false,animation:{duration:380},plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,backgroundColor:'rgba(4,13,26,0.97)',borderColor:'rgba(56,189,248,.18)',borderWidth:1,padding:14,caretSize:5,titleColor:'#6b87a8',titleFont:{family:"'DM Mono'",size:10.5},bodyColor:'#e2eaf4',bodyFont:{family:"'DM Mono'",size:12.5},callbacks:{label(c){return`  ${c.parsed.y.toFixed(dec)} ${unit}`;},}}},scales:{x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#3d5470',font:{family:"'DM Mono'",size:9.5},maxRotation:45,minRotation:45,maxTicksLimit:10}},y:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{color,font:{family:"'DM Mono'",size:10.5},callback:v=>v.toFixed(dec)+' '+unit,maxTicksLimit:7}}},interaction:{mode:'index',intersect:false}};
+  }
+  function pts(data,lo,hi,ok,alert){
+    return{pointRadius:data.map(v=>(v<lo||v>hi)?7:2.5),pointHoverRadius:8,pointBackgroundColor:data.map(v=>(v<lo||v>hi)?alert:ok),pointBorderColor:data.map(v=>(v<lo||v>hi)?alert:'rgba(255,255,255,0.08)'),pointBorderWidth:data.map(v=>(v<lo||v>hi)?2.5:1)};
   }
 
-  function pts(data, lo, hi, ok, alert) {
-    return {
-      pointRadius:          data.map(v => (v < lo || v > hi) ? 7 : 2.5),
-      pointHoverRadius:     8,
-      pointBackgroundColor: data.map(v => (v < lo || v > hi) ? alert : ok),
-      pointBorderColor:     data.map(v => (v < lo || v > hi) ? alert : 'rgba(255,255,255,0.08)'),
-      pointBorderWidth:     data.map(v => (v < lo || v > hi) ? 2.5 : 1)
-    };
-  }
+  const cFc   = new Chart(document.getElementById('chartFc').getContext('2d'),{type:'line',data:{labels,datasets:[{data:fcData,borderColor:'#f87171',backgroundColor:'rgba(248,113,113,0.08)',borderWidth:2,tension:.42,fill:true,...pts(fcData,60,100,'#f87171','rgba(252,165,165,1)')}]},plugins:[dangerPlugin(60,100,'rgba(248,113,113,0.18)','rgba(248,113,113,0.65)')],options:{...baseOpts('#f87171','bpm',0),scales:{...baseOpts('#f87171','bpm',0).scales,y:{...baseOpts('#f87171','bpm',0).scales.y,min:40,max:140}}}});
+  const cOxi  = new Chart(document.getElementById('chartOxi').getContext('2d'),{type:'line',data:{labels,datasets:[{data:oxiData,borderColor:'#60a5fa',backgroundColor:'rgba(96,165,250,0.08)',borderWidth:2,tension:.42,fill:true,...pts(oxiData,95,101,'#60a5fa','rgba(147,197,253,1)')}]},plugins:[dangerPlugin(95,101,'rgba(96,165,250,0.18)','rgba(96,165,250,0.65)')],options:{...baseOpts('#60a5fa','%',1),scales:{...baseOpts('#60a5fa','%',1).scales,y:{...baseOpts('#60a5fa','%',1).scales.y,min:82,max:101}}}});
+  const cTemp = new Chart(document.getElementById('chartTemp').getContext('2d'),{type:'line',data:{labels,datasets:[{data:tempData,borderColor:'#fbbf24',backgroundColor:'rgba(251,191,36,0.08)',borderWidth:2,tension:.42,fill:true,...pts(tempData,36,37.5,'#fbbf24','rgba(253,230,138,1)')}]},plugins:[dangerPlugin(36,37.5,'rgba(251,191,36,0.18)','rgba(251,191,36,0.65)')],options:{...baseOpts('#fbbf24','°C',1),scales:{...baseOpts('#fbbf24','°C',1).scales,y:{...baseOpts('#fbbf24','°C',1).scales.y,min:34.5,max:39}}}});
 
-  const cFc = new Chart(document.getElementById('chartFc').getContext('2d'), {
-    type:'line',
-    data:{labels, datasets:[{data:fcData,borderColor:'#f87171',backgroundColor:'rgba(248,113,113,0.08)',borderWidth:2,tension:.42,fill:true,...pts(fcData,60,100,'#f87171','rgba(252,165,165,1)')}]},
-    plugins:[dangerPlugin(60,100,'rgba(248,113,113,0.18)','rgba(248,113,113,0.65)')],
-    options:{...baseOpts('#f87171','bpm',0), scales:{...baseOpts('#f87171','bpm',0).scales, y:{...baseOpts('#f87171','bpm',0).scales.y, min:40, max:140}}}
-  });
+  const charts={fc:cFc,oxi:cOxi,temp:cTemp};
+  let activeTab='fc';
 
-  const cOxi = new Chart(document.getElementById('chartOxi').getContext('2d'), {
-    type:'line',
-    data:{labels, datasets:[{data:oxiData,borderColor:'#60a5fa',backgroundColor:'rgba(96,165,250,0.08)',borderWidth:2,tension:.42,fill:true,...pts(oxiData,95,101,'#60a5fa','rgba(147,197,253,1)')}]},
-    plugins:[dangerPlugin(95,101,'rgba(96,165,250,0.18)','rgba(96,165,250,0.65)')],
-    options:{...baseOpts('#60a5fa','%',1), scales:{...baseOpts('#60a5fa','%',1).scales, y:{...baseOpts('#60a5fa','%',1).scales.y, min:82, max:101}}}
-  });
-
-  const cTemp = new Chart(document.getElementById('chartTemp').getContext('2d'), {
-    type:'line',
-    data:{labels, datasets:[{data:tempData,borderColor:'#fbbf24',backgroundColor:'rgba(251,191,36,0.08)',borderWidth:2,tension:.42,fill:true,...pts(tempData,36,37.5,'#fbbf24','rgba(253,230,138,1)')}]},
-    plugins:[dangerPlugin(36,37.5,'rgba(251,191,36,0.18)','rgba(251,191,36,0.65)')],
-    options:{...baseOpts('#fbbf24','°C',1), scales:{...baseOpts('#fbbf24','°C',1).scales, y:{...baseOpts('#fbbf24','°C',1).scales.y, min:34.5, max:39}}}
-  });
-
-  const charts = {fc: cFc, oxi: cOxi, temp: cTemp};
-  let activeTab = 'fc';
-
-  document.querySelectorAll('.sensor-tab').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const s = btn.dataset.sensor; if (s === activeTab) return;
-      document.querySelectorAll('.sensor-tab').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.chart-panel').forEach(p => p.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById('panel-' + s).classList.add('active');
-      activeTab = s;
-      setTimeout(() => charts[s].resize(), 30);
+  document.querySelectorAll('.sensor-tab').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const s=btn.dataset.sensor; if(s===activeTab)return;
+      document.querySelectorAll('.sensor-tab').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('.chart-panel').forEach(p=>p.classList.remove('active'));
+      btn.classList.add('active'); document.getElementById('panel-'+s).classList.add('active');
+      activeTab=s; setTimeout(()=>charts[s].resize(),30);
     });
   });
 
-  document.getElementById('btnGrafico').addEventListener('click', () => {
+  document.getElementById('btnGrafico').addEventListener('click',()=>{
     document.getElementById('btnGrafico').classList.add('active');
     document.getElementById('btnTabela').classList.remove('active');
     document.getElementById('chartView').classList.remove('hidden');
     document.getElementById('tableView').classList.add('hidden');
-    setTimeout(() => charts[activeTab].resize(), 50);
+    setTimeout(()=>charts[activeTab].resize(),50);
   });
-  document.getElementById('btnTabela').addEventListener('click', () => {
+  document.getElementById('btnTabela').addEventListener('click',()=>{
     document.getElementById('btnTabela').classList.add('active');
     document.getElementById('btnGrafico').classList.remove('active');
     document.getElementById('tableView').classList.remove('hidden');
     document.getElementById('chartView').classList.add('hidden');
   });
 
-  // ════════════════════════════════════════
-  // TABELA
-  // ════════════════════════════════════════
-  const tbody = document.getElementById('tableBody');
-  [...hist].reverse().slice(0, 15).forEach(r => {
-    const st = getStatus(r);
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td style="font-family:'DM Mono',monospace;font-size:.78rem;color:var(--text-muted)">${fmtTs(r.ts)}</td>
-      <td><span class="val red">${parseFloat(r.fc).toFixed(1)}</span></td>
-      <td><span class="val blue">${parseFloat(r.oxi).toFixed(1)}</span></td>
-      <td><span class="val amber">${parseFloat(r.temp).toFixed(1)}</span></td>
-      <td><span class="badge ${st.cls}">${st.txt}</span></td>`;
+  // ── Tabela ──
+  const tbody=document.getElementById('tableBody');
+  [...hist].reverse().slice(0,15).forEach(r=>{
+    const st=getStatus(r);
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td style="font-family:'DM Mono',monospace;font-size:.78rem;color:var(--text-muted)">${fmtTs(r.ts)}</td><td><span class="val red">${parseFloat(r.fc).toFixed(1)}</span></td><td><span class="val blue">${parseFloat(r.oxi).toFixed(1)}</span></td><td><span class="val amber">${parseFloat(r.temp).toFixed(1)}</span></td><td><span class="badge ${st.cls}">${st.txt}</span></td>`;
     tbody.appendChild(tr);
   });
 
-  // ════════════════════════════════════════
-  // RELÓGIO
-  // ════════════════════════════════════════
-  function tick() {
-    document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString('pt-BR');
-  }
-  tick(); setInterval(tick, 1000);
-  window.addEventListener('resize', () => charts[activeTab].resize());
+  // ── Clock ──
+  function tick(){document.getElementById('lastUpdate').textContent=new Date().toLocaleTimeString('pt-BR');}
+  tick(); setInterval(tick,1000);
+  window.addEventListener('resize',()=>charts[activeTab].resize());
 </script>
 </body>
 </html>
