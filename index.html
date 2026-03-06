@@ -45,10 +45,9 @@
     .forgot{color:var(--primary);text-decoration:none;font-size:.84rem;}
     .forgot:hover{text-decoration:underline;}
 
-    .btn-main{width:100%;padding:16px;background:linear-gradient(135deg,#38bdf8,#0ea5e9);color:#fff;border:none;border-radius:var(--radius-sm);font-size:.97rem;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .25s;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:18px;letter-spacing:.03em;}
+    .btn-main{width:100%;padding:16px;background:linear-gradient(135deg,#38bdf8,#0ea5e9);color:#fff;border:none;border-radius:var(--radius-sm);font-size:.97rem;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .25s;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:18px;}
     .btn-main:hover{background:linear-gradient(135deg,#0ea5e9,#0284c7);transform:translateY(-2px);box-shadow:0 8px 24px rgba(56,189,248,.35);}
     .btn-main:active{transform:translateY(0);}
-    .btn-main:disabled{opacity:.55;cursor:not-allowed;transform:none;}
 
     .btn-sec{width:100%;padding:14px;background:transparent;border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-muted);font-size:.93rem;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .25s;display:flex;align-items:center;justify-content:center;gap:10px;}
     .btn-sec:hover{background:var(--primary-dim);border-color:rgba(56,189,248,.35);color:var(--primary);transform:translateY(-1px);}
@@ -61,9 +60,7 @@
     .or{display:flex;align-items:center;gap:12px;margin:4px 0 18px;color:var(--text-muted);font-size:.76rem;}
     .or::before,.or::after{content:'';flex:1;border-top:1px solid var(--border-soft);}
 
-    .footer-note{text-align:center;margin-top:20px;color:var(--text-muted);font-size:.74rem;}
-    .spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
-    @keyframes spin{to{transform:rotate(360deg)}}
+    .footer-note{text-align:center;margin-top:28px;color:var(--text-muted);font-size:.74rem;}
   </style>
 </head>
 <body>
@@ -88,7 +85,7 @@
 
   <div class="row-mid">
     <label class="remember"><input type="checkbox" id="remember"> Lembrar-me</label>
-    <a href="#" class="forgot">Esqueceu a senha?</a>
+    <a href="#" class="forgot" id="forgotLink">Esqueceu a senha?</a>
   </div>
 
   <button class="btn-main" id="btnEntrar"><i class="fas fa-sign-in-alt"></i> Entrar no Sistema</button>
@@ -99,17 +96,15 @@
 </div>
 
 <script>
-  const elUser    = document.getElementById('username');
-  const elPass    = document.getElementById('password');
-  const elRem     = document.getElementById('remember');
-  const elErro    = document.getElementById('msgErro');
-  const elErrT    = document.getElementById('txtErro');
-  const elSuc     = document.getElementById('msgSucesso');
-  const elSucT    = document.getElementById('txtSucesso');
-  const btnEntrar = document.getElementById('btnEntrar');
+  const elUser  = document.getElementById('username');
+  const elPass  = document.getElementById('password');
+  const elRem   = document.getElementById('remember');
+  const elErro  = document.getElementById('msgErro');
+  const elErrT  = document.getElementById('txtErro');
+  const elSuc   = document.getElementById('msgSucesso');
+  const elSucT  = document.getElementById('txtSucesso');
 
   window.addEventListener('DOMContentLoaded', () => {
-    // Flash de cadastro
     const flash = sessionStorage.getItem('ews_flash');
     if (flash) {
       elSucT.textContent = flash;
@@ -117,76 +112,50 @@
       sessionStorage.removeItem('ews_flash');
       setTimeout(() => elSuc.classList.remove('show'), 5000);
     }
-    // Restaura credenciais salvas
     try {
       const saved = localStorage.getItem('ews_creds');
-      if (saved) {
-        const {u, p} = JSON.parse(saved);
-        elUser.value = u; elPass.value = p; elRem.checked = true;
-      }
+      if (saved) { const {u,p} = JSON.parse(saved); elUser.value=u; elPass.value=p; elRem.checked=true; }
     } catch(e) {}
   });
 
   function showErr(msg) {
     elErrT.textContent = msg;
     elErro.classList.add('show');
-    elUser.classList.add('err');
-    elPass.classList.add('err');
-    setTimeout(() => {
-      elErro.classList.remove('show');
-      elUser.classList.remove('err');
-      elPass.classList.remove('err');
-    }, 4500);
+    elUser.classList.add('err'); elPass.classList.add('err');
+    setTimeout(() => { elErro.classList.remove('show'); elUser.classList.remove('err'); elPass.classList.remove('err'); }, 4000);
   }
 
-  function setLoading(on) {
-    btnEntrar.disabled = on;
-    btnEntrar.innerHTML = on
-      ? '<span class="spinner"></span> Verificando...'
-      : '<i class="fas fa-sign-in-alt"></i> Entrar no Sistema';
-  }
-
-  function getUsuarios() {
+  function getUsers() {
     try { return JSON.parse(localStorage.getItem('ews_usuarios') || '[]'); } catch(e) { return []; }
   }
 
   function doLogin() {
-    const u = elUser.value.trim();
-    const p = elPass.value;
+    const u = elUser.value.trim(), p = elPass.value;
     if (!u || !p) { showErr('Preencha usuário e senha.'); return; }
-
-    setLoading(true);
-    setTimeout(() => {
-      const usuarios = getUsuarios();
-      // Busca por username ou email
-      const user = usuarios.find(x => (x.username === u || x.email === u));
-
-      if (!user) {
-        showErr('Usuário não encontrado. Crie sua conta primeiro.');
-        setLoading(false); return;
-      }
-      if (user.password !== p) {
-        showErr('Senha incorreta. Tente novamente.');
-        setLoading(false); return;
-      }
-
-      if (elRem.checked) {
-        localStorage.setItem('ews_creds', JSON.stringify({u, p}));
-      } else {
-        localStorage.removeItem('ews_creds');
-      }
+    const user = getUsers().find(x => x.username === u && x.password === p);
+    if (user) {
+      elRem.checked
+        ? localStorage.setItem('ews_creds', JSON.stringify({u,p}))
+        : localStorage.removeItem('ews_creds');
+      // Salva o objeto completo do usuário na sessão
       sessionStorage.setItem('ews_sessao', JSON.stringify(user));
       window.location.href = 'dashboard.html';
-    }, 350);
+    } else {
+      showErr(getUsers().length === 0
+        ? 'Nenhum usuário cadastrado. Crie sua conta primeiro.'
+        : 'Usuário ou senha incorretos.');
+    }
   }
 
-  btnEntrar.addEventListener('click', doLogin);
-  document.getElementById('btnCadastrar').addEventListener('click', () => {
-    window.location.href = 'cadastro.html';
-  });
+  document.getElementById('btnEntrar').addEventListener('click', doLogin);
+  document.getElementById('btnCadastrar').addEventListener('click', () => { window.location.href = 'cadastro.html'; });
   [elUser, elPass].forEach(el => {
-    el.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+    el.addEventListener('keydown', e => { if (e.key==='Enter') doLogin(); });
     el.addEventListener('input',   () => { elErro.classList.remove('show'); el.classList.remove('err'); });
+  });
+  document.getElementById('forgotLink').addEventListener('click', e => {
+    e.preventDefault();
+    alert('Recuperação de senha em desenvolvimento.\nContate o administrador do sistema.');
   });
 </script>
 </body>

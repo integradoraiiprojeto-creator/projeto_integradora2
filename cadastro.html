@@ -32,15 +32,9 @@
     .logo h1 span{color:var(--primary);}
     .logo p{color:var(--text-muted);font-size:.84rem;}
 
-    .sec{display:flex;align-items:center;gap:8px;font-family:'Syne',sans-serif;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);margin:28px 0 16px;padding-bottom:10px;border-bottom:1px solid var(--border-soft);}
+    .sec{font-family:'Syne',sans-serif;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);margin:28px 0 18px;display:flex;align-items:center;gap:8px;}
+    .sec::after{content:'';flex:1;border-top:1px solid var(--border-soft);}
     .sec i{color:var(--primary);font-size:.72rem;}
-    .sec .opt-badge{margin-left:auto;font-size:.62rem;font-weight:700;padding:2px 9px;border-radius:20px;background:var(--primary-dim);color:var(--primary);border:1px solid rgba(56,189,248,.25);letter-spacing:.05em;}
-    .sec.clickable{cursor:pointer;user-select:none;}
-    .sec.clickable:hover .sec-label{color:var(--primary);}
-    .sec .chevron{transition:transform .3s;font-size:.76rem;color:var(--primary);}
-
-    .collapsible{overflow:hidden;transition:max-height .45s cubic-bezier(0.4,0,0.2,1),opacity .3s ease;max-height:800px;opacity:1;}
-    .collapsible.closed{max-height:0;opacity:0;pointer-events:none;}
 
     .g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
     .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
@@ -49,7 +43,6 @@
     .fg label{display:block;margin-bottom:8px;font-size:.8rem;font-weight:600;color:var(--text-muted);letter-spacing:.05em;text-transform:uppercase;}
     .fg label i{margin-right:6px;color:var(--primary);font-size:.76rem;}
     .fg label .req{color:var(--red);margin-left:2px;}
-    .fg label .opc{color:var(--text-muted);font-size:.7rem;font-weight:400;letter-spacing:0;text-transform:none;margin-left:4px;}
     .fg input,.fg select{width:100%;padding:13px 16px;background:rgba(10,24,52,0.8);border:1px solid var(--border);border-radius:var(--radius-sm);color:#fff;font-size:.93rem;font-family:'DM Sans',sans-serif;transition:all .25s;}
     .fg select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b87a8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;}
     .fg select option{background:#0a1834;color:#e2eaf4;}
@@ -63,8 +56,9 @@
     .pass-toggle{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:.88rem;padding:4px;transition:color .2s;}
     .pass-toggle:hover{color:var(--primary);}
 
-    .strength-bar{height:4px;border-radius:2px;background:rgba(255,255,255,.05);overflow:hidden;margin:8px 0 5px;}
+    .strength-bar{height:4px;border-radius:2px;background:rgba(255,255,255,0.05);overflow:hidden;margin:8px 0 5px;}
     .strength-fill{height:100%;width:0;border-radius:2px;transition:all .3s;}
+
     .hint{font-size:.72rem;color:var(--text-muted);margin-top:5px;font-family:'DM Mono',monospace;}
     .hint.ok{color:var(--green);}
     .hint.bad{color:var(--red);}
@@ -76,25 +70,16 @@
     .terms-row{display:flex;align-items:flex-start;gap:10px;margin-top:20px;font-size:.83rem;color:var(--text-muted);}
     .terms-row input{width:15px;height:15px;accent-color:var(--primary);cursor:pointer;margin-top:2px;flex-shrink:0;}
     .terms-row a{color:var(--primary);text-decoration:none;}
+    .terms-row a:hover{text-decoration:underline;}
 
     .btn-submit{width:100%;padding:16px;background:linear-gradient(135deg,#38bdf8,#0ea5e9);color:#fff;border:none;border-radius:var(--radius-sm);font-size:.97rem;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .25s;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:22px;}
     .btn-submit:hover{background:linear-gradient(135deg,#0ea5e9,#0284c7);transform:translateY(-2px);box-shadow:0 8px 24px rgba(56,189,248,.35);}
     .btn-submit:active{transform:translateY(0);}
-    .btn-submit:disabled{opacity:.55;cursor:not-allowed;transform:none;}
 
     .back-link{text-align:center;margin-top:22px;font-size:.84rem;color:var(--text-muted);}
     .back-link a{color:var(--primary);text-decoration:none;}
     .back-link a:hover{text-decoration:underline;}
-    .footer-note{text-align:center;margin-top:10px;color:var(--text-muted);font-size:.74rem;}
-
-    .spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
-    @keyframes spin{to{transform:rotate(360deg)}}
-
-    @media(max-width:520px){
-      .box{padding:32px 20px;}
-      .g2,.g3{grid-template-columns:1fr;}
-      .g3 .fg[style*="span 2"]{grid-column:span 1!important;}
-    }
+    .footer-note{text-align:center;margin-top:24px;color:var(--text-muted);font-size:.74rem;}
   </style>
 </head>
 <body>
@@ -110,7 +95,8 @@
   </div>
 
   <!-- DADOS PESSOAIS -->
-  <div class="sec"><i class="fas fa-id-card"></i><span class="sec-label">Dados Pessoais</span></div>
+  <div class="sec"><i class="fas fa-id-card"></i> Dados Pessoais</div>
+
   <div class="g2">
     <div class="fg">
       <label for="nome"><i class="fas fa-user"></i>Nome <span class="req">*</span></label>
@@ -121,16 +107,18 @@
       <input type="text" id="sobrenome" placeholder="Seu sobrenome">
     </div>
   </div>
+
   <div class="g2">
     <div class="fg">
       <label for="email"><i class="fas fa-envelope"></i>E-mail <span class="req">*</span></label>
       <input type="email" id="email" placeholder="seu@email.com">
     </div>
     <div class="fg">
-      <label for="telefone"><i class="fas fa-phone"></i>Telefone <span class="opc">(opcional)</span></label>
+      <label for="telefone"><i class="fas fa-phone"></i>Telefone</label>
       <input type="tel" id="telefone" placeholder="(00) 00000-0000">
     </div>
   </div>
+
   <div class="fg">
     <label for="perfil"><i class="fas fa-user-tag"></i>Perfil <span class="req">*</span></label>
     <select id="perfil">
@@ -145,66 +133,65 @@
     </select>
   </div>
 
-  <!-- ENDEREÇO (OPCIONAL / COLAPSÁVEL) -->
-  <div class="sec clickable" id="secEnd">
-    <i class="fas fa-map-marker-alt"></i>
-    <span class="sec-label">Endereço</span>
-    <span class="opt-badge">Opcional</span>
-    <i class="fas fa-chevron-down chevron" id="chevronEnd" style="margin-left:8px;"></i>
-  </div>
-  <div class="collapsible closed" id="blocoEnd">
-    <div class="g2">
-      <div class="fg">
-        <label for="cep"><i class="fas fa-search-location"></i>CEP</label>
-        <input type="text" id="cep" placeholder="00000-000" maxlength="9">
-      </div>
-      <div class="fg">
-        <label for="estado"><i class="fas fa-map"></i>Estado</label>
-        <select id="estado">
-          <option value="" selected>UF</option>
-          <option>AC</option><option>AL</option><option>AP</option><option>AM</option>
-          <option>BA</option><option>CE</option><option>DF</option><option>ES</option>
-          <option>GO</option><option>MA</option><option>MT</option><option>MS</option>
-          <option>MG</option><option>PA</option><option>PB</option><option>PR</option>
-          <option>PE</option><option>PI</option><option>RJ</option><option>RN</option>
-          <option>RS</option><option>RO</option><option>RR</option><option>SC</option>
-          <option>SP</option><option>SE</option><option>TO</option>
-        </select>
-      </div>
+  <!-- ENDEREÇO -->
+  <div class="sec"><i class="fas fa-map-marker-alt"></i> Endereço</div>
+
+  <div class="g2">
+    <div class="fg">
+      <label for="cep"><i class="fas fa-search-location"></i>CEP <span class="req">*</span></label>
+      <input type="text" id="cep" placeholder="00000-000" maxlength="9">
     </div>
     <div class="fg">
-      <label for="rua"><i class="fas fa-road"></i>Rua / Logradouro</label>
-      <input type="text" id="rua" placeholder="Nome da rua, avenida, travessa...">
+      <label for="estado"><i class="fas fa-map"></i>Estado <span class="req">*</span></label>
+      <select id="estado">
+        <option value="" disabled selected>UF</option>
+        <option>AC</option><option>AL</option><option>AP</option><option>AM</option>
+        <option>BA</option><option>CE</option><option>DF</option><option>ES</option>
+        <option>GO</option><option>MA</option><option>MT</option><option>MS</option>
+        <option>MG</option><option>PA</option><option>PB</option><option>PR</option>
+        <option>PE</option><option>PI</option><option>RJ</option><option>RN</option>
+        <option>RS</option><option>RO</option><option>RR</option><option>SC</option>
+        <option>SP</option><option>SE</option><option>TO</option>
+      </select>
     </div>
-    <div class="g3">
-      <div class="fg">
-        <label for="numero"><i class="fas fa-hashtag"></i>Número</label>
-        <input type="text" id="numero" placeholder="Nº">
-      </div>
-      <div class="fg" style="grid-column:span 2;">
-        <label for="complemento"><i class="fas fa-building"></i>Complemento</label>
-        <input type="text" id="complemento" placeholder="Apto, bloco, sala...">
-      </div>
+  </div>
+
+  <div class="fg">
+    <label for="rua"><i class="fas fa-road"></i>Rua / Logradouro <span class="req">*</span></label>
+    <input type="text" id="rua" placeholder="Nome da rua, avenida, travessa...">
+  </div>
+
+  <div class="g3">
+    <div class="fg">
+      <label for="numero"><i class="fas fa-hashtag"></i>Número <span class="req">*</span></label>
+      <input type="text" id="numero" placeholder="Nº">
     </div>
-    <div class="g2">
-      <div class="fg">
-        <label for="bairro"><i class="fas fa-map-pin"></i>Bairro</label>
-        <input type="text" id="bairro" placeholder="Seu bairro">
-      </div>
-      <div class="fg">
-        <label for="cidade"><i class="fas fa-city"></i>Cidade</label>
-        <input type="text" id="cidade" placeholder="Sua cidade">
-      </div>
+    <div class="fg" style="grid-column:span 2;">
+      <label for="complemento"><i class="fas fa-building"></i>Complemento</label>
+      <input type="text" id="complemento" placeholder="Apto, bloco, sala...">
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="fg">
+      <label for="bairro"><i class="fas fa-map-pin"></i>Bairro <span class="req">*</span></label>
+      <input type="text" id="bairro" placeholder="Seu bairro">
+    </div>
+    <div class="fg">
+      <label for="cidade"><i class="fas fa-city"></i>Cidade <span class="req">*</span></label>
+      <input type="text" id="cidade" placeholder="Sua cidade">
     </div>
   </div>
 
   <!-- DADOS DE ACESSO -->
-  <div class="sec" style="margin-top:28px;"><i class="fas fa-key"></i><span class="sec-label">Dados de Acesso</span></div>
+  <div class="sec"><i class="fas fa-key"></i> Dados de Acesso</div>
+
   <div class="fg">
     <label for="username"><i class="fas fa-at"></i>Usuário <span class="req">*</span></label>
     <input type="text" id="username" placeholder="Escolha um nome de usuário" autocomplete="off">
     <div class="hint" id="hintUser">Mínimo 4 caracteres, sem espaços.</div>
   </div>
+
   <div class="fg">
     <label for="password"><i class="fas fa-lock"></i>Senha <span class="req">*</span></label>
     <div class="pass-wrap">
@@ -214,6 +201,7 @@
     <div class="strength-bar"><div class="strength-fill" id="strFill"></div></div>
     <div class="hint" id="strText">Digite uma senha</div>
   </div>
+
   <div class="fg">
     <label for="confirm"><i class="fas fa-lock"></i>Confirmar Senha <span class="req">*</span></label>
     <div class="pass-wrap">
@@ -225,7 +213,7 @@
 
   <div class="terms-row">
     <input type="checkbox" id="terms">
-    <label for="terms">Concordo com os <a href="#">Termos de Uso</a> e a <a href="#">Política de Privacidade</a>.</label>
+    <label for="terms">Concordo com os <a href="#">Termos de Uso</a> e a <a href="#">Política de Privacidade</a> do sistema EWS Sinais Vitais.</label>
   </div>
 
   <button class="btn-submit" id="btnCadastrar">
@@ -237,15 +225,7 @@
 </div>
 
 <script>
-  // ── Toggle endereço ──
-  let endAberto = false;
-  document.getElementById('secEnd').addEventListener('click', () => {
-    endAberto = !endAberto;
-    document.getElementById('blocoEnd').classList.toggle('closed', !endAberto);
-    document.getElementById('chevronEnd').style.transform = endAberto ? 'rotate(180deg)' : 'rotate(0deg)';
-  });
-
-  // ── Toggle senha ──
+  // Toggle senha
   function setupToggle(btnId, inputId, iconId) {
     document.getElementById(btnId).addEventListener('click', () => {
       const inp = document.getElementById(inputId);
@@ -257,93 +237,86 @@
   setupToggle('togglePass',    'password', 'eyeIcon1');
   setupToggle('toggleConfirm', 'confirm',  'eyeIcon2');
 
-  // ── Máscaras ──
+  // Máscara CEP
   document.getElementById('cep').addEventListener('input', function() {
-    let v = this.value.replace(/\D/g, '');
+    let v = this.value.replace(/\D/g,'');
     if (v.length > 5) v = v.slice(0,5) + '-' + v.slice(5,8);
     this.value = v;
   });
+
+  // Máscara telefone
   document.getElementById('telefone').addEventListener('input', function() {
-    let v = this.value.replace(/\D/g, '');
-    if      (v.length > 10) v = '(' + v.slice(0,2) + ') ' + v.slice(2,7) + '-' + v.slice(7,11);
-    else if (v.length > 6)  v = '(' + v.slice(0,2) + ') ' + v.slice(2,6) + '-' + v.slice(6);
-    else if (v.length > 2)  v = '(' + v.slice(0,2) + ') ' + v.slice(2);
-    else if (v.length > 0)  v = '(' + v;
+    let v = this.value.replace(/\D/g,'');
+    if (v.length > 10)     v = '('+v.slice(0,2)+') '+v.slice(2,7)+'-'+v.slice(7,11);
+    else if (v.length > 6) v = '('+v.slice(0,2)+') '+v.slice(2,6)+'-'+v.slice(6);
+    else if (v.length > 2) v = '('+v.slice(0,2)+') '+v.slice(2);
+    else if (v.length > 0) v = '('+v;
     this.value = v;
   });
 
-  // ── Força da senha ──
+  // Força da senha
   document.getElementById('password').addEventListener('input', function() {
-    const v = this.value; let s = 0;
-    if (v.length >= 8) s++; if (/[A-Z]/.test(v)) s++;
-    if (/[0-9]/.test(v)) s++; if (/[^A-Za-z0-9]/.test(v)) s++;
+    const v = this.value;
+    let s = 0;
+    if (v.length >= 8) s++;
+    if (/[A-Z]/.test(v)) s++;
+    if (/[0-9]/.test(v)) s++;
+    if (/[^A-Za-z0-9]/.test(v)) s++;
     const map = [
-      {w:'0%',  c:'transparent',l:'Digite uma senha'},
-      {w:'25%', c:'#f87171',    l:'Fraca'},
-      {w:'50%', c:'#fbbf24',    l:'Razoável'},
-      {w:'75%', c:'#38bdf8',    l:'Boa'},
-      {w:'100%',c:'#34d399',    l:'Forte'}
+      {w:'0%',   c:'transparent', l:'Digite uma senha'},
+      {w:'25%',  c:'#f87171',     l:'Fraca'},
+      {w:'50%',  c:'#fbbf24',     l:'Razoável'},
+      {w:'75%',  c:'#38bdf8',     l:'Boa'},
+      {w:'100%', c:'#34d399',     l:'Forte'},
     ];
     document.getElementById('strFill').style.width      = map[s].w;
     document.getElementById('strFill').style.background = map[s].c;
     document.getElementById('strText').textContent      = map[s].l;
-    document.getElementById('strText').style.color      = s === 0 ? 'var(--text-muted)' : map[s].c;
+    document.getElementById('strText').style.color      = s===0 ? 'var(--text-muted)' : map[s].c;
     checkMatch();
   });
 
+  // Confirmar senha
   function checkMatch() {
     const p = document.getElementById('password').value;
     const c = document.getElementById('confirm').value;
     const h = document.getElementById('hintConfirm');
     const i = document.getElementById('confirm');
-    if (!c) { h.textContent = ''; i.classList.remove('ok','err'); return; }
-    if (p === c) { h.textContent = '✓ Senhas coincidem'; h.className = 'hint ok'; i.classList.add('ok'); i.classList.remove('err'); }
-    else         { h.textContent = '✗ Senhas não coincidem'; h.className = 'hint bad'; i.classList.add('err'); i.classList.remove('ok'); }
+    if (!c) { h.textContent=''; i.classList.remove('ok','err'); return; }
+    if (p===c) { h.textContent='✓ Senhas coincidem'; h.className='hint ok'; i.classList.add('ok'); i.classList.remove('err'); }
+    else       { h.textContent='✗ Senhas não coincidem'; h.className='hint bad'; i.classList.add('err'); i.classList.remove('ok'); }
   }
   document.getElementById('confirm').addEventListener('input', checkMatch);
 
+  // Validar username
   document.getElementById('username').addEventListener('input', function() {
-    const v = this.value.trim(), h = document.getElementById('hintUser');
-    if (!v) { h.textContent = 'Mínimo 4 caracteres, sem espaços.'; h.className = 'hint'; return; }
-    if (v.length < 4 || /\s/.test(v)) { h.textContent = '✗ Mínimo 4 caracteres, sem espaços.'; h.className = 'hint bad'; }
-    else { h.textContent = '✓ Nome de usuário válido'; h.className = 'hint ok'; }
+    const v = this.value.trim();
+    const h = document.getElementById('hintUser');
+    if (!v) { h.textContent='Mínimo 4 caracteres, sem espaços.'; h.className='hint'; return; }
+    if (v.length < 4 || /\s/.test(v)) { h.textContent='✗ Mínimo 4 caracteres, sem espaços.'; h.className='hint bad'; }
+    else { h.textContent='✓ Nome de usuário válido'; h.className='hint ok'; }
   });
 
-  // ── Utilitários ──
+  // Erro
   function showErr(msg) {
     document.getElementById('txtErro').textContent = msg;
     document.getElementById('msgErro').classList.add('show');
-    window.scrollTo({top: 0, behavior: 'smooth'});
-    setTimeout(() => document.getElementById('msgErro').classList.remove('show'), 5500);
+    window.scrollTo({top:0,behavior:'smooth'});
+    setTimeout(() => document.getElementById('msgErro').classList.remove('show'), 5000);
   }
   function markErr(id) {
     const el = document.getElementById(id);
-    if (!el) return;
     el.classList.add('err'); el.focus();
-    setTimeout(() => el.classList.remove('err'), 3500);
-  }
-  function setLoading(on) {
-    const btn = document.getElementById('btnCadastrar');
-    btn.disabled  = on;
-    btn.innerHTML = on
-      ? '<span class="spinner"></span> Salvando...'
-      : '<i class="fas fa-user-check"></i> Criar Conta';
-  }
-  function getUsuarios() {
-    try { return JSON.parse(localStorage.getItem('ews_usuarios') || '[]'); } catch(e) { return []; }
+    setTimeout(() => el.classList.remove('err'), 3000);
   }
 
-  // ── Cadastrar ──
+  // Cadastrar
   document.getElementById('btnCadastrar').addEventListener('click', () => {
     const nome        = document.getElementById('nome').value.trim();
     const sobrenome   = document.getElementById('sobrenome').value.trim();
     const email       = document.getElementById('email').value.trim();
     const telefone    = document.getElementById('telefone').value.trim();
     const perfil      = document.getElementById('perfil').value;
-    const username    = document.getElementById('username').value.trim();
-    const password    = document.getElementById('password').value;
-    const confirm     = document.getElementById('confirm').value;
-    const terms       = document.getElementById('terms').checked;
     const cep         = document.getElementById('cep').value.trim();
     const estado      = document.getElementById('estado').value;
     const rua         = document.getElementById('rua').value.trim();
@@ -351,47 +324,49 @@
     const complemento = document.getElementById('complemento').value.trim();
     const bairro      = document.getElementById('bairro').value.trim();
     const cidade      = document.getElementById('cidade').value.trim();
+    const username    = document.getElementById('username').value.trim();
+    const password    = document.getElementById('password').value;
+    const confirm     = document.getElementById('confirm').value;
+    const terms       = document.getElementById('terms').checked;
 
-    // Validações
-    if (!nome)      { showErr('Informe seu nome.');      markErr('nome');      return; }
+    if (!nome)      { showErr('Informe seu nome.'); markErr('nome'); return; }
     if (!sobrenome) { showErr('Informe seu sobrenome.'); markErr('sobrenome'); return; }
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showErr('Informe um e-mail válido.'); markErr('email'); return; }
     if (!perfil)    { showErr('Selecione seu perfil.'); markErr('perfil'); return; }
-    if (!username || username.length < 4 || /\s/.test(username)) { showErr('Usuário: mínimo 4 caracteres, sem espaços.'); markErr('username'); return; }
-    if (password.length < 6)  { showErr('A senha deve ter no mínimo 6 caracteres.'); markErr('password'); return; }
-    if (password !== confirm)  { showErr('As senhas não coincidem.');                 markErr('confirm');  return; }
-    if (!terms)               { showErr('Aceite os Termos de Uso para continuar.');                       return; }
+    if (!cep || cep.replace(/\D/g,'').length < 8) { showErr('Informe um CEP válido.'); markErr('cep'); return; }
+    if (!estado)    { showErr('Selecione o estado.'); markErr('estado'); return; }
+    if (!rua)       { showErr('Informe a rua/logradouro.'); markErr('rua'); return; }
+    if (!numero)    { showErr('Informe o número.'); markErr('numero'); return; }
+    if (!bairro)    { showErr('Informe o bairro.'); markErr('bairro'); return; }
+    if (!cidade)    { showErr('Informe a cidade.'); markErr('cidade'); return; }
+    if (!username || username.length < 4 || /\s/.test(username)) { showErr('Usuário precisa ter mínimo 4 caracteres e sem espaços.'); markErr('username'); return; }
+    if (password.length < 6) { showErr('A senha deve ter no mínimo 6 caracteres.'); markErr('password'); return; }
+    if (password !== confirm) { showErr('As senhas não coincidem.'); markErr('confirm'); return; }
+    if (!terms) { showErr('Aceite os Termos de Uso para continuar.'); return; }
 
-    const usuarios = getUsuarios();
+    let users = [];
+    try { users = JSON.parse(localStorage.getItem('ews_usuarios') || '[]'); } catch(e) {}
 
-    // Verifica duplicatas
-    if (usuarios.find(x => x.username === username)) { showErr('Nome de usuário já em uso. Escolha outro.'); markErr('username'); return; }
-    if (usuarios.find(x => x.email === email))        { showErr('E-mail já cadastrado. Faça login.');         markErr('email');    return; }
+    if (users.find(x => x.username === username)) { showErr('Usuário já em uso. Escolha outro.'); markErr('username'); return; }
+    if (users.find(x => x.email === email))        { showErr('E-mail já cadastrado.'); markErr('email'); return; }
 
-    setLoading(true);
-    setTimeout(() => {
-      const novoUsuario = {
-        id:        Date.now().toString(),
-        username,
-        password,
-        nome:      nome + ' ' + sobrenome,
-        email,
-        telefone:  telefone || '',
-        perfil,
-        criadoEm:  new Date().toISOString()
-      };
+    // Monta objeto completo do usuário
+    const novoUsuario = {
+      username,
+      password,
+      nome: nome + ' ' + sobrenome,
+      email,
+      telefone,
+      perfil,
+      endereco: { cep, estado, rua, numero, complemento, bairro, cidade },
+      criadoEm: new Date().toISOString()
+    };
 
-      const temEndereco = cep || (estado && estado !== '') || rua || numero || bairro || cidade;
-      if (temEndereco) {
-        novoUsuario.endereco = { cep, estado, rua, numero, complemento, bairro, cidade };
-      }
+    users.push(novoUsuario);
+    localStorage.setItem('ews_usuarios', JSON.stringify(users));
 
-      usuarios.push(novoUsuario);
-      localStorage.setItem('ews_usuarios', JSON.stringify(usuarios));
-
-      sessionStorage.setItem('ews_flash', `Conta criada com sucesso! Bem-vindo(a), ${nome}.`);
-      window.location.href = 'index.html';
-    }, 350);
+    sessionStorage.setItem('ews_flash', `Conta criada com sucesso! Bem-vindo(a), ${nome}.`);
+    window.location.href = 'index.html';
   });
 </script>
 </body>
