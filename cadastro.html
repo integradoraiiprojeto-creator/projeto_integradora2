@@ -8,9 +8,9 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-  <!-- Firebase SDK (compat) -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <!-- Firebase SDK v9 compat (versão mais estável para uso direto em HTML) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
   <style>
     :root {
@@ -19,6 +19,7 @@
       --text:#e2eaf4; --text-muted:#6b87a8;
       --red:#f87171; --red-dim:rgba(248,113,113,0.12);
       --green:#34d399; --green-dim:rgba(52,211,153,0.12);
+      --yellow:#fbbf24;
       --border:rgba(56,189,248,0.12); --border-soft:rgba(255,255,255,0.05);
       --radius:18px; --radius-sm:10px; --shadow:0 24px 80px rgba(0,0,0,0.7);
     }
@@ -40,6 +41,16 @@
     .sec{font-family:'Syne',sans-serif;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);margin:28px 0 18px;display:flex;align-items:center;gap:8px;}
     .sec::after{content:'';flex:1;border-top:1px solid var(--border-soft);}
     .sec i{color:var(--primary);font-size:.72rem;}
+    .sec .opt-badge{font-size:.62rem;font-weight:600;padding:2px 8px;border-radius:20px;background:rgba(56,189,248,0.1);color:var(--primary);border:1px solid rgba(56,189,248,0.2);text-transform:uppercase;letter-spacing:.06em;}
+
+    .sec-toggle{cursor:pointer;user-select:none;}
+    .sec-toggle .chevron{margin-left:auto;margin-right:0;color:var(--primary);transition:transform .3s;font-size:.8rem;}
+    .sec-toggle.collapsed .chevron{transform:rotate(-90deg);}
+    .sec::after{display:none;}
+    .sec{border-bottom:1px solid var(--border-soft);padding-bottom:10px;}
+
+    .collapsible{overflow:hidden;transition:max-height .4s ease,opacity .3s ease;max-height:1000px;opacity:1;}
+    .collapsible.closed{max-height:0;opacity:0;pointer-events:none;}
 
     .g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
     .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
@@ -48,6 +59,7 @@
     .fg label{display:block;margin-bottom:8px;font-size:.8rem;font-weight:600;color:var(--text-muted);letter-spacing:.05em;text-transform:uppercase;}
     .fg label i{margin-right:6px;color:var(--primary);font-size:.76rem;}
     .fg label .req{color:var(--red);margin-left:2px;}
+    .fg label .opc{color:var(--text-muted);margin-left:4px;font-size:.7rem;font-weight:400;text-transform:none;letter-spacing:0;}
     .fg input,.fg select{width:100%;padding:13px 16px;background:rgba(10,24,52,0.8);border:1px solid var(--border);border-radius:var(--radius-sm);color:#fff;font-size:.93rem;font-family:'DM Sans',sans-serif;transition:all .25s;}
     .fg select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b87a8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;}
     .fg select option{background:#0a1834;color:#e2eaf4;}
@@ -71,6 +83,18 @@
     .alert{display:none;align-items:center;gap:10px;padding:12px 16px;border-radius:var(--radius-sm);font-size:.84rem;margin-bottom:22px;}
     .alert.show{display:flex;}
     .alert-error{background:var(--red-dim);color:var(--red);border:1px solid rgba(248,113,113,.25);}
+    .alert-warn{background:rgba(251,191,36,0.1);color:var(--yellow);border:1px solid rgba(251,191,36,.25);}
+
+    /* Status de conexão Firebase */
+    .db-status{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:var(--radius-sm);font-size:.78rem;margin-bottom:20px;font-family:'DM Mono',monospace;border:1px solid var(--border-soft);}
+    .db-status.checking{background:rgba(107,135,168,0.08);color:var(--text-muted);}
+    .db-status.online{background:var(--green-dim);color:var(--green);border-color:rgba(52,211,153,.2);}
+    .db-status.offline{background:var(--red-dim);color:var(--red);border-color:rgba(248,113,113,.2);}
+    .db-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+    .checking .db-dot{background:var(--text-muted);animation:pulse 1.2s infinite;}
+    .online .db-dot{background:var(--green);}
+    .offline .db-dot{background:var(--red);}
+    @keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
 
     .terms-row{display:flex;align-items:flex-start;gap:10px;margin-top:20px;font-size:.83rem;color:var(--text-muted);}
     .terms-row input{width:15px;height:15px;accent-color:var(--primary);cursor:pointer;margin-top:2px;flex-shrink:0;}
@@ -92,6 +116,12 @@
 
     .spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
     @keyframes spin{to{transform:rotate(360deg)}}
+
+    @media(max-width:520px){
+      .box{padding:32px 22px;}
+      .g2,.g3{grid-template-columns:1fr;}
+      .g3 .fg[style]{grid-column:span 1 !important;}
+    }
   </style>
 </head>
 <body>
@@ -102,11 +132,17 @@
     <p>Crie sua conta para acessar o sistema</p>
   </div>
 
+  <!-- Status Firebase -->
+  <div class="db-status checking" id="dbStatus">
+    <div class="db-dot"></div>
+    <span id="dbStatusTxt">Verificando conexão com o banco de dados...</span>
+  </div>
+
   <div class="alert alert-error" id="msgErro">
     <i class="fas fa-exclamation-circle"></i><span id="txtErro"></span>
   </div>
 
-  <!-- DADOS PESSOAIS -->
+  <!-- ── DADOS PESSOAIS ── -->
   <div class="sec"><i class="fas fa-id-card"></i> Dados Pessoais</div>
   <div class="g2">
     <div class="fg">
@@ -124,7 +160,7 @@
       <input type="email" id="email" placeholder="seu@email.com">
     </div>
     <div class="fg">
-      <label for="telefone"><i class="fas fa-phone"></i>Telefone</label>
+      <label for="telefone"><i class="fas fa-phone"></i>Telefone <span class="opc">(opcional)</span></label>
       <input type="tel" id="telefone" placeholder="(00) 00000-0000">
     </div>
   </div>
@@ -142,54 +178,63 @@
     </select>
   </div>
 
-  <!-- ENDEREÇO -->
-  <div class="sec"><i class="fas fa-map-marker-alt"></i> Endereço</div>
-  <div class="g2">
-    <div class="fg">
-      <label for="cep"><i class="fas fa-search-location"></i>CEP <span class="req">*</span></label>
-      <input type="text" id="cep" placeholder="00000-000" maxlength="9">
-    </div>
-    <div class="fg">
-      <label for="estado"><i class="fas fa-map"></i>Estado <span class="req">*</span></label>
-      <select id="estado">
-        <option value="" disabled selected>UF</option>
-        <option>AC</option><option>AL</option><option>AP</option><option>AM</option>
-        <option>BA</option><option>CE</option><option>DF</option><option>ES</option>
-        <option>GO</option><option>MA</option><option>MT</option><option>MS</option>
-        <option>MG</option><option>PA</option><option>PB</option><option>PR</option>
-        <option>PE</option><option>PI</option><option>RJ</option><option>RN</option>
-        <option>RS</option><option>RO</option><option>RR</option><option>SC</option>
-        <option>SP</option><option>SE</option><option>TO</option>
-      </select>
-    </div>
+  <!-- ── ENDEREÇO (OPCIONAL / colapsável) ── -->
+  <div class="sec sec-toggle" id="secEndereco">
+    <i class="fas fa-map-marker-alt"></i>
+    Endereço
+    <span class="opt-badge">Opcional</span>
+    <i class="fas fa-chevron-down chevron" id="endChevron"></i>
   </div>
-  <div class="fg">
-    <label for="rua"><i class="fas fa-road"></i>Rua / Logradouro <span class="req">*</span></label>
-    <input type="text" id="rua" placeholder="Nome da rua, avenida, travessa...">
-  </div>
-  <div class="g3">
-    <div class="fg">
-      <label for="numero"><i class="fas fa-hashtag"></i>Número <span class="req">*</span></label>
-      <input type="text" id="numero" placeholder="Nº">
-    </div>
-    <div class="fg" style="grid-column:span 2;">
-      <label for="complemento"><i class="fas fa-building"></i>Complemento</label>
-      <input type="text" id="complemento" placeholder="Apto, bloco, sala...">
-    </div>
-  </div>
-  <div class="g2">
-    <div class="fg">
-      <label for="bairro"><i class="fas fa-map-pin"></i>Bairro <span class="req">*</span></label>
-      <input type="text" id="bairro" placeholder="Seu bairro">
-    </div>
-    <div class="fg">
-      <label for="cidade"><i class="fas fa-city"></i>Cidade <span class="req">*</span></label>
-      <input type="text" id="cidade" placeholder="Sua cidade">
+  <div class="collapsible closed" id="enderecoBloco">
+    <div style="padding-top:8px;">
+      <div class="g2">
+        <div class="fg">
+          <label for="cep"><i class="fas fa-search-location"></i>CEP <span class="opc">(opcional)</span></label>
+          <input type="text" id="cep" placeholder="00000-000" maxlength="9">
+        </div>
+        <div class="fg">
+          <label for="estado"><i class="fas fa-map"></i>Estado <span class="opc">(opcional)</span></label>
+          <select id="estado">
+            <option value="" selected>UF</option>
+            <option>AC</option><option>AL</option><option>AP</option><option>AM</option>
+            <option>BA</option><option>CE</option><option>DF</option><option>ES</option>
+            <option>GO</option><option>MA</option><option>MT</option><option>MS</option>
+            <option>MG</option><option>PA</option><option>PB</option><option>PR</option>
+            <option>PE</option><option>PI</option><option>RJ</option><option>RN</option>
+            <option>RS</option><option>RO</option><option>RR</option><option>SC</option>
+            <option>SP</option><option>SE</option><option>TO</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg">
+        <label for="rua"><i class="fas fa-road"></i>Rua / Logradouro <span class="opc">(opcional)</span></label>
+        <input type="text" id="rua" placeholder="Nome da rua, avenida, travessa...">
+      </div>
+      <div class="g3">
+        <div class="fg">
+          <label for="numero"><i class="fas fa-hashtag"></i>Número <span class="opc">(opcional)</span></label>
+          <input type="text" id="numero" placeholder="Nº">
+        </div>
+        <div class="fg" style="grid-column:span 2;">
+          <label for="complemento"><i class="fas fa-building"></i>Complemento <span class="opc">(opcional)</span></label>
+          <input type="text" id="complemento" placeholder="Apto, bloco, sala...">
+        </div>
+      </div>
+      <div class="g2">
+        <div class="fg">
+          <label for="bairro"><i class="fas fa-map-pin"></i>Bairro <span class="opc">(opcional)</span></label>
+          <input type="text" id="bairro" placeholder="Seu bairro">
+        </div>
+        <div class="fg">
+          <label for="cidade"><i class="fas fa-city"></i>Cidade <span class="opc">(opcional)</span></label>
+          <input type="text" id="cidade" placeholder="Sua cidade">
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- DADOS DE ACESSO -->
-  <div class="sec"><i class="fas fa-key"></i> Dados de Acesso</div>
+  <!-- ── DADOS DE ACESSO ── -->
+  <div class="sec" style="margin-top:28px;"><i class="fas fa-key"></i> Dados de Acesso</div>
   <div class="fg">
     <label for="username"><i class="fas fa-at"></i>Usuário <span class="req">*</span></label>
     <input type="text" id="username" placeholder="Escolha um nome de usuário" autocomplete="off">
@@ -228,7 +273,7 @@
 </div>
 
 <script>
-  // ── Firebase ──
+  // ── Firebase config ──
   const firebaseConfig = {
     apiKey: "AIzaSyDURF1Z7S-O0y1mfc0Sf8sjY9KGLJwkYHY",
     authDomain: "projeto-integradora-ii.firebaseapp.com",
@@ -236,11 +281,60 @@
     projectId: "projeto-integradora-ii",
     storageBucket: "projeto-integradora-ii.firebasestorage.app",
     messagingSenderId: "80939508930",
-    appId: "1:80939508930:web:9a2d2f9bf97be9eb98075b",
-    measurementId: "G-QNDHVYGZE7"
+    appId: "1:80939508930:web:9a2d2f9bf97be9eb98075b"
   };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
+
+  // Inicializa Firebase somente uma vez
+  let app, db;
+  try {
+    app = firebase.apps.length ? firebase.app() : firebase.initializeApp(firebaseConfig);
+    db = firebase.firestore(app);
+
+    // Configura persistência offline (ajuda em conexões instáveis)
+    db.settings({ experimentalForceLongPolling: true, merge: true });
+
+    // Testa conexão com um ping no Firestore
+    checkFirebaseConnection();
+  } catch (initErr) {
+    console.error('Erro ao inicializar Firebase:', initErr);
+    setDbStatus('offline', 'Falha ao inicializar o banco de dados.');
+  }
+
+  async function checkFirebaseConnection() {
+    try {
+      // Usa um documento inexistente como ping — não cria dado, só valida conexão
+      await db.collection('_ping').doc('test').get();
+      setDbStatus('online', 'Banco de dados conectado');
+    } catch(e) {
+      if (e.code === 'permission-denied') {
+        // Sem permissão mas a conexão funcionou
+        setDbStatus('online', 'Banco de dados conectado');
+      } else {
+        console.warn('Firebase ping falhou:', e);
+        setDbStatus('offline', 'Sem conexão com o banco de dados. Verifique sua internet.');
+      }
+    }
+  }
+
+  function setDbStatus(state, msg) {
+    const el = document.getElementById('dbStatus');
+    const txt = document.getElementById('dbStatusTxt');
+    el.className = 'db-status ' + state;
+    txt.textContent = msg;
+  }
+
+  // ── Toggle seção Endereço ──
+  const secEnd = document.getElementById('secEndereco');
+  const blocoEnd = document.getElementById('enderecoBloco');
+  const chevron = document.getElementById('endChevron');
+  let endAberto = false;
+
+  secEnd.addEventListener('click', () => {
+    endAberto = !endAberto;
+    blocoEnd.classList.toggle('closed', !endAberto);
+    secEnd.classList.toggle('collapsed', !endAberto);
+    chevron.style.transform = endAberto ? 'rotate(0deg)' : 'rotate(-90deg)';
+  });
 
   // ── Toggle senha ──
   function setupToggle(btnId, inputId, iconId) {
@@ -254,12 +348,14 @@
   setupToggle('togglePass',    'password', 'eyeIcon1');
   setupToggle('toggleConfirm', 'confirm',  'eyeIcon2');
 
-  // ── Máscaras ──
+  // ── Máscara CEP ──
   document.getElementById('cep').addEventListener('input', function() {
     let v = this.value.replace(/\D/g,'');
     if (v.length > 5) v = v.slice(0,5)+'-'+v.slice(5,8);
     this.value = v;
   });
+
+  // ── Máscara Telefone ──
   document.getElementById('telefone').addEventListener('input', function() {
     let v = this.value.replace(/\D/g,'');
     if (v.length > 10)     v='('+v.slice(0,2)+') '+v.slice(2,7)+'-'+v.slice(7,11);
@@ -271,59 +367,78 @@
 
   // ── Força da senha ──
   document.getElementById('password').addEventListener('input', function() {
-    const v=this.value; let s=0;
-    if(v.length>=8)s++; if(/[A-Z]/.test(v))s++; if(/[0-9]/.test(v))s++; if(/[^A-Za-z0-9]/.test(v))s++;
-    const map=[{w:'0%',c:'transparent',l:'Digite uma senha'},{w:'25%',c:'#f87171',l:'Fraca'},{w:'50%',c:'#fbbf24',l:'Razoável'},{w:'75%',c:'#38bdf8',l:'Boa'},{w:'100%',c:'#34d399',l:'Forte'}];
-    document.getElementById('strFill').style.width=map[s].w;
-    document.getElementById('strFill').style.background=map[s].c;
-    document.getElementById('strText').textContent=map[s].l;
-    document.getElementById('strText').style.color=s===0?'var(--text-muted)':map[s].c;
+    const v = this.value; let s = 0;
+    if (v.length >= 8) s++;
+    if (/[A-Z]/.test(v)) s++;
+    if (/[0-9]/.test(v)) s++;
+    if (/[^A-Za-z0-9]/.test(v)) s++;
+    const map = [
+      {w:'0%',  c:'transparent', l:'Digite uma senha'},
+      {w:'25%', c:'#f87171',     l:'Fraca'},
+      {w:'50%', c:'#fbbf24',     l:'Razoável'},
+      {w:'75%', c:'#38bdf8',     l:'Boa'},
+      {w:'100%',c:'#34d399',     l:'Forte'}
+    ];
+    document.getElementById('strFill').style.width      = map[s].w;
+    document.getElementById('strFill').style.background = map[s].c;
+    document.getElementById('strText').textContent      = map[s].l;
+    document.getElementById('strText').style.color      = s===0 ? 'var(--text-muted)' : map[s].c;
     checkMatch();
   });
 
   function checkMatch() {
-    const p=document.getElementById('password').value, c=document.getElementById('confirm').value;
-    const h=document.getElementById('hintConfirm'), i=document.getElementById('confirm');
-    if(!c){h.textContent='';i.classList.remove('ok','err');return;}
-    if(p===c){h.textContent='✓ Senhas coincidem';h.className='hint ok';i.classList.add('ok');i.classList.remove('err');}
-    else{h.textContent='✗ Senhas não coincidem';h.className='hint bad';i.classList.add('err');i.classList.remove('ok');}
+    const p = document.getElementById('password').value;
+    const c = document.getElementById('confirm').value;
+    const h = document.getElementById('hintConfirm');
+    const i = document.getElementById('confirm');
+    if (!c) { h.textContent=''; i.classList.remove('ok','err'); return; }
+    if (p === c) { h.textContent='✓ Senhas coincidem'; h.className='hint ok'; i.classList.add('ok'); i.classList.remove('err'); }
+    else         { h.textContent='✗ Senhas não coincidem'; h.className='hint bad'; i.classList.add('err'); i.classList.remove('ok'); }
   }
   document.getElementById('confirm').addEventListener('input', checkMatch);
 
   document.getElementById('username').addEventListener('input', function() {
-    const v=this.value.trim(), h=document.getElementById('hintUser');
-    if(!v){h.textContent='Mínimo 4 caracteres, sem espaços.';h.className='hint';return;}
-    if(v.length<4||/\s/.test(v)){h.textContent='✗ Mínimo 4 caracteres, sem espaços.';h.className='hint bad';}
-    else{h.textContent='✓ Nome de usuário válido';h.className='hint ok';}
+    const v = this.value.trim(), h = document.getElementById('hintUser');
+    if (!v) { h.textContent='Mínimo 4 caracteres, sem espaços.'; h.className='hint'; return; }
+    if (v.length < 4 || /\s/.test(v)) { h.textContent='✗ Mínimo 4 caracteres, sem espaços.'; h.className='hint bad'; }
+    else { h.textContent='✓ Nome de usuário válido'; h.className='hint ok'; }
   });
 
   // ── Utilitários ──
   function showErr(msg) {
-    document.getElementById('txtErro').textContent=msg;
+    document.getElementById('txtErro').textContent = msg;
     document.getElementById('msgErro').classList.add('show');
     window.scrollTo({top:0,behavior:'smooth'});
-    setTimeout(()=>document.getElementById('msgErro').classList.remove('show'),5000);
+    setTimeout(() => document.getElementById('msgErro').classList.remove('show'), 5500);
   }
   function markErr(id) {
-    const el=document.getElementById(id);
-    el.classList.add('err'); el.focus();
-    setTimeout(()=>el.classList.remove('err'),3000);
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.add('err');
+    el.focus();
+    setTimeout(() => el.classList.remove('err'), 3500);
   }
   function setLoading(on) {
     const btn = document.getElementById('btnCadastrar');
     btn.disabled = on;
     btn.innerHTML = on
-      ? '<span class="spinner"></span> Salvando no Firestore...'
+      ? '<span class="spinner"></span> Salvando...'
       : '<i class="fas fa-user-check"></i> Criar Conta';
   }
 
-  // ── Cadastrar (salva no Firestore) ──
+  // ── Cadastrar ──
   document.getElementById('btnCadastrar').addEventListener('click', async () => {
     const nome        = document.getElementById('nome').value.trim();
     const sobrenome   = document.getElementById('sobrenome').value.trim();
     const email       = document.getElementById('email').value.trim();
     const telefone    = document.getElementById('telefone').value.trim();
     const perfil      = document.getElementById('perfil').value;
+    const username    = document.getElementById('username').value.trim();
+    const password    = document.getElementById('password').value;
+    const confirm     = document.getElementById('confirm').value;
+    const terms       = document.getElementById('terms').checked;
+
+    // Campos de endereço (todos opcionais)
     const cep         = document.getElementById('cep').value.trim();
     const estado      = document.getElementById('estado').value;
     const rua         = document.getElementById('rua').value.trim();
@@ -331,58 +446,83 @@
     const complemento = document.getElementById('complemento').value.trim();
     const bairro      = document.getElementById('bairro').value.trim();
     const cidade      = document.getElementById('cidade').value.trim();
-    const username    = document.getElementById('username').value.trim();
-    const password    = document.getElementById('password').value;
-    const confirm     = document.getElementById('confirm').value;
-    const terms       = document.getElementById('terms').checked;
 
-    // Validações locais
+    // ── Validações obrigatórias ──
     if (!nome)      { showErr('Informe seu nome.'); markErr('nome'); return; }
     if (!sobrenome) { showErr('Informe seu sobrenome.'); markErr('sobrenome'); return; }
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showErr('Informe um e-mail válido.'); markErr('email'); return; }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      showErr('Informe um e-mail válido.'); markErr('email'); return;
+    }
     if (!perfil)    { showErr('Selecione seu perfil.'); markErr('perfil'); return; }
-    if (!cep || cep.replace(/\D/g,'').length < 8) { showErr('Informe um CEP válido.'); markErr('cep'); return; }
-    if (!estado)    { showErr('Selecione o estado.'); markErr('estado'); return; }
-    if (!rua)       { showErr('Informe a rua/logradouro.'); markErr('rua'); return; }
-    if (!numero)    { showErr('Informe o número.'); markErr('numero'); return; }
-    if (!bairro)    { showErr('Informe o bairro.'); markErr('bairro'); return; }
-    if (!cidade)    { showErr('Informe a cidade.'); markErr('cidade'); return; }
-    if (!username || username.length < 4 || /\s/.test(username)) { showErr('Usuário precisa ter mínimo 4 caracteres e sem espaços.'); markErr('username'); return; }
+    if (!username || username.length < 4 || /\s/.test(username)) {
+      showErr('Usuário precisa ter mínimo 4 caracteres e sem espaços.'); markErr('username'); return;
+    }
     if (password.length < 6) { showErr('A senha deve ter no mínimo 6 caracteres.'); markErr('password'); return; }
     if (password !== confirm) { showErr('As senhas não coincidem.'); markErr('confirm'); return; }
     if (!terms) { showErr('Aceite os Termos de Uso para continuar.'); return; }
 
+    // Verifica se Firebase está inicializado
+    if (!db) { showErr('Banco de dados não disponível. Recarregue a página.'); return; }
+
     setLoading(true);
     try {
-      // Verifica username duplicado no Firestore
+      // Verifica username duplicado
       const snapUser = await db.collection('usuarios').where('username','==',username).limit(1).get();
-      if (!snapUser.empty) { showErr('Nome de usuário já em uso. Escolha outro.'); markErr('username'); setLoading(false); return; }
+      if (!snapUser.empty) {
+        showErr('Nome de usuário já em uso. Escolha outro.');
+        markErr('username');
+        setLoading(false);
+        return;
+      }
 
-      // Verifica email duplicado no Firestore
+      // Verifica email duplicado
       const snapEmail = await db.collection('usuarios').where('email','==',email).limit(1).get();
-      if (!snapEmail.empty) { showErr('E-mail já cadastrado.'); markErr('email'); setLoading(false); return; }
+      if (!snapEmail.empty) {
+        showErr('E-mail já cadastrado. Faça login ou use outro e-mail.');
+        markErr('email');
+        setLoading(false);
+        return;
+      }
 
-      // Salva no Firestore
+      // Monta objeto — endereço só inclui se pelo menos um campo foi preenchido
+      const temEndereco = cep || estado || rua || numero || bairro || cidade;
       const novoUsuario = {
         username,
         password,
         nome: nome + ' ' + sobrenome,
         email,
-        telefone,
+        telefone: telefone || '',
         perfil,
-        endereco: { cep, estado, rua, numero, complemento, bairro, cidade },
         criadoEm: firebase.firestore.FieldValue.serverTimestamp()
       };
 
+      if (temEndereco) {
+        novoUsuario.endereco = {
+          cep:         cep         || '',
+          estado:      estado      || '',
+          rua:         rua         || '',
+          numero:      numero      || '',
+          complemento: complemento || '',
+          bairro:      bairro      || '',
+          cidade:      cidade      || ''
+        };
+      }
+
       const docRef = await db.collection('usuarios').add(novoUsuario);
-      console.log('Usuário salvo no Firestore com ID:', docRef.id);
+      console.log('Usuário salvo com ID:', docRef.id);
 
       sessionStorage.setItem('ews_flash', `Conta criada com sucesso! Bem-vindo(a), ${nome}.`);
       window.location.href = 'index.html';
 
     } catch(e) {
       console.error('Erro ao salvar no Firestore:', e);
-      showErr('Erro ao salvar no banco de dados. Verifique sua conexão e tente novamente.');
+      let msg = 'Erro ao salvar no banco de dados.';
+      if (e.code === 'unavailable' || e.code === 'failed-precondition') {
+        msg = 'Sem conexão com o servidor. Verifique sua internet e tente novamente.';
+      } else if (e.code === 'permission-denied') {
+        msg = 'Permissão negada. Verifique as regras do Firestore.';
+      }
+      showErr(msg);
       setLoading(false);
     }
   });
