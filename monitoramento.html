@@ -217,7 +217,7 @@
       <span style="color:var(--text-dim)">·</span>
       <span id="uPerfil" style="font-size:.7rem;color:var(--primary)">—</span>
     </div>
-    <a href="cadastro.html" class="hbtn" id="btnCad"><i class="fas fa-user-plus"></i> Cadastro</a>
+    <button class="hbtn" id="btnCsv" style="display:none" onclick="exportarCSV()"><i class="fas fa-file-csv"></i> Exportar CSV</button>
     <div class="live-pill"><div class="live-dot"></div>AO VIVO</div>
     <button class="logout" id="btnOut"><i class="fas fa-arrow-right-from-bracket"></i> Sair</button>
   </div>
@@ -489,6 +489,45 @@
   </div>
 </div>
 
+<!-- ══════════════════════════════════════════════
+     📋 TABELA DE MEDIÇÕES — visível a todos exceto visitante
+══════════════════════════════════════════════════ -->
+<div id="sec-tabela" style="display:none;position:relative;z-index:1;padding:0 28px 28px;">
+  <div class="card" style="margin-bottom:0">
+    <div class="ctitle" style="margin-bottom:14px">
+      <i class="fas fa-table-list"></i> Tabela de Medições
+      <span id="tbl-total" style="margin-left:6px;font-family:'DM Mono',monospace;font-size:.75rem;color:var(--text-dim);background:var(--bg-raised);padding:2px 8px;border-radius:5px;border:1px solid var(--border-soft)">0 registros</span>
+      <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+        <input type="text" id="tbl-search" placeholder="Filtrar por data/status..." oninput="filtrarTabela()" style="padding:6px 11px;border-radius:var(--radius-sm);background:var(--bg-raised);border:1px solid var(--border-soft);color:var(--text);font-size:.8rem;font-family:'DM Mono',monospace;outline:none;width:200px;">
+        <button onclick="exportarCSV()" style="display:flex;align-items:center;gap:7px;padding:7px 14px;border-radius:var(--radius-sm);background:rgba(52,211,153,0.12);border:1px solid rgba(52,211,153,0.3);color:var(--green);font-size:.83rem;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;transition:all .2s;" onmouseover="this.style.background='rgba(52,211,153,0.22)'" onmouseout="this.style.background='rgba(52,211,153,0.12)'">
+          <i class="fas fa-file-csv"></i> Exportar CSV
+        </button>
+      </div>
+    </div>
+    <div style="overflow-x:auto">
+      <table class="tbl" style="min-width:560px">
+        <thead>
+          <tr>
+            <th style="cursor:pointer;user-select:none" onclick="ordenarTabela('ts')">Data/Hora <i class="fas fa-sort" style="opacity:.4;font-size:.65rem"></i></th>
+            <th style="cursor:pointer;user-select:none" onclick="ordenarTabela('fc')">FC (bpm) <i class="fas fa-sort" style="opacity:.4;font-size:.65rem"></i></th>
+            <th style="cursor:pointer;user-select:none" onclick="ordenarTabela('ox')">SpO₂ (%) <i class="fas fa-sort" style="opacity:.4;font-size:.65rem"></i></th>
+            <th style="cursor:pointer;user-select:none" onclick="ordenarTabela('tp')">Temp (°C) <i class="fas fa-sort" style="opacity:.4;font-size:.65rem"></i></th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="tbl-main-body"></tbody>
+      </table>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:10px;border-top:1px solid var(--border-soft)">
+      <span id="tbl-pag-info" style="font-size:.72rem;color:var(--text-dim);font-family:'DM Mono',monospace"></span>
+      <div style="display:flex;gap:6px">
+        <button id="tbl-prev" onclick="tblPagina(-1)" style="padding:5px 12px;border-radius:var(--radius-sm);background:var(--bg-raised);border:1px solid var(--border-soft);color:var(--text-muted);font-size:.8rem;cursor:pointer;transition:all .2s;">← Anterior</button>
+        <button id="tbl-next" onclick="tblPagina(1)"  style="padding:5px 12px;border-radius:var(--radius-sm);background:var(--bg-raised);border:1px solid var(--border-soft);color:var(--text-muted);font-size:.8rem;cursor:pointer;transition:all .2s;">Próximo →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <footer class="footer">
   <span>© 2024 EWS Sinais Vitais · Sistema de Monitoramento em Tempo Real</span>
   <span class="fclock"><span style="width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;display:inline-block"></span>Atualizado às <span id="clock">--:--:--</span></span>
@@ -545,8 +584,10 @@ window.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('uIcon').className     = `fas ${ICONS[view]||'fa-user'}`;
   document.getElementById('uIcon').style.color   = COLORS[view] || 'var(--primary)';
   document.getElementById('uPerfil').style.color = COLORS[view] || 'var(--primary)';
-  if (['paciente','acompanhante','visitante'].includes(view))
-    document.getElementById('btnCad').style.display = 'none';
+  if (['medico','enfermeiro','tecnico','administrador'].includes(view))
+    document.getElementById('btnCsv').style.display = 'flex';
+  if (['medico','enfermeiro','tecnico','administrador','paciente','acompanhante'].includes(view))
+    document.getElementById('sec-tabela').style.display = 'block';
 
   // Show view
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -661,6 +702,9 @@ async function fetchHist(){
       renderTbl('adm-tbody',hist); updBadges('adm',hist);
       document.getElementById('adm-nalert').textContent=hist.filter(r=>gst(r.fc,r.ox,r.tp).c!=='ok').length;
     }
+    // Popula a tabela de medições para todos os perfis com acesso
+    if(['medico','enfermeiro','tecnico','administrador','paciente','acompanhante'].includes(view))
+      popularTabela(hist);
   }catch(e){}
 }
 
@@ -1014,6 +1058,119 @@ function sSTab(btn,px){
       c.resize();
       c.update();
     },50);
+  }
+}
+
+// ════════ TABELA DE MEDIÇÕES ════════
+let _tblDados = [], _tblFiltrado = [], _tblPag = 0, _tblOrd = {col:'ts', asc:false};
+const _TBL_PER_PAGE = 15;
+
+function popularTabela(hist) {
+  _tblDados    = [...hist].reverse(); // mais recente primeiro por padrão
+  _tblFiltrado = [..._tblDados];
+  _tblPag      = 0;
+  _tblOrd      = { col:'ts', asc:false };
+  renderTblMain();
+}
+
+function filtrarTabela() {
+  const q = document.getElementById('tbl-search').value.toLowerCase();
+  _tblFiltrado = q
+    ? _tblDados.filter(r => fdt(r.ts).toLowerCase().includes(q) || gst(r.fc,r.ox,r.tp).t.toLowerCase().includes(q))
+    : [..._tblDados];
+  _tblPag = 0;
+  renderTblMain();
+}
+
+function ordenarTabela(col) {
+  if (_tblOrd.col === col) _tblOrd.asc = !_tblOrd.asc;
+  else { _tblOrd.col = col; _tblOrd.asc = true; }
+  _tblFiltrado.sort((a,b) => {
+    const va = col==='ts' ? a.ts : (col==='fc' ? a.fc : col==='ox' ? a.ox : a.tp);
+    const vb = col==='ts' ? b.ts : (col==='fc' ? b.fc : col==='ox' ? b.ox : b.tp);
+    return _tblOrd.asc ? (va > vb ? 1 : -1) : (va < vb ? 1 : -1);
+  });
+  _tblPag = 0;
+  renderTblMain();
+}
+
+function tblPagina(dir) {
+  const maxPag = Math.ceil(_tblFiltrado.length / _TBL_PER_PAGE) - 1;
+  _tblPag = Math.max(0, Math.min(_tblPag + dir, maxPag));
+  renderTblMain();
+}
+
+function renderTblMain() {
+  const el = document.getElementById('tbl-main-body');
+  const info = document.getElementById('tbl-pag-info');
+  const total = _tblFiltrado.length;
+  const maxPag = Math.max(0, Math.ceil(total / _TBL_PER_PAGE) - 1);
+  const start  = _tblPag * _TBL_PER_PAGE;
+  const slice  = _tblFiltrado.slice(start, start + _TBL_PER_PAGE);
+
+  document.getElementById('tbl-total').textContent = `${total} registro${total!==1?'s':''}`;
+  document.getElementById('tbl-prev').disabled = _tblPag === 0;
+  document.getElementById('tbl-next').disabled = _tblPag >= maxPag;
+  document.getElementById('tbl-prev').style.opacity = _tblPag === 0 ? '.35' : '1';
+  document.getElementById('tbl-next').style.opacity = _tblPag >= maxPag ? '.35' : '1';
+
+  if (!slice.length) {
+    el.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:30px;color:var(--text-dim);font-family:\'DM Mono\',monospace;font-size:.78rem"><i class="fas fa-magnifying-glass" style="display:block;font-size:1.5rem;opacity:.2;margin-bottom:8px"></i>Nenhum registro encontrado</td></tr>';
+    info.textContent = '';
+    return;
+  }
+
+  el.innerHTML = slice.map(r => {
+    const st = gst(r.fc, r.ox, r.tp);
+    return `<tr>
+      <td style="font-family:'DM Mono',monospace;font-size:.76rem;color:var(--text-muted)">${fdt(r.ts)}</td>
+      <td><span class="mv r">${r.fc.toFixed(1)}</span></td>
+      <td><span class="mv b">${r.ox.toFixed(1)}</span></td>
+      <td><span class="mv a">${r.tp.toFixed(1)}</span></td>
+      <td><span class="badge ${st.c}">${st.t}</span></td>
+    </tr>`;
+  }).join('');
+
+  info.textContent = `Página ${_tblPag + 1} de ${maxPag + 1} · ${start+1}–${Math.min(start+_TBL_PER_PAGE, total)} de ${total}`;
+}
+
+// ════════ EXPORTAR CSV ════════
+async function exportarCSV(){
+  const btn = document.getElementById('btnCsv');
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Exportando...';
+  btn.disabled = true;
+  try {
+    // Busca todo o histórico (sem limite)
+    const raw = await (await fetch(`${DB}/historico.json?orderBy="$key"`)).json();
+    if (!raw) { alert('Nenhum dado encontrado para exportar.'); return; }
+
+    const hist = Object.entries(raw)
+      .sort((a,b) => a[0].localeCompare(b[0]))
+      .map(([ts, v]) => ({ ts, fc: +(v.bpm??0), ox: +(v.spo2??0), tp: +(v.temp??0) }));
+
+    // Monta CSV
+    const header = 'Data/Hora,Frequencia Cardiaca (bpm),SpO2 (%),Temperatura (°C),Status\n';
+    const rows = hist.map(r => {
+      const st = gst(r.fc, r.ox, r.tp);
+      return `"${fdt(r.ts)}",${r.fc.toFixed(1)},${r.ox.toFixed(1)},${r.tp.toFixed(1)},"${st.t}"`;
+    }).join('\n');
+
+    const csvContent = '\uFEFF' + header + rows; // BOM para UTF-8 no Excel
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    const now  = new Date().toISOString().slice(0,19).replace(/[T:]/g,'-');
+    a.href     = url;
+    a.download = `sinais-vitais-${now}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  } catch(e) {
+    alert('Erro ao exportar. Verifique sua conexão.');
+  } finally {
+    btn.innerHTML = '<i class="fas fa-file-csv"></i> Exportar CSV';
+    btn.disabled  = false;
   }
 }
 
