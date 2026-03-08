@@ -5,394 +5,1154 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>EWS Sinais Vitais • Cadastro</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
-      --primary:#38bdf8; --primary-dim:rgba(56,189,248,0.12);
-      --bg:#040d1a; --bg-card:rgba(6,16,36,0.95);
-      --text:#e2eaf4; --text-muted:#6b87a8;
-      --red:#f87171; --red-dim:rgba(248,113,113,0.12);
-      --green:#34d399; --green-dim:rgba(52,211,153,0.12);
-      --border:rgba(56,189,248,0.12); --border-soft:rgba(255,255,255,0.05);
-      --radius:18px; --radius-sm:10px; --shadow:0 24px 80px rgba(0,0,0,0.7);
+      --primary:     #38bdf8;
+      --primary-dim: rgba(56,189,248,0.12);
+      --bg:          #040d1a;
+      --bg-card:     rgba(6,16,36,0.92);
+      --bg-raised:   rgba(10,24,52,0.85);
+      --text:        #e2eaf4;
+      --text-muted:  #6b87a8;
+      --text-dim:    #3d5470;
+      --red:         #f87171;
+      --red-dim:     rgba(248,113,113,0.12);
+      --green:       #34d399;
+      --green-dim:   rgba(52,211,153,0.12);
+      --amber:       #fbbf24;
+      --amber-dim:   rgba(251,191,36,0.12);
+      --purple:      #a78bfa;
+      --purple-dim:  rgba(167,139,250,0.12);
+      --pink:        #f472b6;
+      --pink-dim:    rgba(244,114,182,0.12);
+      --border:      rgba(56,189,248,0.1);
+      --border-soft: rgba(255,255,255,0.04);
+      --radius:      18px;
+      --radius-sm:   10px;
+      --shadow:      0 24px 80px rgba(0,0,0,0.7);
     }
-    *{margin:0;padding:0;box-sizing:border-box;}
-    html,body{height:100%;}
-    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;justify-content:center;align-items:flex-start;padding:40px 20px;}
-    body::before{content:'';position:fixed;inset:0;z-index:0;background-image:linear-gradient(rgba(56,189,248,0.022) 1px,transparent 1px),linear-gradient(90deg,rgba(56,189,248,0.022) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;}
-    body::after{content:'';position:fixed;top:-40%;left:-20%;width:70%;height:80%;background:radial-gradient(ellipse,rgba(56,189,248,0.05) 0%,transparent 65%);z-index:0;pointer-events:none;}
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html, body { height:100%; }
+    body {
+      font-family:'DM Sans',sans-serif;
+      background:var(--bg); color:var(--text);
+      min-height:100vh; line-height:1.6;
+      display:flex; flex-direction:column;
+    }
+    body::before {
+      content:''; position:fixed; inset:0; z-index:0;
+      background-image:
+        linear-gradient(rgba(56,189,248,0.022) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(56,189,248,0.022) 1px, transparent 1px);
+      background-size:40px 40px; pointer-events:none;
+    }
+    body::after {
+      content:''; position:fixed; top:-40%; left:-20%; width:70%; height:80%;
+      background:radial-gradient(ellipse, rgba(56,189,248,0.05) 0%, transparent 65%);
+      z-index:0; pointer-events:none;
+    }
 
-    .box{position:relative;z-index:1;background:var(--bg-card);padding:48px 44px;border-radius:var(--radius);width:100%;max-width:560px;box-shadow:var(--shadow);border:1px solid var(--border);animation:rise .5s cubic-bezier(.22,.68,0,1.2) both;}
-    @keyframes rise{from{opacity:0;transform:translateY(28px) scale(.97)}to{opacity:1;transform:none}}
+    /* ── Header ── */
+    .header {
+      position:sticky; top:0; z-index:200;
+      display:flex; justify-content:space-between; align-items:center;
+      padding:0 36px; height:64px;
+      background:rgba(4,13,26,0.9);
+      backdrop-filter:blur(20px) saturate(180%);
+      border-bottom:1px solid var(--border); flex-shrink:0;
+    }
+    .logo { display:flex; align-items:center; gap:12px; text-decoration:none; }
+    .logo-icon { width:36px; height:36px; border-radius:10px; background:linear-gradient(135deg,#0ea5e9,#38bdf8); display:flex; align-items:center; justify-content:center; font-size:16px; color:white; box-shadow:0 0 16px rgba(56,189,248,0.4); }
+    .logo-text { font-family:'Syne',sans-serif; font-size:1.25rem; font-weight:800; color:var(--text); letter-spacing:-0.02em; }
+    .logo-text span { color:var(--primary); }
+    .back-btn {
+      display:flex; align-items:center; gap:8px;
+      padding:8px 18px; border-radius:var(--radius-sm);
+      background:transparent; border:1px solid var(--border-soft);
+      color:var(--text-muted); font-size:0.88rem; font-family:'DM Sans',sans-serif;
+      cursor:pointer; transition:all 0.2s; text-decoration:none;
+    }
+    .back-btn:hover { background:var(--primary-dim); border-color:rgba(56,189,248,0.3); color:var(--primary); }
 
-    .logo{text-align:center;margin-bottom:36px;}
-    .logo-icon{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,#0ea5e9,#38bdf8);font-size:22px;color:#fff;box-shadow:0 0 24px rgba(56,189,248,0.4);margin-bottom:14px;}
-    .logo h1{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;color:var(--text);letter-spacing:-.02em;margin-bottom:5px;}
-    .logo h1 span{color:var(--primary);}
-    .logo p{color:var(--text-muted);font-size:.84rem;}
+    /* ── Layout ── */
+    .main {
+      position:relative; z-index:1;
+      max-width:860px; width:100%;
+      margin:32px auto; padding:0 24px 60px;
+      flex:1;
+    }
+    .page-title {
+      font-family:'Syne',sans-serif; font-size:1.4rem; font-weight:800;
+      color:var(--text); margin-bottom:4px;
+    }
+    .page-subtitle { font-size:0.82rem; color:var(--text-muted); font-family:'DM Mono',monospace; margin-bottom:28px; }
 
-    .sec{display:flex;align-items:center;gap:8px;font-family:'Syne',sans-serif;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);margin:28px 0 16px;padding-bottom:10px;border-bottom:1px solid var(--border-soft);}
-    .sec i{color:var(--primary);font-size:.72rem;}
-    .sec .opt-badge{margin-left:auto;font-size:.62rem;font-weight:700;padding:2px 9px;border-radius:20px;background:var(--primary-dim);color:var(--primary);border:1px solid rgba(56,189,248,.25);letter-spacing:.05em;}
-    .sec.clickable{cursor:pointer;user-select:none;}
-    .sec.clickable:hover .sec-label{color:var(--primary);}
-    .sec .chevron{transition:transform .3s;font-size:.76rem;color:var(--primary);}
+    /* ── Seletor de Função ── */
+    .role-section { margin-bottom:28px; }
+    .role-section-label {
+      font-family:'Syne',sans-serif; font-size:0.7rem; font-weight:700;
+      letter-spacing:0.12em; text-transform:uppercase; color:var(--text-muted);
+      margin-bottom:14px; display:flex; align-items:center; gap:8px;
+    }
+    .role-section-label i { color:var(--primary); }
+    .role-grid {
+      display:grid; grid-template-columns:repeat(3,1fr); gap:10px;
+    }
+    @media(max-width:600px){ .role-grid { grid-template-columns:repeat(2,1fr); } }
+    .role-card {
+      padding:16px 14px; border-radius:var(--radius-sm);
+      background:var(--bg-raised); border:2px solid var(--border-soft);
+      cursor:pointer; transition:all 0.22s;
+      display:flex; flex-direction:column; align-items:center; gap:10px;
+      text-align:center; user-select:none;
+    }
+    .role-card:hover { border-color:rgba(56,189,248,0.25); background:rgba(10,24,52,0.95); }
+    .role-card.selected { border-color:var(--role-color, var(--primary)); background:var(--role-dim, var(--primary-dim)); box-shadow:0 0 0 1px var(--role-color, var(--primary)), 0 4px 20px rgba(0,0,0,0.3); }
+    .role-icon {
+      width:44px; height:44px; border-radius:12px;
+      display:flex; align-items:center; justify-content:center;
+      font-size:18px; color:white;
+      background: var(--role-gradient);
+      box-shadow:0 4px 14px rgba(0,0,0,0.3);
+      transition: transform 0.2s;
+    }
+    .role-card.selected .role-icon { transform:scale(1.1); }
+    .role-name { font-family:'Syne',sans-serif; font-size:0.8rem; font-weight:700; color:var(--text); }
+    .role-desc { font-family:'DM Mono',monospace; font-size:0.62rem; color:var(--text-dim); line-height:1.4; }
+    .role-access-badge {
+      font-family:'DM Mono',monospace; font-size:0.58rem; font-weight:600;
+      padding:2px 7px; border-radius:4px; text-transform:uppercase; letter-spacing:0.04em;
+      background:var(--role-dim, var(--primary-dim));
+      color:var(--role-color, var(--primary));
+      border:1px solid var(--role-color, var(--primary));
+      opacity:0.8;
+    }
 
-    .collapsible{overflow:hidden;transition:max-height .45s cubic-bezier(0.4,0,0.2,1),opacity .3s ease;max-height:800px;opacity:1;}
-    .collapsible.closed{max-height:0;opacity:0;pointer-events:none;}
+    /* ── Card ── */
+    .card {
+      background:var(--bg-card); border-radius:var(--radius);
+      border:1px solid var(--border-soft); padding:28px;
+      box-shadow:var(--shadow); margin-bottom:18px;
+      animation:rise 0.4s cubic-bezier(.22,.68,0,1.2) both;
+    }
+    @keyframes rise { from{opacity:0;transform:translateY(18px);} to{opacity:1;transform:none;} }
+    .card-title {
+      font-family:'Syne',sans-serif; font-size:0.71rem; font-weight:700;
+      letter-spacing:0.11em; text-transform:uppercase; color:var(--text-muted);
+      margin-bottom:20px; display:flex; align-items:center; gap:8px;
+    }
+    .card-title i { color:var(--primary); }
 
-    .g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
-    .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+    /* ── Form ── */
+    .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .form-grid.cols3 { grid-template-columns:1fr 1fr 1fr; }
+    .form-group { display:flex; flex-direction:column; gap:7px; }
+    .form-group.span2 { grid-column:span 2; }
+    .form-group.span3 { grid-column:span 3; }
+    .form-label {
+      font-size:0.72rem; font-weight:600; letter-spacing:0.08em;
+      text-transform:uppercase; color:var(--text-muted); font-family:'Syne',sans-serif;
+    }
+    .form-label .optional { font-family:'DM Mono',monospace; font-size:0.63rem; color:var(--text-dim); text-transform:none; letter-spacing:0; margin-left:6px; }
+    .form-label .req { color:var(--red); margin-left:2px; }
+    .input-wrap { position:relative; }
+    .input-icon { position:absolute; left:13px; top:50%; transform:translateY(-50%); color:var(--text-dim); font-size:0.82rem; pointer-events:none; transition:color 0.2s; }
+    .form-input {
+      width:100%; padding:11px 14px 11px 38px;
+      border-radius:var(--radius-sm);
+      background:var(--bg-raised); border:1px solid var(--border-soft);
+      color:var(--text); font-size:0.92rem; font-family:'DM Sans',sans-serif;
+      transition:all 0.22s;
+    }
+    .form-input.no-icon { padding-left:14px; }
+    .form-input::placeholder { color:var(--text-dim); }
+    .form-input:focus { outline:none; border-color:rgba(56,189,248,0.4); box-shadow:0 0 0 3px rgba(56,189,248,0.1); background:rgba(10,24,52,0.95); }
+    .input-wrap:focus-within .input-icon { color:var(--primary); }
+    select.form-input { cursor:pointer; appearance:none; }
+    .divider { height:1px; background:var(--border-soft); margin:22px 0; }
 
-    .fg{margin-bottom:18px;}
-    .fg label{display:block;margin-bottom:8px;font-size:.8rem;font-weight:600;color:var(--text-muted);letter-spacing:.05em;text-transform:uppercase;}
-    .fg label i{margin-right:6px;color:var(--primary);font-size:.76rem;}
-    .fg label .req{color:var(--red);margin-left:2px;}
-    .fg label .opc{color:var(--text-muted);font-size:.7rem;font-weight:400;letter-spacing:0;text-transform:none;margin-left:4px;}
-    .fg input,.fg select{width:100%;padding:13px 16px;background:rgba(10,24,52,0.8);border:1px solid var(--border);border-radius:var(--radius-sm);color:#fff;font-size:.93rem;font-family:'DM Sans',sans-serif;transition:all .25s;}
-    .fg select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b87a8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;}
-    .fg select option{background:#0a1834;color:#e2eaf4;}
-    .fg input::placeholder{color:var(--text-muted);opacity:.55;}
-    .fg input:focus,.fg select:focus{outline:none;border-color:rgba(56,189,248,.55);box-shadow:0 0 0 3px rgba(56,189,248,.1);background:rgba(14,30,60,.9);}
-    .fg input.err,.fg select.err{border-color:rgba(248,113,113,.6)!important;}
-    .fg input.ok{border-color:rgba(52,211,153,.5);}
+    /* ── Access Info Box ── */
+    .access-info {
+      display:flex; gap:10px; align-items:flex-start;
+      padding:14px 16px; border-radius:var(--radius-sm);
+      background:var(--role-dim, var(--primary-dim));
+      border:1px solid var(--role-color, rgba(56,189,248,0.3));
+      margin-bottom:20px; font-size:0.82rem; color:var(--text-muted);
+    }
+    .access-info i { color:var(--role-color, var(--primary)); margin-top:2px; flex-shrink:0; }
+    .access-info strong { color:var(--text); }
 
-    .pass-wrap{position:relative;}
-    .pass-wrap input{padding-right:46px;}
-    .pass-toggle{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:.88rem;padding:4px;transition:color .2s;}
-    .pass-toggle:hover{color:var(--primary);}
+    /* ── Placeholder state ── */
+    .choose-role-prompt {
+      text-align:center; padding:52px 20px;
+      color:var(--text-dim); font-family:'DM Mono',monospace; font-size:0.82rem;
+      animation:rise 0.3s ease both;
+    }
+    .choose-role-prompt i { font-size:2.2rem; margin-bottom:14px; display:block; opacity:0.2; color:var(--primary); }
 
-    .strength-bar{height:4px;border-radius:2px;background:rgba(255,255,255,.05);overflow:hidden;margin:8px 0 5px;}
-    .strength-fill{height:100%;width:0;border-radius:2px;transition:all .3s;}
-    .hint{font-size:.72rem;color:var(--text-muted);margin-top:5px;font-family:'DM Mono',monospace;}
-    .hint.ok{color:var(--green);}
-    .hint.bad{color:var(--red);}
+    /* ── Senha strength ── */
+    .pwd-hint { font-family:'DM Mono',monospace; font-size:0.63rem; color:var(--text-dim); margin-top:4px; }
+    .strength-bar { height:3px; border-radius:2px; background:var(--border-soft); margin-top:5px; overflow:hidden; }
+    .strength-fill { height:100%; border-radius:2px; width:0%; transition:all 0.3s; }
 
-    .alert{display:none;align-items:center;gap:10px;padding:12px 16px;border-radius:var(--radius-sm);font-size:.84rem;margin-bottom:22px;}
-    .alert.show{display:flex;}
-    .alert-error{background:var(--red-dim);color:var(--red);border:1px solid rgba(248,113,113,.25);}
+    /* ── Botões ── */
+    .btn-row { display:flex; gap:12px; justify-content:flex-end; margin-top:24px; }
+    .btn-primary {
+      display:flex; align-items:center; gap:9px;
+      padding:13px 30px; border:none; border-radius:var(--radius-sm);
+      background:linear-gradient(135deg,#0ea5e9,#38bdf8);
+      color:white; font-size:0.92rem; font-weight:700;
+      font-family:'DM Sans',sans-serif; cursor:pointer;
+      transition:all 0.22s; box-shadow:0 4px 20px rgba(56,189,248,0.2);
+    }
+    .btn-primary:hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(56,189,248,0.4); }
+    .btn-primary:active { transform:translateY(0); }
+    .btn-secondary {
+      display:flex; align-items:center; gap:8px;
+      padding:13px 20px; border-radius:var(--radius-sm);
+      background:transparent; border:1px solid var(--border-soft);
+      color:var(--text-muted); font-size:0.92rem; font-family:'DM Sans',sans-serif;
+      cursor:pointer; transition:all 0.2s;
+    }
+    .btn-secondary:hover { border-color:rgba(56,189,248,0.3); color:var(--primary); }
 
-    .terms-row{display:flex;align-items:flex-start;gap:10px;margin-top:20px;font-size:.83rem;color:var(--text-muted);}
-    .terms-row input{width:15px;height:15px;accent-color:var(--primary);cursor:pointer;margin-top:2px;flex-shrink:0;}
-    .terms-row a{color:var(--primary);text-decoration:none;}
+    /* ── Toast ── */
+    .toast {
+      position:fixed; bottom:28px; right:28px; z-index:999;
+      display:flex; align-items:center; gap:12px;
+      padding:14px 20px; border-radius:var(--radius-sm);
+      font-size:0.88rem; font-weight:500;
+      box-shadow:0 8px 32px rgba(0,0,0,0.5);
+      transform:translateY(80px); opacity:0;
+      transition:all 0.35s cubic-bezier(.22,.68,0,1.2);
+      pointer-events:none;
+    }
+    .toast.show { transform:translateY(0); opacity:1; }
+    .toast.success { background:var(--green-dim); border:1px solid rgba(52,211,153,0.3); color:var(--green); }
+    .toast.error   { background:var(--red-dim);   border:1px solid rgba(248,113,113,0.3); color:var(--red); }
 
-    .btn-submit{width:100%;padding:16px;background:linear-gradient(135deg,#38bdf8,#0ea5e9);color:#fff;border:none;border-radius:var(--radius-sm);font-size:.97rem;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .25s;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:22px;}
-    .btn-submit:hover{background:linear-gradient(135deg,#0ea5e9,#0284c7);transform:translateY(-2px);box-shadow:0 8px 24px rgba(56,189,248,.35);}
-    .btn-submit:active{transform:translateY(0);}
-    .btn-submit:disabled{opacity:.55;cursor:not-allowed;transform:none;}
+    /* ── Tab ── */
+    .tab-row {
+      display:flex; gap:0; margin-bottom:24px;
+      border-radius:var(--radius-sm); overflow:hidden;
+      border:1px solid var(--border-soft); background:var(--bg-raised);
+    }
+    .tab-btn {
+      flex:1; padding:11px 16px; background:transparent; border:none;
+      cursor:pointer; font-size:0.85rem; font-weight:600;
+      font-family:'DM Sans',sans-serif; color:var(--text-muted);
+      display:flex; align-items:center; justify-content:center; gap:7px;
+      transition:all 0.22s; position:relative;
+    }
+    .tab-btn + .tab-btn { border-left:1px solid var(--border-soft); }
+    .tab-btn.active { background:var(--primary-dim); color:var(--primary); }
+    .tab-btn.active::after { content:''; position:absolute; bottom:0; left:0; right:0; height:2px; background:var(--primary); }
+    .tab-panel { display:none; }
+    .tab-panel.active { display:block; }
 
-    .back-link{text-align:center;margin-top:22px;font-size:.84rem;color:var(--text-muted);}
-    .back-link a{color:var(--primary);text-decoration:none;}
-    .back-link a:hover{text-decoration:underline;}
-    .footer-note{text-align:center;margin-top:10px;color:var(--text-muted);font-size:.74rem;}
+    /* ── Lista ── */
+    .list-item { display:flex; align-items:center; gap:14px; padding:14px 16px; border-radius:var(--radius-sm); background:var(--bg-raised); border:1px solid var(--border-soft); margin-bottom:10px; transition:all 0.2s; }
+    .list-item:hover { border-color:rgba(56,189,248,0.15); }
+    .list-avatar { width:40px; height:40px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:15px; }
+    .list-info { flex:1; min-width:0; }
+    .list-name { font-weight:600; font-size:0.92rem; color:var(--text); }
+    .list-meta { font-size:0.73rem; color:var(--text-muted); font-family:'DM Mono',monospace; margin-top:2px; }
+    .list-badge { font-size:0.62rem; font-weight:700; padding:3px 9px; border-radius:5px; text-transform:uppercase; letter-spacing:0.05em; white-space:nowrap; }
+    .empty-state { text-align:center; padding:40px 20px; color:var(--text-dim); font-family:'DM Mono',monospace; font-size:0.8rem; }
+    .empty-state i { font-size:2rem; margin-bottom:12px; display:block; opacity:0.3; }
 
-    .spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
-    @keyframes spin{to{transform:rotate(360deg)}}
+    .footer { position:relative; z-index:1; display:flex; align-items:center; justify-content:center; padding:14px 36px; border-top:1px solid var(--border-soft); color:var(--text-dim); font-size:0.74rem; font-family:'DM Mono',monospace; }
 
-    @media(max-width:520px){
-      .box{padding:32px 20px;}
-      .g2,.g3{grid-template-columns:1fr;}
-      .g3 .fg[style*="span 2"]{grid-column:span 1!important;}
+    @media(max-width:600px){
+      .form-grid { grid-template-columns:1fr; }
+      .form-grid.cols3 { grid-template-columns:1fr; }
+      .form-group.span2, .form-group.span3 { grid-column:span 1; }
+      .header { padding:0 18px; }
+      .main { padding:0 14px 50px; }
     }
   </style>
 </head>
 <body>
-<div class="box">
-  <div class="logo">
-    <div class="logo-icon"><i class="fas fa-heart-pulse"></i></div>
-    <h1>EWS <span>Sinais Vitais</span></h1>
-    <p>Crie sua conta para acessar o sistema</p>
-  </div>
 
-  <div class="alert alert-error" id="msgErro">
-    <i class="fas fa-exclamation-circle"></i><span id="txtErro"></span>
-  </div>
+  <header class="header">
+    <a class="logo" href="index.html">
+      <div class="logo-icon"><i class="fas fa-heart-pulse"></i></div>
+      <span class="logo-text">EWS <span>Sinais Vitais</span></span>
+    </a>
+    <a class="back-btn" href="monitoramento.html"><i class="fas fa-arrow-left"></i> Dashboard</a>
+  </header>
 
-  <!-- DADOS PESSOAIS -->
-  <div class="sec"><i class="fas fa-id-card"></i><span class="sec-label">Dados Pessoais</span></div>
-  <div class="g2">
-    <div class="fg">
-      <label for="nome"><i class="fas fa-user"></i>Nome <span class="req">*</span></label>
-      <input type="text" id="nome" placeholder="Seu nome">
-    </div>
-    <div class="fg">
-      <label for="sobrenome"><i class="fas fa-user"></i>Sobrenome <span class="req">*</span></label>
-      <input type="text" id="sobrenome" placeholder="Seu sobrenome">
-    </div>
-  </div>
-  <div class="g2">
-    <div class="fg">
-      <label for="email"><i class="fas fa-envelope"></i>E-mail <span class="req">*</span></label>
-      <input type="email" id="email" placeholder="seu@email.com">
-    </div>
-    <div class="fg">
-      <label for="telefone"><i class="fas fa-phone"></i>Telefone <span class="opc">(opcional)</span></label>
-      <input type="tel" id="telefone" placeholder="(00) 00000-0000">
-    </div>
-  </div>
-  <div class="fg">
-    <label for="perfil"><i class="fas fa-user-tag"></i>Perfil <span class="req">*</span></label>
-    <select id="perfil">
-      <option value="" disabled selected>Selecione seu perfil...</option>
-      <option value="Paciente">Paciente</option>
-      <option value="Médico">Médico</option>
-      <option value="Enfermeiro">Enfermeiro</option>
-      <option value="Técnico">Técnico de Enfermagem</option>
-      <option value="Fisioterapeuta">Fisioterapeuta</option>
-      <option value="Admin">Administrador</option>
-      <option value="Outro">Outro</option>
-    </select>
-  </div>
+  <main class="main">
+    <div class="page-title"><i class="fas fa-user-plus" style="color:var(--primary);margin-right:10px"></i>Cadastro</div>
+    <div class="page-subtitle">Selecione a função para ver os campos específicos · dados salvos no Firebase</div>
 
-  <!-- ENDEREÇO (OPCIONAL / COLAPSÁVEL) -->
-  <div class="sec clickable" id="secEnd">
-    <i class="fas fa-map-marker-alt"></i>
-    <span class="sec-label">Endereço</span>
-    <span class="opt-badge">Opcional</span>
-    <i class="fas fa-chevron-down chevron" id="chevronEnd" style="margin-left:8px;"></i>
-  </div>
-  <div class="collapsible closed" id="blocoEnd">
-    <div class="g2">
-      <div class="fg">
-        <label for="cep"><i class="fas fa-search-location"></i>CEP</label>
-        <input type="text" id="cep" placeholder="00000-000" maxlength="9">
+    <div class="tab-row">
+      <button class="tab-btn active" onclick="switchTab('cadastro', this)">
+        <i class="fas fa-user-plus"></i> Novo Cadastro
+      </button>
+      <button class="tab-btn" onclick="switchTab('lista', this); carregarListas()">
+        <i class="fas fa-list"></i> Cadastros
+      </button>
+    </div>
+
+    <!-- ══ TAB CADASTRO ══ -->
+    <div id="tab-cadastro" class="tab-panel active">
+
+      <!-- Seletor de Função -->
+      <div class="role-section">
+        <div class="role-section-label"><i class="fas fa-id-badge"></i> Selecione a função</div>
+        <div class="role-grid">
+
+          <div class="role-card" onclick="selectRole('medico')"
+            style="--role-color:#38bdf8;--role-dim:rgba(56,189,248,0.1);--role-gradient:linear-gradient(135deg,#0369a1,#38bdf8)" data-role="medico">
+            <div class="role-icon"><i class="fas fa-user-doctor"></i></div>
+            <div class="role-name">Médico</div>
+            <div class="role-desc">Acessa todos os pacientes vinculados</div>
+            <span class="role-access-badge" style="--role-color:#38bdf8;--role-dim:rgba(56,189,248,0.1)">Acesso amplo</span>
+          </div>
+
+          <div class="role-card" onclick="selectRole('enfermeiro')"
+            style="--role-color:#34d399;--role-dim:rgba(52,211,153,0.1);--role-gradient:linear-gradient(135deg,#065f46,#34d399)" data-role="enfermeiro">
+            <div class="role-icon"><i class="fas fa-user-nurse"></i></div>
+            <div class="role-name">Enfermeiro(a)</div>
+            <div class="role-desc">Monitora pacientes do setor/turno</div>
+            <span class="role-access-badge" style="--role-color:#34d399;--role-dim:rgba(52,211,153,0.1)">Setor</span>
+          </div>
+
+          <div class="role-card" onclick="selectRole('tecnico')"
+            style="--role-color:#fbbf24;--role-dim:rgba(251,191,36,0.1);--role-gradient:linear-gradient(135deg,#78350f,#fbbf24)" data-role="tecnico">
+            <div class="role-icon"><i class="fas fa-stethoscope"></i></div>
+            <div class="role-name">Técnico de Enfermagem</div>
+            <div class="role-desc">Coleta e registra sinais vitais</div>
+            <span class="role-access-badge" style="--role-color:#fbbf24;--role-dim:rgba(251,191,36,0.1)">Leitura/Escrita</span>
+          </div>
+
+          <div class="role-card" onclick="selectRole('paciente')"
+            style="--role-color:#a78bfa;--role-dim:rgba(167,139,250,0.1);--role-gradient:linear-gradient(135deg,#4c1d95,#a78bfa)" data-role="paciente">
+            <div class="role-icon"><i class="fas fa-bed-pulse"></i></div>
+            <div class="role-name">Paciente</div>
+            <div class="role-desc">Visualiza apenas seus próprios dados</div>
+            <span class="role-access-badge" style="--role-color:#a78bfa;--role-dim:rgba(167,139,250,0.1)">Pessoal</span>
+          </div>
+
+          <div class="role-card" onclick="selectRole('acompanhante')"
+            style="--role-color:#f472b6;--role-dim:rgba(244,114,182,0.1);--role-gradient:linear-gradient(135deg,#831843,#f472b6)" data-role="acompanhante">
+            <div class="role-icon"><i class="fas fa-people-arrows"></i></div>
+            <div class="role-name">Acompanhante</div>
+            <div class="role-desc">Acessa dados do paciente vinculado</div>
+            <span class="role-access-badge" style="--role-color:#f472b6;--role-dim:rgba(244,114,182,0.1)">Vinculado</span>
+          </div>
+
+          <div class="role-card" onclick="selectRole('administrador')"
+            style="--role-color:#fb923c;--role-dim:rgba(251,146,60,0.1);--role-gradient:linear-gradient(135deg,#7c2d12,#fb923c)" data-role="administrador">
+            <div class="role-icon"><i class="fas fa-shield-halved"></i></div>
+            <div class="role-name">Administrador</div>
+            <div class="role-desc">Acesso total ao sistema</div>
+            <span class="role-access-badge" style="--role-color:#fb923c;--role-dim:rgba(251,146,60,0.1)">Total</span>
+          </div>
+
+        </div>
       </div>
-      <div class="fg">
-        <label for="estado"><i class="fas fa-map"></i>Estado</label>
-        <select id="estado">
-          <option value="" selected>UF</option>
-          <option>AC</option><option>AL</option><option>AP</option><option>AM</option>
-          <option>BA</option><option>CE</option><option>DF</option><option>ES</option>
-          <option>GO</option><option>MA</option><option>MT</option><option>MS</option>
-          <option>MG</option><option>PA</option><option>PB</option><option>PR</option>
-          <option>PE</option><option>PI</option><option>RJ</option><option>RN</option>
-          <option>RS</option><option>RO</option><option>RR</option><option>SC</option>
-          <option>SP</option><option>SE</option><option>TO</option>
-        </select>
+
+      <!-- Form dinâmico por função -->
+      <div id="form-container">
+        <div class="choose-role-prompt">
+          <i class="fas fa-arrow-up"></i>
+          Selecione uma função acima para ver o formulário de cadastro
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ══ TAB LISTA ══ -->
+    <div id="tab-lista" class="tab-panel">
+      <div class="card">
+        <div class="card-title"><i class="fas fa-users"></i> Usuários Cadastrados</div>
+        <div id="lista-usuarios"><div class="empty-state"><i class="fas fa-users"></i>Nenhum usuário cadastrado ainda</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><i class="fas fa-user-injured"></i> Pacientes Cadastrados</div>
+        <div id="lista-pacientes"><div class="empty-state"><i class="fas fa-user-injured"></i>Nenhum paciente cadastrado ainda</div></div>
       </div>
     </div>
-    <div class="fg">
-      <label for="rua"><i class="fas fa-road"></i>Rua / Logradouro</label>
-      <input type="text" id="rua" placeholder="Nome da rua, avenida, travessa...">
-    </div>
-    <div class="g3">
-      <div class="fg">
-        <label for="numero"><i class="fas fa-hashtag"></i>Número</label>
-        <input type="text" id="numero" placeholder="Nº">
-      </div>
-      <div class="fg" style="grid-column:span 2;">
-        <label for="complemento"><i class="fas fa-building"></i>Complemento</label>
-        <input type="text" id="complemento" placeholder="Apto, bloco, sala...">
-      </div>
-    </div>
-    <div class="g2">
-      <div class="fg">
-        <label for="bairro"><i class="fas fa-map-pin"></i>Bairro</label>
-        <input type="text" id="bairro" placeholder="Seu bairro">
-      </div>
-      <div class="fg">
-        <label for="cidade"><i class="fas fa-city"></i>Cidade</label>
-        <input type="text" id="cidade" placeholder="Sua cidade">
-      </div>
-    </div>
-  </div>
 
-  <!-- DADOS DE ACESSO -->
-  <div class="sec" style="margin-top:28px;"><i class="fas fa-key"></i><span class="sec-label">Dados de Acesso</span></div>
-  <div class="fg">
-    <label for="username"><i class="fas fa-at"></i>Usuário <span class="req">*</span></label>
-    <input type="text" id="username" placeholder="Escolha um nome de usuário" autocomplete="off">
-    <div class="hint" id="hintUser">Mínimo 4 caracteres, sem espaços.</div>
-  </div>
-  <div class="fg">
-    <label for="password"><i class="fas fa-lock"></i>Senha <span class="req">*</span></label>
-    <div class="pass-wrap">
-      <input type="password" id="password" placeholder="Crie uma senha forte" autocomplete="new-password">
-      <button class="pass-toggle" id="togglePass" type="button" tabindex="-1"><i class="fas fa-eye" id="eyeIcon1"></i></button>
-    </div>
-    <div class="strength-bar"><div class="strength-fill" id="strFill"></div></div>
-    <div class="hint" id="strText">Digite uma senha</div>
-  </div>
-  <div class="fg">
-    <label for="confirm"><i class="fas fa-lock"></i>Confirmar Senha <span class="req">*</span></label>
-    <div class="pass-wrap">
-      <input type="password" id="confirm" placeholder="Repita a senha" autocomplete="new-password">
-      <button class="pass-toggle" id="toggleConfirm" type="button" tabindex="-1"><i class="fas fa-eye" id="eyeIcon2"></i></button>
-    </div>
-    <div class="hint" id="hintConfirm"></div>
-  </div>
+  </main>
 
-  <div class="terms-row">
-    <input type="checkbox" id="terms">
-    <label for="terms">Concordo com os <a href="#">Termos de Uso</a> e a <a href="#">Política de Privacidade</a>.</label>
-  </div>
+  <footer class="footer">© 2024 EWS Sinais Vitais · Sistema de Monitoramento em Tempo Real</footer>
+  <div class="toast" id="toast"></div>
 
-  <button class="btn-submit" id="btnCadastrar">
-    <i class="fas fa-user-check"></i> Criar Conta
-  </button>
+  <script>
+    const DB_URL = 'https://projeto-integradora-ii-default-rtdb.firebaseio.com';
+    let currentRole = null;
 
-  <div class="back-link">Já tem conta? <a href="index.html">Entrar no sistema</a></div>
-  <div class="footer-note">© 2026 EWS Sinais Vitais · Acesso restrito</div>
-</div>
+    // ── Tabs ──
+    function switchTab(name, btn) {
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('tab-' + name).classList.add('active');
+      btn.classList.add('active');
+    }
 
-<script>
-  // ── Toggle endereço ──
-  let endAberto = false;
-  document.getElementById('secEnd').addEventListener('click', () => {
-    endAberto = !endAberto;
-    document.getElementById('blocoEnd').classList.toggle('closed', !endAberto);
-    document.getElementById('chevronEnd').style.transform = endAberto ? 'rotate(180deg)' : 'rotate(0deg)';
-  });
+    // ── Toast ──
+    function showToast(msg, type = 'success') {
+      const t = document.getElementById('toast');
+      t.className = `toast ${type} show`;
+      t.innerHTML = `<i class="fas fa-${type === 'success' ? 'circle-check' : 'circle-exclamation'}"></i> ${msg}`;
+      setTimeout(() => t.classList.remove('show'), 3500);
+    }
 
-  // ── Toggle senha ──
-  function setupToggle(btnId, inputId, iconId) {
-    document.getElementById(btnId).addEventListener('click', () => {
-      const inp = document.getElementById(inputId);
-      const ico = document.getElementById(iconId);
-      inp.type = inp.type === 'password' ? 'text' : 'password';
-      ico.className = inp.type === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash';
-    });
-  }
-  setupToggle('togglePass',    'password', 'eyeIcon1');
-  setupToggle('toggleConfirm', 'confirm',  'eyeIcon2');
+    // ── Roles config ──
+    const roleConfig = {
+      medico: {
+        label: 'Médico',
+        icon: 'fa-user-doctor',
+        color: '#38bdf8',
+        dim: 'rgba(56,189,248,0.1)',
+        accessText: '<strong>Médico</strong> tem acesso a <strong>todos os pacientes vinculados ao seu CRM</strong>. Pode visualizar histórico, sinais vitais e laudos de todos eles.',
+        accessIcon: 'fa-circle-info',
+        fields: `
+          <div class="card">
+            <div class="card-title"><i class="fas fa-user-doctor"></i> Dados Pessoais</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Nome<span class="req">*</span></label>
+                <div class="input-wrap"><input class="form-input" type="text" id="f-nome" placeholder="Dr. João Silva" maxlength="80"><i class="fas fa-user input-icon"></i></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">CRM<span class="req">*</span></label>
+                <div class="input-wrap"><input class="form-input" type="text" id="f-crm" placeholder="12.345/CE" maxlength="12" inputmode="text"><i class="fas fa-id-badge input-icon"></i></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Especialidade<span class="req">*</span></label>
+                <div class="input-wrap">
+                  <select class="form-input no-icon" id="f-especialidade" style="padding-left:14px">
+                    <option value="">Selecione...</option>
+                    <option>Clínica Geral</option>
+                    <option>Cardiologia</option>
+                    <option>Neurologia</option>
+                    <option>UTI / Intensivismo</option>
+                    <option>Pediatria</option>
+                    <option>Ortopedia</option>
+                    <option>Oncologia</option>
+                    <option>Outra</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Telefone <span class="optional">opcional</span></label>
+                <div class="input-wrap"><input class="form-input" type="tel" id="f-telefone" placeholder="(88) 99999-9999" maxlength="15" inputmode="numeric"><i class="fas fa-phone input-icon"></i></div>
+              </div>
+              <div class="form-group span2">
+                <label class="form-label">Email <span class="optional">opcional</span></label>
+                <div class="input-wrap"><input class="form-input" type="email" id="f-email" placeholder="medico@hospital.com"><i class="fas fa-envelope input-icon"></i></div>
+              </div>
+              <div class="form-group span2">
+                <label class="form-label">Endereço <span class="optional">opcional</span></label>
+                <div class="input-wrap"><input class="form-input" type="text" id="f-endereco" placeholder="Rua, número, bairro, cidade" maxlength="120"><i class="fas fa-location-dot input-icon"></i></div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title"><i class="fas fa-key"></i> Dados de Acesso</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Login<span class="req">*</span></label>
+                <div class="input-wrap"><input class="form-input" type="text" id="f-login" placeholder="Ex: dr.joao" maxlength="30"><i class="fas fa-at input-icon"></i></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Senha<span class="req">*</span></label>
+                <div class="input-wrap"><input class="form-input" type="password" id="f-senha" placeholder="Mínimo 6 caracteres" oninput="checkSenha(this)"><i class="fas fa-lock input-icon"></i></div>
+                <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
+                <div class="pwd-hint" id="pwd-hint">Digite uma senha</div>
+              </div>
+              <div class="form-group span2">
+                <label class="form-label">Confirmar Senha<span class="req">*</span></label>
+                <div class="input-wrap"><input class="form-input" type="password" id="f-senha2" placeholder="Repita a senha"><i class="fas fa-lock input-icon"></i></div>
+              </div>
+            </div>
+          </div>
+        `
+      },
 
-  // ── Máscaras ──
-  document.getElementById('cep').addEventListener('input', function() {
-    let v = this.value.replace(/\D/g, '');
-    if (v.length > 5) v = v.slice(0,5) + '-' + v.slice(5,8);
-    this.value = v;
-  });
-  document.getElementById('telefone').addEventListener('input', function() {
-    let v = this.value.replace(/\D/g, '');
-    if      (v.length > 10) v = '(' + v.slice(0,2) + ') ' + v.slice(2,7) + '-' + v.slice(7,11);
-    else if (v.length > 6)  v = '(' + v.slice(0,2) + ') ' + v.slice(2,6) + '-' + v.slice(6);
-    else if (v.length > 2)  v = '(' + v.slice(0,2) + ') ' + v.slice(2);
-    else if (v.length > 0)  v = '(' + v;
-    this.value = v;
-  });
+      enfermeiro: {
+        label: 'Enfermeiro(a)',
+        icon: 'fa-user-nurse',
+        color: '#34d399',
+        dim: 'rgba(52,211,153,0.1)',
+        accessText: '<strong>Enfermeiro(a)</strong> acessa os <strong>pacientes do setor e turno vinculado</strong>. Pode registrar e visualizar sinais vitais, mas não edita diagnósticos.',
+        accessIcon: 'fa-circle-info',
+        fields: `
+          <div class="card">
+            <div class="card-title"><i class="fas fa-user-nurse"></i> Dados Pessoais</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Nome<span class="req">*</span></label>
+                <div class="input-wrap"><input class="form-input" type="text" id="f-nome" placeholder="Enf. Maria Santos" maxlength="80"><i class="fas fa-user input-icon"></i></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">COREN<span class="req">*</span></label>
+                <div class="input-wrap"><input class="form-input" type="text" id="f-coren" placeholder="45.678/CE" maxlength="12" inputmode="text"><i class="fas fa-id-badge input-icon"></i></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Setor<span class="req">*</span></label>
+                <div class="input-wrap">
+                  <select class="form-input no-icon" id="f-setor" style="padding-left:14px">
+                    <option value="">Selecione o setor...</option>
+                    <option>UTI Adulto</option>
+                    <option>UTI Pediátrica</option>
+                    <option>Clínica Médica</option>
+                    <option>Pronto-Socorro</option>
+                    <option>Cirurgia</option>
+                    <option>Maternidade</option>
+                    <option>Cardiologia</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Turno<span class="req">*</span></label>
+                <div class="input-wrap">
+                  <select class="form-input no-icon" id="f-turno" style="padding-left:14px">
+                    <option value="">Selecione...</option>
+                    <option>Manhã (07h–13h)</option>
+                    <option>Tarde (13h–19h)</option>
+                    <option>Noite (19h–07h)</option>
+                    <option>Plantão 12h</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group span2">
+                <label class="form-label">Email <span class="optional">opcional</span></label>
+                <div class="input-wrap"><input class="form-input" type="email" id="f-email" placeholder="enfermeiro@hospital.com"><i class="fas fa-envelope input-icon"></i></div>
+              </div>
+              <div class="form-group span2">
+                <label class="form-label">Endereço <span class="optional">opcional</span></label>
+                <div class="input-wrap"><input class="form-input" type="text" id="f-endereco" placeholder="Rua, número, bairro, cidade" maxlength="120"><i class="fas fa-location-dot input-icon"></i></div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title"><i class="fas fa-key"></i> Dados de Acesso</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Login<span class="req">*</span></label>
+                <div class="input-wrap"><input class="form-input" type="text" id="f-login" placeholder="Ex: enf.maria" maxlength="30"><i class="fas fa-at input-icon"></i></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Senha<span class="req">*</span></label>
+                <div class="input-wrap"><input class="form-input" type="password" id="f-senha" placeholder="Mínimo 6 caracteres" oninput="checkSenha(this)"><i class="fas fa-lock input-icon"></i></div>
+                <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
+                <div class="pwd-hint" id="pwd-hint">Digite uma senha</div>
+              </div>
+              <div class="form-group span2">
+                <label class="form-label">Confirmar Senha<span class="req">*</span></label>
+                <div class="input-wrap"><input class="form-input" type="password" id="f-senha2" placeholder="Repita a senha"><i class="fas fa-lock input-icon"></i></div>
+              </div>
+            </div>
+          </div>
+        `
+      },
 
-  // ── Força da senha ──
-  document.getElementById('password').addEventListener('input', function() {
-    const v = this.value; let s = 0;
-    if (v.length >= 8) s++; if (/[A-Z]/.test(v)) s++;
-    if (/[0-9]/.test(v)) s++; if (/[^A-Za-z0-9]/.test(v)) s++;
-    const map = [
-      {w:'0%',  c:'transparent',l:'Digite uma senha'},
-      {w:'25%', c:'#f87171',    l:'Fraca'},
-      {w:'50%', c:'#fbbf24',    l:'Razoável'},
-      {w:'75%', c:'#38bdf8',    l:'Boa'},
-      {w:'100%',c:'#34d399',    l:'Forte'}
-    ];
-    document.getElementById('strFill').style.width      = map[s].w;
-    document.getElementById('strFill').style.background = map[s].c;
-    document.getElementById('strText').textContent      = map[s].l;
-    document.getElementById('strText').style.color      = s === 0 ? 'var(--text-muted)' : map[s].c;
-    checkMatch();
-  });
+      tecnico: {
+        label: 'Técnico de Enfermagem',
+        icon: 'fa-stethoscope',
+        color: '#fbbf24',
+        dim: 'rgba(251,191,36,0.1)',
+        accessText: '<strong>Técnico de Enfermagem</strong> pode <strong>coletar e registrar sinais vitais</strong> dos pacientes do setor. Não acessa diagnósticos nem histórico completo.',
+        accessIcon: 'fa-circle-info',
+        fields: `
+          <div class="card">
+            <div class="card-title"><i class="fas fa-stethoscope"></i> Dados Pessoais</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Nome<span class="req">*</span></label>
+                <div class="input-wrap"><input class="form-input" type="text" id="f-nome" placeholder="Téc. Carlos Alves" maxlength="80"><i class="fas fa-user input-icon"></i></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">COREN-Téc<span class="req">*</span></label>
+                <div class="input-wrap"><input class="form-input" type="text" id="f-coren" placeholder="T-78.901/CE" maxlength="13" inputmode="text"><i class="fas fa-id-badge input-icon"></i></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Setor<span class="req">*</span></label>
+                <div class="input-wrap">
+                  <select class="form-input no-icon" id="f-setor" style="padding-left:14px">
+                    <option value="">Selecione o setor...</option>
+                    <option>UTI Adulto</option>
+                    <option>UTI Pediátrica</option>
+                    <option>Clínica Médica</option>
+                    <option>Pronto-Socorro</option>
+                    <option>Cirurgia</option>
+                    <option>Maternidade</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Turno<span class="req">*</span></label>
+                <div class="input-wrap">
+                  <select class="form-input no-icon" id="f-turno" style="padding-left:14px">
+                    <option value="">Selecione...</option>
+                    <option>Manhã (07h–13h)</option>
+                    <option>Tarde (13h–19h)</option>
+                    <option>Noite (19h–07h)</option>
+                    <option>Plantão 12h</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="form-grid" style="margin-top:16px">
+              <div class="form-group span2">
+                <label class="form-label">Endereço <span class="optional">opcional</span></label>
+                <div class="input-wrap"><input class="form-input" type="text" id="f-endereco" placeholder="Rua, número, bairro, cidade" maxlength="120"><i class="fas fa-location-dot input-icon"></i></div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title"><i class="fas fa-key"></i> Dados de Acesso</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Login<span class="req">*</span></label>
+                <div class="input-wrap"><input class="form-input" type="text" id="f-login" placeholder="Ex: tec.carlos" maxlength="30"><i class="fas fa-at input-icon"></i></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Senha<span class="req">*</span></label>
+                <div class="input-wrap"><input class="form-input" type="password" id="f-senha" placeholder="Mínimo 6 caracteres" oninput="checkSenha(this)"><i class="fas fa-lock input-icon"></i></div>
+                <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
+                <div class="pwd-hint" id="pwd-hint">Digite uma senha</div>
+              </div>
+              <div class="form-group span2">
+                <label class="form-label">Confirmar Senha<span class="req">*</span></label>
+                <div class="input-wrap"><input class="form-input" type="password" id="f-senha2" placeholder="Repita a senha"><i class="fas fa-lock input-icon"></i></div>
+              </div>
+            </div>
+          </div>
+        `
+      },
 
-  function checkMatch() {
-    const p = document.getElementById('password').value;
-    const c = document.getElementById('confirm').value;
-    const h = document.getElementById('hintConfirm');
-    const i = document.getElementById('confirm');
-    if (!c) { h.textContent = ''; i.classList.remove('ok','err'); return; }
-    if (p === c) { h.textContent = '✓ Senhas coincidem'; h.className = 'hint ok'; i.classList.add('ok'); i.classList.remove('err'); }
-    else         { h.textContent = '✗ Senhas não coincidem'; h.className = 'hint bad'; i.classList.add('err'); i.classList.remove('ok'); }
-  }
-  document.getElementById('confirm').addEventListener('input', checkMatch);
+      paciente: {
+        label: 'Paciente',
+        icon: 'fa-bed-pulse',
+        color: '#a78bfa',
+        dim: 'rgba(167,139,250,0.1)',
+        accessText: '<strong>Paciente</strong> visualiza <strong>apenas seus próprios sinais vitais, exames e histórico</strong>. Não tem acesso a dados de outros pacientes.',
+        accessIcon: 'fa-circle-info',
+        fields: `
+          <div class="card">
+            <div class="card-title"><i class="fas fa-bed-pulse"></i> Dados do Paciente</div>
+            <div class="form-grid">
+              <div class="form-group span2">
+                <label class="form-label">Nome Completo<span class="req">*</span></label>
+                <div class="input-wrap"><input class="form-input" type="text" id="f-nome" placeholder="Ex: José Ferreira" maxlength="80"><i class="fas fa-user input-icon"></i></div>
+              </div>
+              <div class="form-group span2">
+                <label class="form-label">ID do Paciente</label>
+                <div class="input-wrap" style="display:flex;align-items:center;gap:10px">
+                  <input class="form-input" type="text" id="f-pac-id" readonly style="cursor:default;opacity:0.6;flex:1" placeholder="Gerado automaticamente pelo sistema">
+                  <i class="fas fa-id-card input-icon"></i>
+                  <span style="font-family:'DM Mono',monospace;font-size:0.7rem;color:var(--text-dim);white-space:nowrap;flex-shrink:0"><i class="fas fa-robot" style="color:var(--primary);margin-right:4px"></i>Auto</span>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Leito<span class="req">*</span></label>
+                <div class="input-wrap"><input class="form-input" type="text" id="f-leito" placeholder="Ex: 07-B" maxlength="10"><i class="fas fa-bed input-icon"></i></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Data de Internação</label>
+                <div class="input-wrap"><input class="form-input" type="date" id="f-data-int"><i class="fas fa-calendar input-icon"></i></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Email <span class="optional">opcional</span></label>
+                <div class="input-wrap"><input class="form-input" type="email" id="f-email" placeholder="paciente@email.com"><i class="fas fa-envelope input-icon"></i></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Telefone <span class="optional">opcional</span></label>
+                <div class="input-wrap"><input class="form-input" type="tel" id="f-telefone" placeholder="(88) 99999-9999" maxlength="15" inputmode="numeric"><i class="fas fa-phone input-icon"></i></div>
+              </div>
+              <div class="form-group span2">
+                <label class="form-label">Médico Responsável <span class="optional">opcional</span></label>
+                <div class="input-wrap"><input class="form-input" type="text" id="f-medico" placeholder="Dr. Carlos Mendes · CRM 45.231" maxlength="80"><i class="fas fa-user-doctor input-icon"></i></div>
+              </div>
+              <div class="form-group span2">
+                <label class="form-label">Endereço <span class="optional">opcional</span></label>
+                <div class="input-wrap"><input class="form-input" type="text" id="f-endereco" placeholder="Rua, número, bairro, cidade" maxlength="120"><i class="fas fa-location-dot input-icon"></i></div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title"><i class="fas fa-key"></i> Dados de Acesso</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Login<span class="req">*</span></label>
+                <div class="input-wrap"><input class="form-input" type="text" id="f-login" placeholder="Ex: jose.ferreira" maxlength="30"><i class="fas fa-at input-icon"></i></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Senha<span class="req">*</span></label>
+                <div class="input-wrap"><input class="form-input" type="password" id="f-senha" placeholder="Mínimo 4 caracteres" oninput="checkSenha(this)"><i class="fas fa-lock input-icon"></i></div>
+                <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
+                <div class="pwd-hint" id="pwd-hint">Digite uma senha</div>
+              </div>
+              <div class="form-group span2">
+                <label class="form-label">Confirmar Senha<span class="req">*</span></label>
+                <div class="input-wrap"><input class="form-input" type="password" id="f-senha2" placeholder="Repita a senha"><i class="fas fa-lock input-icon"></i></div>
+              </div>
+            </div>
+          </div>
+        `
+      },
 
-  document.getElementById('username').addEventListener('input', function() {
-    const v = this.value.trim(), h = document.getElementById('hintUser');
-    if (!v) { h.textContent = 'Mínimo 4 caracteres, sem espaços.'; h.className = 'hint'; return; }
-    if (v.length < 4 || /\s/.test(v)) { h.textContent = '✗ Mínimo 4 caracteres, sem espaços.'; h.className = 'hint bad'; }
-    else { h.textContent = '✓ Nome de usuário válido'; h.className = 'hint ok'; }
-  });
+      acompanhante: {
+        label: 'Acompanhante',
+        icon: 'fa-people-arrows',
+        color: '#f472b6',
+        dim: 'rgba(244,114,182,0.1)',
+        accessText: '<strong>Acompanhante</strong> acessa <strong>apenas os dados do paciente ao qual está vinculado</strong>. Pode acompanhar sinais vitais em tempo real, sem poder editar nada.',
+        accessIcon: 'fa-circle-info',
+        fields: `
+          <div class="card">
+            <div class="card-title"><i class="fas fa-people-arrows"></i> Dados do Acompanhante</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Nome Completo<span class="req">*</span></label>
+                <div class="input-wrap"><input class="form-input" type="text" id="f-nome" placeholder="Ex: Ana Ferreira" maxlength="80"><i class="fas fa-user input-icon"></i></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Parentesco<span class="req">*</span></label>
+                <div class="input-wrap">
+                  <select class="form-input no-icon" id="f-parentesco" style="padding-left:14px">
+                    <option value="">Selecione...</option>
+                    <option>Cônjuge / Companheiro(a)</option>
+                    <option>Pai / Mãe</option>
+                    <option>Filho(a)</option>
+                    <option>Irmão / Irmã</option>
+                    <option>Amigo(a)</option>
+                    <option>Cuidador(a)</option>
+                    <option>Outro</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">CPF <span class="optional">opcional</span></label>
+                <div class="input-wrap"><input class="form-input" type="text" id="f-cpf" placeholder="000.000.000-00" maxlength="14" inputmode="numeric"><i class="fas fa-id-card input-icon"></i></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Telefone<span class="req">*</span></label>
+                <div class="input-wrap"><input class="form-input" type="tel" id="f-telefone" placeholder="(88) 99999-9999" maxlength="15" inputmode="numeric"><i class="fas fa-phone input-icon"></i></div>
+              </div>
+            </div>
+            <div class="divider"></div>
+            <div class="card-title" style="margin-bottom:16px"><i class="fas fa-link"></i> Paciente Vinculado</div>
+            <div class="form-grid">
+              <div class="form-group span2">
+                <label class="form-label">Paciente<span class="req">*</span></label>
+                <div class="input-wrap">
+                  <select class="form-input no-icon" id="f-paciente-vinc" style="padding-left:14px">
+                    <option value="">Carregando pacientes...</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group span2">
+                <label class="form-label">Endereço <span class="optional">opcional</span></label>
+                <div class="input-wrap"><input class="form-input" type="text" id="f-endereco" placeholder="Rua, número, bairro, cidade" maxlength="120"><i class="fas fa-location-dot input-icon"></i></div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title"><i class="fas fa-key"></i> Dados de Acesso</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Login<span class="req">*</span></label>
+                <div class="input-wrap"><input class="form-input" type="text" id="f-login" placeholder="Ex: ana.ferreira" maxlength="30"><i class="fas fa-at input-icon"></i></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Senha<span class="req">*</span></label>
+                <div class="input-wrap"><input class="form-input" type="password" id="f-senha" placeholder="Mínimo 4 caracteres" oninput="checkSenha(this)"><i class="fas fa-lock input-icon"></i></div>
+                <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
+                <div class="pwd-hint" id="pwd-hint">Digite uma senha</div>
+              </div>
+              <div class="form-group span2">
+                <label class="form-label">Confirmar Senha<span class="req">*</span></label>
+                <div class="input-wrap"><input class="form-input" type="password" id="f-senha2" placeholder="Repita a senha"><i class="fas fa-lock input-icon"></i></div>
+              </div>
+            </div>
+          </div>
+        `
+      },
 
-  // ── Utilitários ──
-  function showErr(msg) {
-    document.getElementById('txtErro').textContent = msg;
-    document.getElementById('msgErro').classList.add('show');
-    window.scrollTo({top: 0, behavior: 'smooth'});
-    setTimeout(() => document.getElementById('msgErro').classList.remove('show'), 5500);
-  }
-  function markErr(id) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.classList.add('err'); el.focus();
-    setTimeout(() => el.classList.remove('err'), 3500);
-  }
-  function setLoading(on) {
-    const btn = document.getElementById('btnCadastrar');
-    btn.disabled  = on;
-    btn.innerHTML = on
-      ? '<span class="spinner"></span> Salvando...'
-      : '<i class="fas fa-user-check"></i> Criar Conta';
-  }
-  function getUsuarios() {
-    try { return JSON.parse(localStorage.getItem('ews_usuarios') || '[]'); } catch(e) { return []; }
-  }
+      administrador: {
+        label: 'Administrador',
+        icon: 'fa-shield-halved',
+        color: '#fb923c',
+        dim: 'rgba(251,146,60,0.1)',
+        accessText: '<strong>Administrador</strong> tem <strong>acesso total ao sistema</strong>: gerencia usuários, pacientes, configurações e todos os dados.',
+        accessIcon: 'fa-triangle-exclamation',
+        fields: `
+          <div class="card">
+            <div class="card-title"><i class="fas fa-shield-halved"></i> Dados do Administrador</div>
+            <div class="form-grid">
+              <div class="form-group span2">
+                <label class="form-label">Nome Completo<span class="req">*</span></label>
+                <div class="input-wrap"><input class="form-input" type="text" id="f-nome" placeholder="Ex: Admin Principal" maxlength="80"><i class="fas fa-user input-icon"></i></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Email<span class="req">*</span></label>
+                <div class="input-wrap"><input class="form-input" type="email" id="f-email" placeholder="admin@hospital.com"><i class="fas fa-envelope input-icon"></i></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Telefone <span class="optional">opcional</span></label>
+                <div class="input-wrap"><input class="form-input" type="tel" id="f-telefone" placeholder="(88) 99999-9999" maxlength="15" inputmode="numeric"><i class="fas fa-phone input-icon"></i></div>
+              </div>
+              <div class="form-group span2">
+                <label class="form-label">Cargo / Departamento <span class="optional">opcional</span></label>
+                <div class="input-wrap"><input class="form-input" type="text" id="f-cargo" placeholder="Ex: Gestor de TI Hospitalar" maxlength="60"><i class="fas fa-briefcase input-icon"></i></div>
+              </div>
+              <div class="form-group span2">
+                <label class="form-label">Endereço <span class="optional">opcional</span></label>
+                <div class="input-wrap"><input class="form-input" type="text" id="f-endereco" placeholder="Rua, número, bairro, cidade" maxlength="120"><i class="fas fa-location-dot input-icon"></i></div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title"><i class="fas fa-key"></i> Dados de Acesso</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Login<span class="req">*</span></label>
+                <div class="input-wrap"><input class="form-input" type="text" id="f-login" placeholder="Ex: admin" maxlength="30"><i class="fas fa-at input-icon"></i></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Senha<span class="req">*</span></label>
+                <div class="input-wrap"><input class="form-input" type="password" id="f-senha" placeholder="Mínimo 8 caracteres (admin)" oninput="checkSenha(this)"><i class="fas fa-lock input-icon"></i></div>
+                <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
+                <div class="pwd-hint" id="pwd-hint">Digite uma senha forte</div>
+              </div>
+              <div class="form-group span2">
+                <label class="form-label">Confirmar Senha<span class="req">*</span></label>
+                <div class="input-wrap"><input class="form-input" type="password" id="f-senha2" placeholder="Repita a senha"><i class="fas fa-lock input-icon"></i></div>
+              </div>
+            </div>
+          </div>
+        `
+      }
+    };
 
-  // ── Cadastrar ──
-  document.getElementById('btnCadastrar').addEventListener('click', () => {
-    const nome        = document.getElementById('nome').value.trim();
-    const sobrenome   = document.getElementById('sobrenome').value.trim();
-    const email       = document.getElementById('email').value.trim();
-    const telefone    = document.getElementById('telefone').value.trim();
-    const perfil      = document.getElementById('perfil').value;
-    const username    = document.getElementById('username').value.trim();
-    const password    = document.getElementById('password').value;
-    const confirm     = document.getElementById('confirm').value;
-    const terms       = document.getElementById('terms').checked;
-    const cep         = document.getElementById('cep').value.trim();
-    const estado      = document.getElementById('estado').value;
-    const rua         = document.getElementById('rua').value.trim();
-    const numero      = document.getElementById('numero').value.trim();
-    const complemento = document.getElementById('complemento').value.trim();
-    const bairro      = document.getElementById('bairro').value.trim();
-    const cidade      = document.getElementById('cidade').value.trim();
+    // Cores de badge por role
+    const roleBadge = {
+      medico:       { bg:'var(--primary-dim)',  color:'var(--primary)',  border:'rgba(56,189,248,0.2)' },
+      enfermeiro:   { bg:'var(--green-dim)',    color:'var(--green)',    border:'rgba(52,211,153,0.2)' },
+      tecnico:      { bg:'var(--amber-dim)',    color:'var(--amber)',    border:'rgba(251,191,36,0.2)' },
+      paciente:     { bg:'var(--purple-dim)',   color:'var(--purple)',   border:'rgba(167,139,250,0.2)' },
+      acompanhante: { bg:'var(--pink-dim)',     color:'var(--pink)',     border:'rgba(244,114,182,0.2)' },
+      administrador:{ bg:'rgba(251,146,60,0.1)',color:'#fb923c',         border:'rgba(251,146,60,0.2)' }
+    };
 
-    // Validações
-    if (!nome)      { showErr('Informe seu nome.');      markErr('nome');      return; }
-    if (!sobrenome) { showErr('Informe seu sobrenome.'); markErr('sobrenome'); return; }
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showErr('Informe um e-mail válido.'); markErr('email'); return; }
-    if (!perfil)    { showErr('Selecione seu perfil.'); markErr('perfil'); return; }
-    if (!username || username.length < 4 || /\s/.test(username)) { showErr('Usuário: mínimo 4 caracteres, sem espaços.'); markErr('username'); return; }
-    if (password.length < 6)  { showErr('A senha deve ter no mínimo 6 caracteres.'); markErr('password'); return; }
-    if (password !== confirm)  { showErr('As senhas não coincidem.');                 markErr('confirm');  return; }
-    if (!terms)               { showErr('Aceite os Termos de Uso para continuar.');                       return; }
+    function selectRole(role) {
+      currentRole = role;
+      const cfg = roleConfig[role];
 
-    const usuarios = getUsuarios();
+      // Update visual selection
+      document.querySelectorAll('.role-card').forEach(c => {
+        c.classList.toggle('selected', c.dataset.role === role);
+      });
 
-    // Verifica duplicatas
-    if (usuarios.find(x => x.username === username)) { showErr('Nome de usuário já em uso. Escolha outro.'); markErr('username'); return; }
-    if (usuarios.find(x => x.email === email))        { showErr('E-mail já cadastrado. Faça login.');         markErr('email');    return; }
+      // Build form
+      const container = document.getElementById('form-container');
+      container.innerHTML = `
+        <div class="access-info" style="--role-color:${cfg.color};--role-dim:${cfg.dim}">
+          <i class="fas ${cfg.accessIcon}"></i>
+          <span>${cfg.accessText}</span>
+        </div>
+        ${cfg.fields}
+        <div class="card" style="padding:18px 28px">
+          <div class="btn-row" style="margin-top:0">
+            <button class="btn-secondary" onclick="limparForm()"><i class="fas fa-eraser"></i> Limpar</button>
+            <button class="btn-primary" onclick="salvarUsuario()" style="background:linear-gradient(135deg,${cfg.color}99,${cfg.color})">
+              <i class="fas fa-floppy-disk"></i> Salvar ${cfg.label}
+            </button>
+          </div>
+        </div>
+      `;
 
-    setLoading(true);
-    setTimeout(() => {
-      const novoUsuario = {
-        id:        Date.now().toString(),
-        username,
-        password,
-        nome:      nome + ' ' + sobrenome,
-        email,
-        telefone:  telefone || '',
-        perfil,
-        criadoEm:  new Date().toISOString()
-      };
+      // Apply input masks
+      applyMasks();
 
-      const temEndereco = cep || (estado && estado !== '') || rua || numero || bairro || cidade;
-      if (temEndereco) {
-        novoUsuario.endereco = { cep, estado, rua, numero, complemento, bairro, cidade };
+      // Load patients for acompanhante
+      if (role === 'acompanhante') carregarSelectPacientes('f-paciente-vinc');
+
+      // Auto-generate PAC ID for paciente role
+      if (role === 'paciente') {
+        const el = document.getElementById('f-pac-id');
+        if (el) el.value = gerarPacID();
+      }
+    }
+
+    // ── Gerar ID do Paciente ──
+    function gerarPacID() {
+      const num = String(Math.floor(Math.random() * 90000) + 10000);
+      return 'PAC-' + num;
+    }
+
+    // ── Força da senha ──
+    function checkSenha(input) {
+      const v = input.value;
+      const fill = document.getElementById('strength-fill');
+      const hint = document.getElementById('pwd-hint');
+      if (!fill || !hint) return;
+      let score = 0;
+      if (v.length >= 4) score++;
+      if (v.length >= 8) score++;
+      if (/[A-Z]/.test(v)) score++;
+      if (/[0-9]/.test(v)) score++;
+      if (/[^A-Za-z0-9]/.test(v)) score++;
+      const levels = [
+        { pct:'0%',   color:'transparent', text:'Digite uma senha' },
+        { pct:'25%',  color:'var(--red)',   text:'Fraca' },
+        { pct:'50%',  color:'var(--amber)', text:'Razoável' },
+        { pct:'75%',  color:'var(--primary)',text:'Boa' },
+        { pct:'100%', color:'var(--green)', text:'Forte ✓' }
+      ];
+      const lvl = levels[Math.min(score, 4)];
+      fill.style.width = lvl.pct;
+      fill.style.background = lvl.color;
+      hint.textContent = lvl.text;
+      hint.style.color = lvl.color;
+    }
+
+    // ── Salvar Usuário ──
+    async function salvarUsuario() {
+      if (!currentRole) { showToast('Selecione uma função!', 'error'); return; }
+
+      const nome  = document.getElementById('f-nome')?.value.trim();
+      const login = document.getElementById('f-login')?.value.trim();
+      const senha = document.getElementById('f-senha')?.value;
+      const senha2= document.getElementById('f-senha2')?.value;
+
+      if (!nome || !login || !senha) {
+        showToast('Preencha todos os campos obrigatórios!', 'error'); return;
+      }
+      if (senha.length < 4) {
+        showToast('A senha deve ter pelo menos 4 caracteres!', 'error'); return;
+      }
+      if (senha !== senha2) {
+        showToast('As senhas não coincidem!', 'error'); return;
       }
 
-      usuarios.push(novoUsuario);
-      localStorage.setItem('ews_usuarios', JSON.stringify(usuarios));
+      // Garantir ID gerado para paciente
+      if (currentRole === 'paciente') {
+        const idEl = document.getElementById('f-pac-id');
+        if (idEl && !idEl.value) idEl.value = gerarPacID();
+      }
 
-      sessionStorage.setItem('ews_flash', `Conta criada com sucesso! Bem-vindo(a), ${nome}.`);
-      window.location.href = 'index.html';
-    }, 350);
-  });
-</script>
+      // Coletar campos extras por role
+      const extras = {};
+      ['f-crm','f-especialidade','f-coren','f-setor','f-turno','f-email','f-telefone',
+       'f-cargo','f-parentesco','f-cpf','f-pac-id','f-leito','f-data-int','f-medico',
+       'f-paciente-vinc','f-endereco'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el && el.value.trim()) extras[id.replace('f-','')] = el.value.trim();
+      });
+
+      try {
+        if (currentRole === 'paciente') {
+          // Paciente salva em /pacientes/ E cria login em /usuarios/
+          const pacId = extras['pac-id'] || gerarPacID();
+          const pacKey = pacId.replace(/[^a-zA-Z0-9]/g, '-');
+
+          const pacPayload = {
+            nome,
+            id: pacId,
+            leito:        extras['leito']    || '',
+            email:        extras['email']    || '',
+            telefone:     extras['telefone'] || '',
+            endereco:     extras['endereco'] || '',
+            medico:       extras['medico']   || '',
+            dataInternacao: extras['data-int'] || '',
+            cadastradoEm: new Date().toISOString()
+          };
+
+          const userPayload = {
+            nome, login, senha,
+            perfil: 'Paciente',
+            role: 'paciente',
+            pacienteVinculado: pacKey,
+            cadastradoEm: new Date().toISOString()
+          };
+
+          const [r1, r2] = await Promise.all([
+            fetch(`${DB_URL}/pacientes/${pacKey}.json`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(pacPayload)
+            }),
+            fetch(`${DB_URL}/usuarios/${login}.json`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(userPayload)
+            })
+          ]);
+
+          if (!r1.ok || !r2.ok) throw new Error();
+          showToast(`Paciente "${nome}" cadastrado! ID: ${pacId}`);
+          setTimeout(() => { window.location.href = 'index.html'; }, 1800);
+
+        } else {
+          // Todos os outros vão para /usuarios/
+          const payload = {
+            nome, login, senha,
+            perfil: roleConfig[currentRole].label,
+            role: currentRole,
+            ...extras,
+            // Garante que o paciente vinculado fica em campos padrão
+            pacienteVinculado: extras['paciente-vinc'] || extras['pacienteVinculado'] || '',
+            cadastradoEm: new Date().toISOString()
+          };
+
+          const res = await fetch(`${DB_URL}/usuarios/${login}.json`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          if (!res.ok) throw new Error();
+          showToast(`${roleConfig[currentRole].label} "${nome}" cadastrado com sucesso!`);
+          setTimeout(() => { window.location.href = 'index.html'; }, 1800);
+        }
+
+        limparForm();
+        // Regenera ID para próximo paciente
+        if (currentRole === 'paciente') {
+          const idEl = document.getElementById('f-pac-id');
+          if (idEl) idEl.value = gerarPacID();
+        }
+
+      } catch(e) {
+        showToast('Erro ao salvar. Verifique a conexão com o Firebase.', 'error');
+      }
+    }
+
+    // ── Limpar ──
+    function limparForm() {
+      document.querySelectorAll('#form-container input, #form-container select').forEach(el => el.value = '');
+      const fill = document.getElementById('strength-fill');
+      const hint = document.getElementById('pwd-hint');
+      if (fill) { fill.style.width = '0%'; fill.style.background = 'transparent'; }
+      if (hint) { hint.textContent = 'Digite uma senha'; hint.style.color = ''; }
+    }
+
+    // ── Select pacientes ──
+    async function carregarSelectPacientes(selId) {
+      try {
+        const res  = await fetch(`${DB_URL}/pacientes.json`);
+        const data = await res.json();
+        const sel  = document.getElementById(selId);
+        if (!sel) return;
+        sel.innerHTML = '<option value="">Selecione o paciente...</option>';
+        if (data) {
+          Object.values(data).forEach(p => {
+            const opt = document.createElement('option');
+            opt.value = String(p.id).replace(/[^a-zA-Z0-9]/g,'-');
+            opt.textContent = `${p.nome} · Leito ${p.leito} (ID: ${p.id})`;
+            sel.appendChild(opt);
+          });
+        }
+      } catch(e) {
+        const sel = document.getElementById(selId);
+        if (sel) sel.innerHTML = '<option value="">Nenhum paciente encontrado</option>';
+      }
+    }
+
+    // ── Máscaras de input ──
+    function maskCPF(v) {
+      v = v.replace(/\D/g,'').slice(0,11);
+      if (v.length > 9) return v.replace(/(\d{3})(\d{3})(\d{3})(\d{0,2})/,'$1.$2.$3-$4');
+      if (v.length > 6) return v.replace(/(\d{3})(\d{3})(\d{0,3})/,'$1.$2.$3');
+      if (v.length > 3) return v.replace(/(\d{3})(\d{0,3})/,'$1.$2');
+      return v;
+    }
+    function maskTel(v) {
+      v = v.replace(/\D/g,'').slice(0,11);
+      if (v.length > 10) return v.replace(/(\d{2})(\d{5})(\d{0,4})/,'($1) $2-$3');
+      if (v.length > 6)  return v.replace(/(\d{2})(\d{4,5})(\d{0,4})/,'($1) $2-$3');
+      if (v.length > 2)  return v.replace(/(\d{2})(\d{0,5})/,'($1) $2');
+      return v;
+    }
+    function maskCRM(v) {
+      // formato: 12.345/UF
+      v = v.replace(/[^0-9A-Za-z]/g,'');
+      const nums = v.replace(/[^0-9]/g,'').slice(0,6);
+      const uf   = v.replace(/[^A-Za-z]/g,'').slice(0,2).toUpperCase();
+      if (nums.length > 2 && uf.length > 0) return nums.replace(/(\d{1,2})(\d{1,3})/,'$1.$2') + '/' + uf;
+      if (nums.length > 2) return nums.replace(/(\d{1,2})(\d{1,3})/,'$1.$2');
+      return nums;
+    }
+    function maskCOREN(v) {
+      // formato: 45.678/UF ou T-78.901/UF
+      const isTec = v.toUpperCase().startsWith('T');
+      let nums = v.replace(/[^0-9]/g,'').slice(0,6);
+      const uf = v.replace(/[^A-Za-z]/g,'').replace(/^T/i,'').slice(0,2).toUpperCase();
+      let base = nums.length > 2 ? nums.replace(/(\d{1,2})(\d{1,4})/,'$1.$2') : nums;
+      if (isTec) base = 'T-' + base;
+      if (uf) base += '/' + uf;
+      return base;
+    }
+    function applyMask(el, fn) {
+      if (!el) return;
+      el.addEventListener('input', function() {
+        const pos = this.selectionStart;
+        const prev = this.value.length;
+        this.value = fn(this.value);
+        const diff = this.value.length - prev;
+        this.setSelectionRange(pos + diff, pos + diff);
+      });
+    }
+    function applyMasks() {
+      applyMask(document.getElementById('f-cpf'),      maskCPF);
+      applyMask(document.getElementById('f-telefone'), maskTel);
+      applyMask(document.getElementById('f-crm'),      maskCRM);
+      applyMask(document.getElementById('f-coren'),    maskCOREN);
+    }
+
+    // ── Carregar listas ──
+    async function carregarListas() {
+      // Usuários
+      try {
+        const res  = await fetch(`${DB_URL}/usuarios.json`);
+        const data = await res.json();
+        const el   = document.getElementById('lista-usuarios');
+        if (!data) { el.innerHTML = '<div class="empty-state"><i class="fas fa-users"></i>Nenhum usuário cadastrado ainda</div>'; return; }
+        el.innerHTML = Object.values(data).map(u => {
+          const rb = roleBadge[u.role] || roleBadge.paciente;
+          return `
+          <div class="list-item">
+            <div class="list-avatar" style="background:linear-gradient(135deg,${rb.color}44,${rb.color}99)">
+              <i class="fas ${roleConfig[u.role]?.icon || 'fa-user'}" style="color:${rb.color}"></i>
+            </div>
+            <div class="list-info">
+              <div class="list-name">${u.nome}</div>
+              <div class="list-meta">Login: ${u.login}${u.email ? ' · '+u.email : ''}${u.crm ? ' · CRM '+u.crm : ''}${u.coren ? ' · COREN '+u.coren : ''}</div>
+            </div>
+            <span class="list-badge" style="background:${rb.bg};color:${rb.color};border:1px solid ${rb.border}">${u.perfil || u.role}</span>
+          </div>`;
+        }).join('');
+      } catch(e) {}
+
+      // Pacientes
+      try {
+        const res  = await fetch(`${DB_URL}/pacientes.json`);
+        const data = await res.json();
+        const el   = document.getElementById('lista-pacientes');
+        if (!data) { el.innerHTML = '<div class="empty-state"><i class="fas fa-user-injured"></i>Nenhum paciente cadastrado ainda</div>'; return; }
+        el.innerHTML = Object.values(data).map(p => `
+          <div class="list-item">
+            <div class="list-avatar" style="background:linear-gradient(135deg,#4c1d95,#a78bfa99)">
+              <i class="fas fa-bed-pulse" style="color:#a78bfa"></i>
+            </div>
+            <div class="list-info">
+              <div class="list-name">${p.nome}</div>
+              <div class="list-meta">ID: ${p.id} · Leito: ${p.leito}${p.medico ? ' · '+p.medico : ''}</div>
+            </div>
+            <span class="list-badge" style="background:var(--purple-dim);color:var(--purple);border:1px solid rgba(167,139,250,0.2)">Paciente</span>
+          </div>
+        `).join('');
+      } catch(e) {}
+    }
+  </script>
 </body>
 </html>

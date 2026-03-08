@@ -5,189 +5,203 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>EWS Sinais Vitais • Login</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
-      --primary:#38bdf8; --primary-dim:rgba(56,189,248,0.12);
-      --bg:#040d1a; --bg-card:rgba(6,16,36,0.95);
-      --text:#e2eaf4; --text-muted:#6b87a8;
-      --red:#f87171; --red-dim:rgba(248,113,113,0.12);
-      --green:#34d399; --green-dim:rgba(52,211,153,0.12);
-      --border:rgba(56,189,248,0.12); --border-soft:rgba(255,255,255,0.05);
-      --radius:18px; --radius-sm:10px; --shadow:0 24px 80px rgba(0,0,0,0.7);
+      --primary:     #38bdf8;
+      --primary-dim: rgba(56,189,248,0.12);
+      --bg:          #040d1a;
+      --bg-card:     rgba(6,16,36,0.92);
+      --bg-raised:   rgba(10,24,52,0.85);
+      --text:        #e2eaf4;
+      --text-muted:  #6b87a8;
+      --text-dim:    #3d5470;
+      --red:         #f87171;
+      --red-dim:     rgba(248,113,113,0.12);
+      --green:       #34d399;
+      --border-soft: rgba(255,255,255,0.04);
+      --radius:      18px;
+      --radius-sm:   10px;
+      --shadow:      0 24px 80px rgba(0,0,0,0.7);
     }
-    *{margin:0;padding:0;box-sizing:border-box;} html,body{height:100%;}
-    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px;}
-    body::before{content:'';position:fixed;inset:0;z-index:0;background-image:linear-gradient(rgba(56,189,248,0.022) 1px,transparent 1px),linear-gradient(90deg,rgba(56,189,248,0.022) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;}
-    body::after{content:'';position:fixed;top:-40%;left:-20%;width:70%;height:80%;background:radial-gradient(ellipse,rgba(56,189,248,0.05) 0%,transparent 65%);z-index:0;pointer-events:none;}
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      min-height:100vh; display:flex; align-items:center; justify-content:center;
+      font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); overflow:hidden;
+    }
+    body::before {
+      content:''; position:fixed; inset:0; z-index:0;
+      background-image: linear-gradient(rgba(56,189,248,0.022) 1px, transparent 1px), linear-gradient(90deg, rgba(56,189,248,0.022) 1px, transparent 1px);
+      background-size:40px 40px; pointer-events:none;
+    }
+    body::after {
+      content:''; position:fixed; top:-40%; left:-20%; width:70%; height:80%;
+      background:radial-gradient(ellipse,rgba(56,189,248,0.05) 0%,transparent 65%); z-index:0; pointer-events:none;
+    }
+    .bg-glow { position:fixed; bottom:-30%; right:-10%; width:60%; height:70%; background:radial-gradient(ellipse,rgba(14,165,233,0.04) 0%,transparent 65%); z-index:0; pointer-events:none; }
 
-    .box{position:relative;z-index:1;background:var(--bg-card);padding:48px 44px;border-radius:var(--radius);width:100%;max-width:440px;box-shadow:var(--shadow);border:1px solid var(--border);animation:rise .5s cubic-bezier(.22,.68,0,1.2) both;}
-    @keyframes rise{from{opacity:0;transform:translateY(28px) scale(.97)}to{opacity:1;transform:none}}
+    .login-wrapper { position:relative; z-index:2; width:100%; max-width:440px; padding:20px; animation:rise .55s cubic-bezier(.22,.68,0,1.2) both; }
+    @keyframes rise { from{opacity:0;transform:translateY(28px) scale(0.97);} to{opacity:1;transform:none;} }
 
-    .logo{text-align:center;margin-bottom:40px;}
-    .logo-icon{display:inline-flex;align-items:center;justify-content:center;width:60px;height:60px;border-radius:18px;background:linear-gradient(135deg,#0ea5e9,#38bdf8);font-size:24px;color:#fff;box-shadow:0 0 30px rgba(56,189,248,0.45);margin-bottom:16px;}
-    .logo h1{font-family:'Syne',sans-serif;font-size:1.7rem;font-weight:800;color:var(--text);letter-spacing:-.02em;margin-bottom:6px;}
-    .logo h1 span{color:var(--primary);}
-    .logo p{color:var(--text-muted);font-size:.86rem;}
+    .login-card { background:var(--bg-card); border-radius:var(--radius); border:1px solid var(--border-soft); padding:40px 36px 36px; box-shadow:var(--shadow); }
 
-    .fg{margin-bottom:22px;}
-    .fg label{display:block;margin-bottom:8px;font-size:.82rem;font-weight:600;color:var(--text-muted);letter-spacing:.05em;text-transform:uppercase;}
-    .fg label i{margin-right:7px;color:var(--primary);font-size:.78rem;}
-    .fg input{width:100%;padding:14px 16px;background:rgba(10,24,52,0.8);border:1px solid var(--border);border-radius:var(--radius-sm);color:#fff;font-size:.95rem;font-family:'DM Sans',sans-serif;transition:all .25s;}
-    .fg input::placeholder{color:var(--text-muted);opacity:.55;}
-    .fg input:focus{outline:none;border-color:rgba(56,189,248,.55);box-shadow:0 0 0 3px rgba(56,189,248,.1);background:rgba(14,30,60,.9);}
-    .fg input.err{border-color:rgba(248,113,113,.6)!important;}
+    .login-header { text-align:center; margin-bottom:32px; }
+    .login-logo-icon { width:52px; height:52px; border-radius:14px; background:linear-gradient(135deg,#0ea5e9,#38bdf8); display:inline-flex; align-items:center; justify-content:center; font-size:22px; color:white; box-shadow:0 0 24px rgba(56,189,248,0.45); margin-bottom:14px; }
+    .login-title { font-family:'Syne',sans-serif; font-size:1.6rem; font-weight:800; color:var(--text); letter-spacing:-0.02em; margin-bottom:4px; }
+    .login-title span { color:var(--primary); }
+    .login-subtitle { font-size:0.82rem; color:var(--text-muted); font-family:'DM Mono',monospace; letter-spacing:0.04em; }
+    .login-divider { height:1px; background:var(--border-soft); margin:0 0 28px; }
 
-    .row-mid{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;font-size:.84rem;}
-    .remember{display:flex;align-items:center;gap:8px;color:var(--text-muted);cursor:pointer;}
-    .remember input{width:15px;height:15px;accent-color:var(--primary);cursor:pointer;}
-    .forgot{color:var(--primary);text-decoration:none;font-size:.84rem;}
-    .forgot:hover{text-decoration:underline;}
+    .form-group { margin-bottom:20px; }
+    .form-label { display:block; font-size:0.75rem; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-muted); margin-bottom:8px; font-family:'Syne',sans-serif; }
+    .input-wrap { position:relative; }
+    .input-icon { position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--text-dim); font-size:0.85rem; pointer-events:none; transition:color 0.2s; }
+    .form-input { width:100%; padding:13px 16px 13px 40px; border-radius:var(--radius-sm); background:var(--bg-raised); border:1px solid var(--border-soft); color:var(--text); font-size:0.95rem; font-family:'DM Sans',sans-serif; transition:all 0.22s; }
+    .form-input::placeholder { color:var(--text-dim); }
+    .form-input:focus { outline:none; border-color:rgba(56,189,248,0.4); box-shadow:0 0 0 3px rgba(56,189,248,0.1); background:rgba(10,24,52,0.95); }
+    .input-wrap:focus-within .input-icon { color:var(--primary); }
 
-    .btn-main{width:100%;padding:16px;background:linear-gradient(135deg,#38bdf8,#0ea5e9);color:#fff;border:none;border-radius:var(--radius-sm);font-size:.97rem;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .25s;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:18px;letter-spacing:.03em;}
-    .btn-main:hover{background:linear-gradient(135deg,#0ea5e9,#0284c7);transform:translateY(-2px);box-shadow:0 8px 24px rgba(56,189,248,.35);}
-    .btn-main:active{transform:translateY(0);}
-    .btn-main:disabled{opacity:.55;cursor:not-allowed;transform:none;}
+    .error-message { display:none; align-items:center; gap:9px; background:var(--red-dim); border:1px solid rgba(248,113,113,0.3); color:var(--red); padding:11px 14px; border-radius:var(--radius-sm); margin-bottom:20px; font-size:0.85rem; }
+    .error-message.visible { display:flex; animation:shake .35s ease; }
+    @keyframes shake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-6px);} 75%{transform:translateX(6px);} }
 
-    .btn-sec{width:100%;padding:14px;background:transparent;border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-muted);font-size:.93rem;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .25s;display:flex;align-items:center;justify-content:center;gap:10px;}
-    .btn-sec:hover{background:var(--primary-dim);border-color:rgba(56,189,248,.35);color:var(--primary);transform:translateY(-1px);}
+    .btn-login { width:100%; padding:14px; border:none; border-radius:var(--radius-sm); background:linear-gradient(135deg,#0ea5e9,#38bdf8); color:white; font-size:0.95rem; font-weight:700; font-family:'DM Sans',sans-serif; cursor:pointer; transition:all 0.22s; display:flex; align-items:center; justify-content:center; gap:9px; box-shadow:0 4px 20px rgba(56,189,248,0.2); margin-top:8px; }
+    .btn-login:hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(56,189,248,0.4); }
+    .btn-login:active { transform:translateY(0); }
 
-    .alert{display:none;align-items:center;gap:10px;padding:12px 16px;border-radius:var(--radius-sm);font-size:.84rem;margin-bottom:22px;}
-    .alert.show{display:flex;}
-    .alert-error{background:var(--red-dim);color:var(--red);border:1px solid rgba(248,113,113,.25);}
-    .alert-success{background:var(--green-dim);color:var(--green);border:1px solid rgba(52,211,153,.25);}
+    .login-footer { text-align:center; margin-top:24px; font-size:0.72rem; color:var(--text-dim); font-family:'DM Mono',monospace; display:flex; align-items:center; justify-content:center; gap:8px; }
+    .live-dot { width:6px; height:6px; border-radius:50%; background:var(--green); animation:livePulse 2s ease infinite; flex-shrink:0; }
+    @keyframes livePulse { 0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(52,211,153,0.4);} 50%{opacity:0.6;box-shadow:0 0 0 4px rgba(52,211,153,0);} }
 
-    .or{display:flex;align-items:center;gap:12px;margin:4px 0 18px;color:var(--text-muted);font-size:.76rem;}
-    .or::before,.or::after{content:'';flex:1;border-top:1px solid var(--border-soft);}
-
-    .footer-note{text-align:center;margin-top:20px;color:var(--text-muted);font-size:.74rem;}
-    .spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
-    @keyframes spin{to{transform:rotate(360deg)}}
+    .hint-row { display:flex; gap:8px; flex-wrap:wrap; margin-top:20px; padding-top:18px; border-top:1px solid var(--border-soft); }
+    .hint-badge { font-family:'DM Mono',monospace; font-size:0.68rem; padding:4px 10px; border-radius:6px; background:var(--bg-raised); border:1px solid var(--border-soft); color:var(--text-muted); cursor:pointer; transition:all 0.18s; }
+    .hint-badge:hover { border-color:rgba(56,189,248,0.25); color:var(--primary); }
+    .hint-label { font-size:0.68rem; color:var(--text-dim); font-family:'DM Mono',monospace; width:100%; margin-bottom:4px; }
   </style>
 </head>
 <body>
-<div class="box">
-  <div class="logo">
-    <div class="logo-icon"><i class="fas fa-heart-pulse"></i></div>
-    <h1>EWS <span>Sinais Vitais</span></h1>
-    <p>Sistema de Monitoramento de Pacientes</p>
+  <div class="bg-glow"></div>
+
+  <div class="login-wrapper">
+    <div class="login-card">
+      <div class="login-header">
+        <div class="login-logo-icon"><i class="fas fa-heart-pulse"></i></div>
+        <div class="login-title">EWS <span>Sinais Vitais</span></div>
+        <div class="login-subtitle">Sistema de Monitoramento em Tempo Real</div>
+      </div>
+
+      <div class="login-divider"></div>
+
+      <div class="error-message" id="errorMessage">
+        <i class="fas fa-circle-exclamation"></i> Usuário ou senha inválidos
+      </div>
+
+      <form id="loginForm">
+        <div class="form-group">
+          <label class="form-label" for="username">Usuário</label>
+          <div class="input-wrap">
+            <input class="form-input" type="text" id="username" placeholder="Digite seu usuário" autocomplete="username" required>
+            <i class="fas fa-user input-icon"></i>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="password">Senha</label>
+          <div class="input-wrap">
+            <input class="form-input" type="password" id="password" placeholder="Digite sua senha" autocomplete="current-password" required>
+            <i class="fas fa-lock input-icon"></i>
+          </div>
+        </div>
+        <button type="submit" class="btn-login">
+          <i class="fas fa-arrow-right-to-bracket"></i> Entrar
+        </button>
+
+        <a href="cadastro.html" style="display:flex;align-items:center;justify-content:center;gap:9px;width:100%;padding:12px;border-radius:var(--radius-sm);background:transparent;border:1px solid rgba(56,189,248,0.25);color:var(--text-muted);font-size:0.88rem;font-weight:600;font-family:'DM Sans',sans-serif;text-decoration:none;transition:all 0.22s;margin-top:6px;" onmouseover="this.style.borderColor='rgba(56,189,248,0.5)';this.style.color='var(--primary)';this.style.background='rgba(56,189,248,0.06)'" onmouseout="this.style.borderColor='rgba(56,189,248,0.25)';this.style.color='var(--text-muted)';this.style.background='transparent'">
+          <i class="fas fa-user-plus"></i> Criar conta
+        </a>
+      </form>
+
+      <div class="hint-row">
+        <div class="hint-label">Acesso rápido (teste):</div>
+        <span class="hint-badge" onclick="fillUser('visitante','1234')">visitante / 1234</span>
+        <span class="hint-badge" onclick="fillUser('adm','adm123')">adm / adm123</span>
+        <span class="hint-badge" onclick="fillUser('enfermeiro','enf123')">enfermeiro / enf123</span>
+      </div>
+    </div>
+
+    <div class="login-footer">
+      <div class="live-dot"></div>
+      © 2024 EWS Sinais Vitais · Todos os direitos reservados
+    </div>
   </div>
 
-  <div class="alert alert-success" id="msgSucesso"><i class="fas fa-check-circle"></i><span id="txtSucesso"></span></div>
-  <div class="alert alert-error"   id="msgErro"  ><i class="fas fa-exclamation-circle"></i><span id="txtErro"></span></div>
+  <script>
+    // Usuários padrão (fallback caso Firebase esteja vazio)
+    const defaultUsers = [
+      { u: 'visitante',  p: '1234',   nome: 'Visitante',   perfil: 'Visita',         role: 'visitante',    pacienteVinculado: '' },
+      { u: 'adm',        p: 'adm123', nome: 'Admin',        perfil: 'Administrador',  role: 'administrador',pacienteVinculado: '' },
+      { u: 'enfermeiro', p: 'enf123', nome: 'Enf. Santos',  perfil: 'Enfermeiro',     role: 'enfermeiro',   pacienteVinculado: '' }
+    ];
 
-  <div class="fg">
-    <label for="username"><i class="fas fa-user"></i>Usuário</label>
-    <input type="text" id="username" placeholder="Digite seu usuário" autocomplete="username">
-  </div>
-  <div class="fg">
-    <label for="password"><i class="fas fa-lock"></i>Senha</label>
-    <input type="password" id="password" placeholder="Digite sua senha" autocomplete="current-password">
-  </div>
+    const DB_URL = 'https://projeto-integradora-ii-default-rtdb.firebaseio.com';
 
-  <div class="row-mid">
-    <label class="remember"><input type="checkbox" id="remember"> Lembrar-me</label>
-    <a href="#" class="forgot">Esqueceu a senha?</a>
-  </div>
-
-  <button class="btn-main" id="btnEntrar"><i class="fas fa-sign-in-alt"></i> Entrar no Sistema</button>
-  <div class="or">ou</div>
-  <button class="btn-sec" id="btnCadastrar"><i class="fas fa-user-plus"></i> Criar nova conta</button>
-
-  <div class="footer-note">© 2026 EWS Sinais Vitais · Acesso restrito</div>
-</div>
-
-<script>
-  const elUser    = document.getElementById('username');
-  const elPass    = document.getElementById('password');
-  const elRem     = document.getElementById('remember');
-  const elErro    = document.getElementById('msgErro');
-  const elErrT    = document.getElementById('txtErro');
-  const elSuc     = document.getElementById('msgSucesso');
-  const elSucT    = document.getElementById('txtSucesso');
-  const btnEntrar = document.getElementById('btnEntrar');
-
-  window.addEventListener('DOMContentLoaded', () => {
-    // Flash de cadastro
-    const flash = sessionStorage.getItem('ews_flash');
-    if (flash) {
-      elSucT.textContent = flash;
-      elSuc.classList.add('show');
-      sessionStorage.removeItem('ews_flash');
-      setTimeout(() => elSuc.classList.remove('show'), 5000);
+    function fillUser(u, p) {
+      document.getElementById('username').value = u;
+      document.getElementById('password').value = p;
+      document.getElementById('password').focus();
     }
-    // Restaura credenciais salvas
-    try {
-      const saved = localStorage.getItem('ews_creds');
-      if (saved) {
-        const {u, p} = JSON.parse(saved);
-        elUser.value = u; elPass.value = p; elRem.checked = true;
-      }
-    } catch(e) {}
-  });
 
-  function showErr(msg) {
-    elErrT.textContent = msg;
-    elErro.classList.add('show');
-    elUser.classList.add('err');
-    elPass.classList.add('err');
-    setTimeout(() => {
-      elErro.classList.remove('show');
-      elUser.classList.remove('err');
-      elPass.classList.remove('err');
-    }, 4500);
-  }
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+      const errorEl  = document.getElementById('errorMessage');
+      const btn      = document.querySelector('.btn-login');
 
-  function setLoading(on) {
-    btnEntrar.disabled = on;
-    btnEntrar.innerHTML = on
-      ? '<span class="spinner"></span> Verificando...'
-      : '<i class="fas fa-sign-in-alt"></i> Entrar no Sistema';
-  }
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Entrando...';
+      btn.disabled = true;
 
-  function getUsuarios() {
-    try { return JSON.parse(localStorage.getItem('ews_usuarios') || '[]'); } catch(e) { return []; }
-  }
+      let user = null;
 
-  function doLogin() {
-    const u = elUser.value.trim();
-    const p = elPass.value;
-    if (!u || !p) { showErr('Preencha usuário e senha.'); return; }
+      // 1. Tenta buscar no Firebase
+      try {
+        const res  = await fetch(`${DB_URL}/usuarios/${username}.json`);
+        const data = await res.json();
+        if (data && data.senha === password) {
+          user = {
+            login: data.login || username,
+            nome:  data.nome,
+            perfil: data.perfil,
+            role:  data.role || data.perfil, // salva role em minúsculo
+            pacienteVinculado: data.pacienteVinculado || data['paciente-vinc'] || '',
+            setor:   data.setor   || '',
+            turno:   data.turno   || '',
+            email:   data.email   || '',
+            crm:     data.crm     || '',
+            coren:   data.coren   || '',
+          };
+        }
+      } catch(e) {}
 
-    setLoading(true);
-    setTimeout(() => {
-      const usuarios = getUsuarios();
-      // Busca por username ou email
-      const user = usuarios.find(x => (x.username === u || x.email === u));
-
+      // 2. Fallback: usuários padrão
       if (!user) {
-        showErr('Usuário não encontrado. Crie sua conta primeiro.');
-        setLoading(false); return;
-      }
-      if (user.password !== p) {
-        showErr('Senha incorreta. Tente novamente.');
-        setLoading(false); return;
+        user = defaultUsers.find(x => x.u === username && x.p === password) || null;
       }
 
-      if (elRem.checked) {
-        localStorage.setItem('ews_creds', JSON.stringify({u, p}));
+      btn.innerHTML = '<i class="fas fa-arrow-right-to-bracket"></i> Entrar';
+      btn.disabled = false;
+
+      if (user) {
+        sessionStorage.setItem('usuarioLogado', JSON.stringify(user));
+        sessionStorage.setItem('loginTime', new Date().toISOString());
+        window.location.href = 'monitoramento.html';
       } else {
-        localStorage.removeItem('ews_creds');
+        errorEl.classList.remove('visible');
+        void errorEl.offsetWidth;
+        errorEl.classList.add('visible');
+        setTimeout(() => errorEl.classList.remove('visible'), 4000);
       }
-      sessionStorage.setItem('ews_sessao', JSON.stringify(user));
-      window.location.href = 'dashboard.html';
-    }, 350);
-  }
-
-  btnEntrar.addEventListener('click', doLogin);
-  document.getElementById('btnCadastrar').addEventListener('click', () => {
-    window.location.href = 'cadastro.html';
-  });
-  [elUser, elPass].forEach(el => {
-    el.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
-    el.addEventListener('input',   () => { elErro.classList.remove('show'); el.classList.remove('err'); });
-  });
-</script>
+    });
+  </script>
 </body>
 </html>
