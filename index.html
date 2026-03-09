@@ -3,77 +3,203 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EWS Sinais Vitais • Login</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <title>MonitorMed • Login</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    :root {
-      --primary:#38bdf8; --primary-dim:rgba(56,189,248,0.12);
-      --bg:#040d1a; --bg-card:rgba(6,16,36,0.95);
-      --text:#e2eaf4; --text-muted:#6b87a8;
-      --red:#f87171; --red-dim:rgba(248,113,113,0.12);
-      --green:#34d399; --green-dim:rgba(52,211,153,0.12);
-      --border:rgba(56,189,248,0.12); --border-soft:rgba(255,255,255,0.05);
-      --radius:18px; --radius-sm:10px; --shadow:0 24px 80px rgba(0,0,0,0.7);
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-    *{margin:0;padding:0;box-sizing:border-box;} html,body{height:100%;}
-    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px;}
-    body::before{content:'';position:fixed;inset:0;z-index:0;background-image:linear-gradient(rgba(56,189,248,0.022) 1px,transparent 1px),linear-gradient(90deg,rgba(56,189,248,0.022) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;}
-    body::after{content:'';position:fixed;top:-40%;left:-20%;width:70%;height:80%;background:radial-gradient(ellipse,rgba(56,189,248,0.05) 0%,transparent 65%);z-index:0;pointer-events:none;}
 
-    .box{position:relative;z-index:1;background:var(--bg-card);padding:48px 44px;border-radius:var(--radius);width:100%;max-width:440px;box-shadow:var(--shadow);border:1px solid var(--border);animation:rise .5s cubic-bezier(.22,.68,0,1.2) both;}
-    @keyframes rise{from{opacity:0;transform:translateY(28px) scale(.97)}to{opacity:1;transform:none}}
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #020617, #0f172a, #020617);
+      overflow: hidden;
+      color: #e5e7eb;
+    }
 
-    .logo{text-align:center;margin-bottom:40px;}
-    .logo-icon{display:inline-flex;align-items:center;justify-content:center;width:60px;height:60px;border-radius:18px;background:linear-gradient(135deg,#0ea5e9,#38bdf8);font-size:24px;color:#fff;box-shadow:0 0 30px rgba(56,189,248,0.45);margin-bottom:16px;}
-    .logo h1{font-family:'Syne',sans-serif;font-size:1.7rem;font-weight:800;color:var(--text);letter-spacing:-.02em;margin-bottom:6px;}
-    .logo h1 span{color:var(--primary);}
-    .logo p{color:var(--text-muted);font-size:.86rem;}
+    body::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top, rgba(56, 189, 248, .15), transparent 40%),
+                  radial-gradient(circle at bottom, rgba(14, 165, 233, .15), transparent 40%);
+      animation: move 10s infinite alternate;
+    }
 
-    .fg{margin-bottom:22px;}
-    .fg label{display:block;margin-bottom:8px;font-size:.82rem;font-weight:600;color:var(--text-muted);letter-spacing:.05em;text-transform:uppercase;}
-    .fg label i{margin-right:7px;color:var(--primary);font-size:.78rem;}
-    .fg input{width:100%;padding:14px 16px;background:rgba(10,24,52,0.8);border:1px solid var(--border);border-radius:var(--radius-sm);color:#fff;font-size:.95rem;font-family:'DM Sans',sans-serif;transition:all .25s;}
-    .fg input::placeholder{color:var(--text-muted);opacity:.55;}
-    .fg input:focus{outline:none;border-color:rgba(56,189,248,.55);box-shadow:0 0 0 3px rgba(56,189,248,.1);background:rgba(14,30,60,.9);}
-    .fg input.err{border-color:rgba(248,113,113,.6)!important;}
+    @keyframes move {
+      from { transform: translateY(0); }
+      to { transform: translateY(-40px); }
+    }
 
-    .row-mid{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;font-size:.84rem;}
-    .remember{display:flex;align-items:center;gap:8px;color:var(--text-muted);cursor:pointer;}
-    .remember input{width:15px;height:15px;accent-color:var(--primary);cursor:pointer;}
-    .forgot{color:var(--primary);text-decoration:none;font-size:.84rem;}
-    .forgot:hover{text-decoration:underline;}
+    .login-container {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 420px;
+      background: rgba(2, 6, 23, .85);
+      backdrop-filter: blur(15px);
+      border-radius: 22px;
+      padding: 40px;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, .6);
+      animation: fadeUp .8s ease;
+    }
 
+<<<<<<< HEAD
     .btn-main{width:100%;padding:16px;background:linear-gradient(135deg,#38bdf8,#0ea5e9);color:#fff;border:none;border-radius:var(--radius-sm);font-size:.97rem;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .25s;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:18px;}
     .btn-main:hover{background:linear-gradient(135deg,#0ea5e9,#0284c7);transform:translateY(-2px);box-shadow:0 8px 24px rgba(56,189,248,.35);}
     .btn-main:active{transform:translateY(0);}
+=======
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+>>>>>>> cec7d746ef3cdb126a01758260c26f6071db8c70
 
-    .btn-sec{width:100%;padding:14px;background:transparent;border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-muted);font-size:.93rem;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .25s;display:flex;align-items:center;justify-content:center;gap:10px;}
-    .btn-sec:hover{background:var(--primary-dim);border-color:rgba(56,189,248,.35);color:var(--primary);transform:translateY(-1px);}
+    .logo {
+      text-align: center;
+      margin-bottom: 30px;
+    }
 
-    .alert{display:none;align-items:center;gap:10px;padding:12px 16px;border-radius:var(--radius-sm);font-size:.84rem;margin-bottom:22px;}
-    .alert.show{display:flex;}
-    .alert-error{background:var(--red-dim);color:var(--red);border:1px solid rgba(248,113,113,.25);}
-    .alert-success{background:var(--green-dim);color:var(--green);border:1px solid rgba(52,211,153,.25);}
+    .logo h1 {
+      color: #38bdf8;
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
 
-    .or{display:flex;align-items:center;gap:12px;margin:4px 0 18px;color:var(--text-muted);font-size:.76rem;}
-    .or::before,.or::after{content:'';flex:1;border-top:1px solid var(--border-soft);}
+    .logo p {
+      color: #94a3b8;
+      font-size: .9rem;
+    }
 
+<<<<<<< HEAD
     .footer-note{text-align:center;margin-top:28px;color:var(--text-muted);font-size:.74rem;}
+=======
+    .form-group {
+      margin-bottom: 22px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 12px;
+      background: #020617;
+      border: 1px solid rgba(56, 189, 248, .2);
+      color: white;
+      transition: .3s;
+      font-size: 1rem;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, .2);
+      transform: scale(1.02);
+    }
+
+    .btn {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+      color: white;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: .3s;
+    }
+
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 0 25px rgba(56, 189, 248, .6);
+    }
+
+    .error-message {
+      display: none;
+      background: rgba(239, 68, 68, .15);
+      border: 1px solid rgba(239, 68, 68, .4);
+      color: #ef4444;
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      animation: shake .4s;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      50% { transform: translateX(5px); }
+      75% { transform: translateX(-5px); }
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 25px;
+      font-size: .8rem;
+      color: #94a3b8;
+    }
+>>>>>>> cec7d746ef3cdb126a01758260c26f6071db8c70
   </style>
 </head>
 <body>
-<div class="box">
-  <div class="logo">
-    <div class="logo-icon"><i class="fas fa-heart-pulse"></i></div>
-    <h1>EWS <span>Sinais Vitais</span></h1>
-    <p>Sistema de Monitoramento de Pacientes</p>
+  <div class="login-container">
+    <div class="logo">
+      <h1><i class="fas fa-heart-pulse"></i> EWS: Sistema de Monitoramento</h1>
+      <p>Sistema de Monitoramento</p>
+    </div>
+
+    <div class="error-message" id="errorMessage">
+      <i class="fas fa-exclamation-circle"></i> Usuário ou senha inválidos
+    </div>
+
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="username">Usuário</label>
+        <input type="text" id="username" placeholder="Digite seu usuário" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="password">Senha</label>
+        <input type="password" id="password" placeholder="Digite sua senha" required>
+      </div>
+      
+      <button type="submit" class="btn">
+        <i class="fas fa-sign-in-alt"></i> Entrar
+      </button>
+    </form>
+
+    <div class="footer">
+      © 2026 EWS Sistema de Monitoramento • Todos os direitos reservados
+    </div>
   </div>
 
-  <div class="alert alert-success" id="msgSucesso"><i class="fas fa-check-circle"></i><span id="txtSucesso"></span></div>
-  <div class="alert alert-error"   id="msgErro"  ><i class="fas fa-exclamation-circle"></i><span id="txtErro"></span></div>
+  <script>
+    // Usuários de teste
+    const users = [
+      { u: 'visitante', p: '1234', nome: 'Visitante', perfil: 'Visita' },
+      { u: 'adm', p: 'adm123', nome: 'Admin', perfil: 'Administrador' },
+      { u: 'enfermeiro', p: 'enf123', nome: 'Enf. Santos', perfil: 'Enfermeiro' }
+    ];
 
+<<<<<<< HEAD
   <div class="fg">
     <label for="username"><i class="fas fa-user"></i>Usuário</label>
     <input type="text" id="username" placeholder="Digite seu usuário" autocomplete="username">
@@ -158,5 +284,35 @@
     alert('Recuperação de senha em desenvolvimento.\nContate o administrador do sistema.');
   });
 </script>
+=======
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const errorMessage = document.getElementById('errorMessage');
+      
+      // Validação
+      const user = users.find(x => x.u === username && x.p === password);
+      
+      if (user) {
+        // Salva dados na sessão
+        sessionStorage.setItem('usuarioLogado', JSON.stringify(user));
+        sessionStorage.setItem('loginTime', new Date().toISOString());
+        
+        // Redireciona para dashboard
+        window.location.href = 'monitoramento.html';
+      } else {
+        // Exibe erro
+        errorMessage.style.display = 'block';
+        
+        // Oculta após 4 segundos
+        setTimeout(() => {
+          errorMessage.style.display = 'none';
+        }, 4000);
+      }
+    });
+  </script>
+>>>>>>> cec7d746ef3cdb126a01758260c26f6071db8c70
 </body>
 </html>
