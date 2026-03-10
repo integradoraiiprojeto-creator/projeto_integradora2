@@ -3,14 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MonitorMed • Login</title>
+  <title>EWS • Login</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       min-height: 100vh;
@@ -18,301 +14,371 @@
       align-items: center;
       justify-content: center;
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #020617, #0f172a, #020617);
+      background: #020617;
       overflow: hidden;
       color: #e5e7eb;
     }
 
-    body::before {
-      content: "";
-      position: absolute;
+    /* ── Fundo animado ── */
+    .bg {
+      position: fixed;
       inset: 0;
-      background: radial-gradient(circle at top, rgba(56, 189, 248, .15), transparent 40%),
-                  radial-gradient(circle at bottom, rgba(14, 165, 233, .15), transparent 40%);
-      animation: move 10s infinite alternate;
+      z-index: 0;
+    }
+    .bg-glow {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.18;
+      animation: drift 14s ease-in-out infinite alternate;
+    }
+    .bg-glow-1 {
+      width: 500px; height: 500px;
+      background: #38bdf8;
+      top: -120px; left: -100px;
+      animation-delay: 0s;
+    }
+    .bg-glow-2 {
+      width: 400px; height: 400px;
+      background: #6366f1;
+      bottom: -100px; right: -80px;
+      animation-delay: -5s;
+    }
+    .bg-glow-3 {
+      width: 300px; height: 300px;
+      background: #0ea5e9;
+      top: 40%; left: 50%;
+      transform: translate(-50%,-50%);
+      animation-delay: -9s;
+    }
+    @keyframes drift {
+      from { transform: translateY(0) scale(1);   }
+      to   { transform: translateY(-40px) scale(1.08); }
     }
 
-    @keyframes move {
-      from { transform: translateY(0); }
-      to { transform: translateY(-40px); }
+    /* Grid de pontos no fundo */
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(rgba(56,189,248,0.07) 1px, transparent 1px);
+      background-size: 32px 32px;
+      z-index: 0;
     }
 
-    .login-container {
+    /* ── Container ── */
+    .login-wrap {
       position: relative;
       z-index: 2;
       width: 100%;
       max-width: 420px;
-      background: rgba(2, 6, 23, .85);
-      backdrop-filter: blur(15px);
-      border-radius: 22px;
-      padding: 40px;
-      box-shadow: 0 30px 80px rgba(0, 0, 0, .6);
-      animation: fadeUp .8s ease;
+      padding: 16px;
     }
 
-<<<<<<< HEAD
-    .btn-main{width:100%;padding:16px;background:linear-gradient(135deg,#38bdf8,#0ea5e9);color:#fff;border:none;border-radius:var(--radius-sm);font-size:.97rem;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .25s;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:18px;}
-    .btn-main:hover{background:linear-gradient(135deg,#0ea5e9,#0284c7);transform:translateY(-2px);box-shadow:0 8px 24px rgba(56,189,248,.35);}
-    .btn-main:active{transform:translateY(0);}
-=======
+    .login-container {
+      background: rgba(2, 6, 23, 0.82);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: 44px 40px 36px;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(56,189,248,0.12);
+      animation: fadeUp .7s cubic-bezier(.22,1,.36,1);
+    }
+
     @keyframes fadeUp {
-      from {
-        opacity: 0;
-        transform: translateY(40px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(36px); }
+      to   { opacity: 1; transform: none; }
     }
->>>>>>> cec7d746ef3cdb126a01758260c26f6071db8c70
 
+    /* ── Logo ── */
     .logo {
       text-align: center;
-      margin-bottom: 30px;
+      margin-bottom: 36px;
     }
-
-    .logo h1 {
+    .logo-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 64px; height: 64px;
+      background: linear-gradient(135deg, rgba(56,189,248,0.2), rgba(14,165,233,0.1));
+      border: 1px solid rgba(56,189,248,0.25);
+      border-radius: 18px;
+      margin-bottom: 16px;
+      font-size: 1.8rem;
       color: #38bdf8;
-      font-size: 2rem;
-      margin-bottom: 8px;
     }
-
+    .logo h1 {
+      color: #f1f5f9;
+      font-size: 1.9rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+    .logo h1 span { color: #38bdf8; }
     .logo p {
-      color: #94a3b8;
-      font-size: .9rem;
+      color: #64748b;
+      font-size: 0.88rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
     }
 
-<<<<<<< HEAD
-    .footer-note{text-align:center;margin-top:28px;color:var(--text-muted);font-size:.74rem;}
-=======
+    /* ── Credenciais de teste ── */
+    .test-creds {
+      background: rgba(56,189,248,0.06);
+      border: 1px solid rgba(56,189,248,0.14);
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 24px;
+      font-size: 0.78rem;
+      color: #64748b;
+    }
+    .test-creds strong { color: #38bdf8; display: block; margin-bottom: 6px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .cred-row { display: flex; justify-content: space-between; margin-top: 4px; }
+    .cred-row span { color: #94a3b8; }
+    .cred-row code {
+      background: rgba(56,189,248,0.1);
+      border-radius: 4px;
+      padding: 1px 6px;
+      color: #7dd3fc;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .cred-row code:hover { background: rgba(56,189,248,0.2); }
+
+    /* ── Form ── */
     .form-group {
-      margin-bottom: 22px;
+      margin-bottom: 18px;
+      position: relative;
     }
 
     label {
       display: block;
       margin-bottom: 8px;
       font-weight: 600;
+      font-size: 0.88rem;
+      color: #94a3b8;
+      letter-spacing: 0.02em;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+    .input-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #334155;
+      font-size: 0.9rem;
+      pointer-events: none;
+      transition: color 0.2s;
     }
 
     input {
       width: 100%;
-      padding: 14px 16px;
+      padding: 13px 14px 13px 40px;
       border-radius: 12px;
-      background: #020617;
-      border: 1px solid rgba(56, 189, 248, .2);
-      color: white;
-      transition: .3s;
-      font-size: 1rem;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(56, 189, 248, 0.14);
+      color: #f1f5f9;
+      transition: all 0.25s;
+      font-size: 0.97rem;
+      font-family: inherit;
     }
-
+    input::placeholder { color: #334155; }
     input:focus {
       outline: none;
-      border-color: #38bdf8;
-      box-shadow: 0 0 0 3px rgba(56, 189, 248, .2);
-      transform: scale(1.02);
+      border-color: rgba(56,189,248,0.5);
+      box-shadow: 0 0 0 3px rgba(56,189,248,0.1);
+      background: rgba(15,23,42,0.95);
     }
+    input:focus + .input-icon,
+    .input-wrap:focus-within .input-icon { color: #38bdf8; }
 
-    .btn {
-      width: 100%;
-      padding: 16px;
-      border: none;
-      border-radius: 14px;
-      background: linear-gradient(135deg, #38bdf8, #0ea5e9);
-      color: white;
-      font-size: 1rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: .3s;
-    }
-
-    .btn:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 0 25px rgba(56, 189, 248, .6);
-    }
-
+    /* ── Erro ── */
     .error-message {
       display: none;
-      background: rgba(239, 68, 68, .15);
-      border: 1px solid rgba(239, 68, 68, .4);
-      color: #ef4444;
-      padding: 12px;
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.3);
+      color: #fca5a5;
+      padding: 12px 14px;
       border-radius: 10px;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
+      font-size: 0.88rem;
       animation: shake .4s;
+      display: none;
     }
-
     @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-5px); }
-      50% { transform: translateX(5px); }
-      75% { transform: translateX(-5px); }
+      0%,100% { transform: translateX(0); }
+      25%      { transform: translateX(-6px); }
+      75%      { transform: translateX(6px); }
     }
 
+    /* ── Botão ── */
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 13px;
+      background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+      color: #020617;
+      font-size: 0.97rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.25s;
+      letter-spacing: 0.02em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 6px;
+      box-shadow: 0 4px 20px rgba(56,189,248,0.25);
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(56,189,248,0.45);
+    }
+    .btn:active { transform: translateY(0); }
+
+    /* ── Loading state ── */
+    .btn.loading {
+      pointer-events: none;
+      opacity: 0.8;
+    }
+    .btn .spinner {
+      display: none;
+      width: 16px; height: 16px;
+      border: 2px solid rgba(2,6,23,0.3);
+      border-top-color: #020617;
+      border-radius: 50%;
+      animation: spin .6s linear infinite;
+    }
+    .btn.loading .spinner { display: block; }
+    .btn.loading .btn-text { display: none; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Footer ── */
     .footer {
       text-align: center;
-      margin-top: 25px;
-      font-size: .8rem;
-      color: #94a3b8;
+      margin-top: 24px;
+      font-size: 0.76rem;
+      color: #1e293b;
     }
->>>>>>> cec7d746ef3cdb126a01758260c26f6071db8c70
   </style>
 </head>
 <body>
-  <div class="login-container">
-    <div class="logo">
-      <h1><i class="fas fa-heart-pulse"></i> EWS: Sistema de Monitoramento</h1>
-      <p>Sistema de Monitoramento</p>
-    </div>
 
-    <div class="error-message" id="errorMessage">
-      <i class="fas fa-exclamation-circle"></i> Usuário ou senha inválidos
-    </div>
+  <!-- Fundo -->
+  <div class="bg">
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+    <div class="bg-glow bg-glow-3"></div>
+  </div>
 
-    <form id="loginForm">
-      <div class="form-group">
-        <label for="username">Usuário</label>
-        <input type="text" id="username" placeholder="Digite seu usuário" required>
+  <div class="login-wrap">
+    <div class="login-container">
+
+      <!-- Logo -->
+      <div class="logo">
+        <div class="logo-icon"><i class="fas fa-heart-pulse"></i></div>
+        <h1>EWS</h1>
+        <p>Sistema de Monitoramento</p>
       </div>
-      
-      <div class="form-group">
-        <label for="password">Senha</label>
-        <input type="password" id="password" placeholder="Digite sua senha" required>
+
+      <!-- Credenciais de teste -->
+      <div class="test-creds">
+        <strong><i class="fas fa-key"></i> &nbsp;Credenciais de acesso</strong>
+        <div class="cred-row">
+          <span>Visitante</span>
+          <span><code onclick="fill('visitante','1234')">visitante</code> / <code onclick="fill('visitante','1234')">1234</code></span>
+        </div>
+        <div class="cred-row">
+          <span>Enfermeiro</span>
+          <span><code onclick="fill('enfermeiro','enf123')">enfermeiro</code> / <code onclick="fill('enfermeiro','enf123')">enf123</code></span>
+        </div>
+        <div class="cred-row">
+          <span>Admin</span>
+          <span><code onclick="fill('adm','adm123')">adm</code> / <code onclick="fill('adm','adm123')">adm123</code></span>
+        </div>
       </div>
-      
-      <button type="submit" class="btn">
-        <i class="fas fa-sign-in-alt"></i> Entrar
+
+      <!-- Erro -->
+      <div class="error-message" id="errorMessage">
+        <i class="fas fa-exclamation-circle"></i> Usuário ou senha inválidos
+      </div>
+
+      <!-- Form -->
+      <div class="form-group">
+        <label for="username"><i class="fas fa-user"></i> &nbsp;Usuário</label>
+        <div class="input-wrap">
+          <input type="text" id="username" placeholder="Digite seu usuário" autocomplete="username" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password"><i class="fas fa-lock"></i> &nbsp;Senha</label>
+        <div class="input-wrap">
+          <input type="password" id="password" placeholder="Digite sua senha" autocomplete="current-password" required>
+        </div>
+      </div>
+
+      <button class="btn" id="loginBtn" onclick="doLogin()">
+        <div class="spinner"></div>
+        <span class="btn-text"><i class="fas fa-sign-in-alt"></i> &nbsp;Entrar</span>
       </button>
-    </form>
 
-    <div class="footer">
-      © 2026 EWS Sistema de Monitoramento • Todos os direitos reservados
+      <div class="footer">© 2025 EWS • Todos os direitos reservados</div>
     </div>
   </div>
 
   <script>
-    // Usuários de teste
     const users = [
-      { u: 'visitante', p: '1234', nome: 'Visitante', perfil: 'Visita' },
-      { u: 'adm', p: 'adm123', nome: 'Admin', perfil: 'Administrador' },
-      { u: 'enfermeiro', p: 'enf123', nome: 'Enf. Santos', perfil: 'Enfermeiro' }
+      { u: 'visitante',  p: '1234',   nome: 'Visitante',   perfil: 'Visita'         },
+      { u: 'adm',        p: 'adm123', nome: 'Admin',        perfil: 'Administrador'  },
+      { u: 'enfermeiro', p: 'enf123', nome: 'Enf. Santos',  perfil: 'Enfermeiro'     },
     ];
 
-<<<<<<< HEAD
-  <div class="fg">
-    <label for="username"><i class="fas fa-user"></i>Usuário</label>
-    <input type="text" id="username" placeholder="Digite seu usuário" autocomplete="username">
-  </div>
-  <div class="fg">
-    <label for="password"><i class="fas fa-lock"></i>Senha</label>
-    <input type="password" id="password" placeholder="Digite sua senha" autocomplete="current-password">
-  </div>
-
-  <div class="row-mid">
-    <label class="remember"><input type="checkbox" id="remember"> Lembrar-me</label>
-    <a href="#" class="forgot" id="forgotLink">Esqueceu a senha?</a>
-  </div>
-
-  <button class="btn-main" id="btnEntrar"><i class="fas fa-sign-in-alt"></i> Entrar no Sistema</button>
-  <div class="or">ou</div>
-  <button class="btn-sec" id="btnCadastrar"><i class="fas fa-user-plus"></i> Criar nova conta</button>
-
-  <div class="footer-note">© 2026 EWS Sinais Vitais · Acesso restrito</div>
-</div>
-
-<script>
-  const elUser  = document.getElementById('username');
-  const elPass  = document.getElementById('password');
-  const elRem   = document.getElementById('remember');
-  const elErro  = document.getElementById('msgErro');
-  const elErrT  = document.getElementById('txtErro');
-  const elSuc   = document.getElementById('msgSucesso');
-  const elSucT  = document.getElementById('txtSucesso');
-
-  window.addEventListener('DOMContentLoaded', () => {
-    const flash = sessionStorage.getItem('ews_flash');
-    if (flash) {
-      elSucT.textContent = flash;
-      elSuc.classList.add('show');
-      sessionStorage.removeItem('ews_flash');
-      setTimeout(() => elSuc.classList.remove('show'), 5000);
+    // Preenche campos ao clicar nas credenciais
+    function fill(u, p) {
+      document.getElementById('username').value = u;
+      document.getElementById('password').value = p;
+      document.getElementById('username').focus();
     }
-    try {
-      const saved = localStorage.getItem('ews_creds');
-      if (saved) { const {u,p} = JSON.parse(saved); elUser.value=u; elPass.value=p; elRem.checked=true; }
-    } catch(e) {}
-  });
 
-  function showErr(msg) {
-    elErrT.textContent = msg;
-    elErro.classList.add('show');
-    elUser.classList.add('err'); elPass.classList.add('err');
-    setTimeout(() => { elErro.classList.remove('show'); elUser.classList.remove('err'); elPass.classList.remove('err'); }, 4000);
-  }
-
-  function getUsers() {
-    try { return JSON.parse(localStorage.getItem('ews_usuarios') || '[]'); } catch(e) { return []; }
-  }
-
-  function doLogin() {
-    const u = elUser.value.trim(), p = elPass.value;
-    if (!u || !p) { showErr('Preencha usuário e senha.'); return; }
-    const user = getUsers().find(x => x.username === u && x.password === p);
-    if (user) {
-      elRem.checked
-        ? localStorage.setItem('ews_creds', JSON.stringify({u,p}))
-        : localStorage.removeItem('ews_creds');
-      // Salva o objeto completo do usuário na sessão
-      sessionStorage.setItem('ews_sessao', JSON.stringify(user));
-      window.location.href = 'dashboard.html';
-    } else {
-      showErr(getUsers().length === 0
-        ? 'Nenhum usuário cadastrado. Crie sua conta primeiro.'
-        : 'Usuário ou senha incorretos.');
-    }
-  }
-
-  document.getElementById('btnEntrar').addEventListener('click', doLogin);
-  document.getElementById('btnCadastrar').addEventListener('click', () => { window.location.href = 'cadastro.html'; });
-  [elUser, elPass].forEach(el => {
-    el.addEventListener('keydown', e => { if (e.key==='Enter') doLogin(); });
-    el.addEventListener('input',   () => { elErro.classList.remove('show'); el.classList.remove('err'); });
-  });
-  document.getElementById('forgotLink').addEventListener('click', e => {
-    e.preventDefault();
-    alert('Recuperação de senha em desenvolvimento.\nContate o administrador do sistema.');
-  });
-</script>
-=======
-    document.getElementById('loginForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      const username = document.getElementById('username').value;
-      const password = document.getElementById('password').value;
-      const errorMessage = document.getElementById('errorMessage');
-      
-      // Validação
-      const user = users.find(x => x.u === username && x.p === password);
-      
-      if (user) {
-        // Salva dados na sessão
-        sessionStorage.setItem('usuarioLogado', JSON.stringify(user));
-        sessionStorage.setItem('loginTime', new Date().toISOString());
-        
-        // Redireciona para dashboard
-        window.location.href = 'monitoramento.html';
-      } else {
-        // Exibe erro
-        errorMessage.style.display = 'block';
-        
-        // Oculta após 4 segundos
-        setTimeout(() => {
-          errorMessage.style.display = 'none';
-        }, 4000);
-      }
+    // Enter no campo de senha dispara o login
+    document.getElementById('password').addEventListener('keydown', e => {
+      if (e.key === 'Enter') doLogin();
     });
+    document.getElementById('username').addEventListener('keydown', e => {
+      if (e.key === 'Enter') document.getElementById('password').focus();
+    });
+
+    function doLogin() {
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+      const errorEl  = document.getElementById('errorMessage');
+      const btn      = document.getElementById('loginBtn');
+
+      if (!username || !password) return;
+
+      // Loading
+      btn.classList.add('loading');
+      errorEl.style.display = 'none';
+
+      setTimeout(() => {
+        const user = users.find(x => x.u === username && x.p === password);
+
+        if (user) {
+          sessionStorage.setItem('usuarioLogado', JSON.stringify(user));
+          sessionStorage.setItem('loginTime', new Date().toISOString());
+          window.location.href = 'monitoramento.html';
+        } else {
+          btn.classList.remove('loading');
+          errorEl.style.display = 'block';
+          setTimeout(() => errorEl.style.display = 'none', 4000);
+        }
+      }, 600);
+    }
   </script>
->>>>>>> cec7d746ef3cdb126a01758260c26f6071db8c70
 </body>
 </html>

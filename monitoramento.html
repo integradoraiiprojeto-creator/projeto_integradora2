@@ -3,658 +3,1225 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EWS: Sinais Vitais • Dashboard</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <title>EWS • Dashboard</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
-      --primary:      #38bdf8;
-      --primary-glow: rgba(56,189,248,0.18);
-      --bg:           #04080f;
-      --bg-card:      rgba(8,16,32,0.9);
-      --bg-raised:    rgba(12,22,44,0.8);
-      --border:       rgba(56,189,248,0.1);
-      --border-hi:    rgba(56,189,248,0.28);
-      --text:         #e2eaf6;
-      --muted:        #5e7898;
-      --red:          #f87171;
-      --blue:         #60a5fa;
-      --amber:        #fbbf24;
-      --green:        #34d399;
-      --mono:         'JetBrains Mono', monospace;
+      --primary: #38bdf8;
+      --primary-dark: #0ea5e9;
+      --bg-dark: #020617;
+      --bg-card: rgba(2, 6, 23, 0.85);
+      --bg-hover: rgba(15, 23, 42, 0.8);
+      --text-light: #e5e7eb;
+      --text-muted: #94a3b8;
+      --danger: #ef4444;
+      --border-color: rgba(56, 189, 248, 0.2);
+      --heart-color: #ef4444;
+      --oxy-color: #3b82f6;
+      --temp-color: #f59e0b;
     }
 
-    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      font-family: 'Space Grotesk', sans-serif;
-      background: var(--bg);
-      color: var(--text);
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, var(--bg-dark), #0f172a);
+      color: var(--text-light);
       min-height: 100vh;
       line-height: 1.6;
-      overflow-x: hidden;
     }
 
-    /* bg grid + glows */
-    body::before {
-      content: '';
-      position: fixed; inset: 0; z-index: 0;
-      background-image:
-        linear-gradient(rgba(56,189,248,0.025) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(56,189,248,0.025) 1px, transparent 1px);
-      background-size: 44px 44px;
-      pointer-events: none;
-    }
-    .glow-top    { position:fixed; top:-30%; left:10%; width:55%; height:55%; background:radial-gradient(ellipse, rgba(56,189,248,0.07) 0%, transparent 65%); z-index:0; pointer-events:none; }
-    .glow-bottom { position:fixed; bottom:-20%; right:5%; width:45%; height:45%; background:radial-gradient(ellipse, rgba(14,165,233,0.05) 0%, transparent 65%); z-index:0; pointer-events:none; }
-
-    /* Header */
+    /* ── HEADER ── */
     .header {
-      position: sticky; top: 0; z-index: 200;
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 0 32px; height: 62px;
-      background: rgba(4,8,15,0.94);
-      backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 28px;
+      background: rgba(2, 6, 23, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
-    .header-brand { display: flex; align-items: center; gap: 11px; }
-    .header-icon {
-      width: 36px; height: 36px; border-radius: 10px;
-      background: linear-gradient(135deg, #0ea5e9, #38bdf8);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 15px; color: #fff;
-      box-shadow: 0 0 16px rgba(56,189,248,0.4);
-    }
-    .header-brand h2 { font-size: 1.15rem; font-weight: 700; letter-spacing: -0.02em; color: var(--text); }
-    .header-brand h2 span { color: var(--primary); }
-    .header-right { display: flex; align-items: center; gap: 10px; }
 
-    .live-badge {
-      display: flex; align-items: center; gap: 6px;
-      padding: 4px 12px; border-radius: 20px;
-      background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.25);
-      font-size: 0.72rem; font-weight: 700; color: var(--green);
-      font-family: var(--mono); letter-spacing: 0.07em;
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
     }
-    .live-dot { width:6px; height:6px; border-radius:50%; background:var(--green); animation:livePulse 2s ease infinite; }
-    @keyframes livePulse {
-      0%,100% { opacity:1; box-shadow:0 0 0 0 rgba(52,211,153,0.4); }
-      50%      { opacity:.6; box-shadow:0 0 0 5px rgba(52,211,153,0); }
+
+    .header-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--primary);
+      font-size: 1.4rem;
+      font-weight: 700;
     }
-    .clock-badge {
-      font-family: var(--mono); font-size: 0.78rem; color: var(--muted);
-      padding: 4px 12px; background: var(--bg-raised);
-      border-radius: 8px; border: 1px solid var(--border);
+
+    .user-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
     }
+
+    .user-badge strong { color: var(--primary); }
+
+    .firebase-status {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 0.8rem;
+      padding: 5px 12px;
+      border-radius: 20px;
+      border: 1px solid;
+      transition: all 0.4s;
+    }
+    .firebase-status.connecting { color: #f59e0b; border-color: rgba(245,158,11,0.4); background: rgba(245,158,11,0.1); }
+    .firebase-status.connected  { color: #22c55e; border-color: rgba(34,197,94,0.4);  background: rgba(34,197,94,0.1);  }
+    .firebase-status.error      { color: #ef4444; border-color: rgba(239,68,68,0.4);  background: rgba(239,68,68,0.1);  }
+    .firebase-status .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+      animation: none;
+    }
+    .firebase-status.connecting .dot { animation: pulse 1s infinite; }
+    @keyframes pulse {
+      0%,100% { opacity: 1; } 50% { opacity: 0.3; }
+    }
+
+    .firebase-error-box {
+      display: none;
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.35);
+      border-radius: 14px;
+      padding: 18px 22px;
+      margin: 20px 24px 0;
+      color: #fca5a5;
+    }
+    .firebase-error-box h4 { color: #ef4444; margin-bottom: 10px; font-size: 1rem; }
+    .firebase-error-box code {
+      display: block;
+      background: rgba(0,0,0,0.3);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.82rem;
+      margin-top: 10px;
+      color: #fde68a;
+      white-space: pre;
+      overflow-x: auto;
+    }
+
     .logout-btn {
-      display: flex; align-items: center; gap: 7px;
-      padding: 7px 16px; border-radius: 9px;
-      background: transparent; border: 1px solid rgba(248,113,113,0.3);
-      color: var(--red); font-size: 0.84rem; font-family: 'Space Grotesk', sans-serif;
-      font-weight: 600; cursor: pointer; transition: all 0.2s;
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: var(--danger);
+      padding: 9px 18px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s;
     }
-    .logout-btn:hover { background: rgba(248,113,113,0.1); transform: translateY(-1px); }
+    .logout-btn:hover {
+      background: rgba(239, 68, 68, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 14px rgba(239,68,68,0.25);
+    }
 
-    /* Layout */
+    /* ── LAYOUT ── */
     .dashboard {
-      position: relative; z-index: 1;
-      display: grid; grid-template-columns: 340px 1fr;
-      gap: 22px; padding: 24px 28px 32px;
-      max-width: 1400px; margin: 0 auto;
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 24px;
+      padding: 24px;
     }
-    @media (max-width: 1000px) { .dashboard { grid-template-columns: 1fr; } }
 
-    /* Cards */
+    @media (max-width: 1050px) {
+      .dashboard { grid-template-columns: 1fr; }
+    }
+
+    /* ── CARDS ── */
     .card {
       background: var(--bg-card);
-      border-radius: 18px; border: 1px solid var(--border);
-      padding: 22px; box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      border-radius: 20px;
+      padding: 22px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.55);
+      animation: fadeUp 0.5s ease;
       margin-bottom: 18px;
-      animation: rise 0.5s cubic-bezier(.22,.68,0,1.2) both;
+      border: 1px solid rgba(56,189,248,0.08);
     }
-    .card:nth-child(2) { animation-delay: 0.08s; }
-    @keyframes rise {
-      from { opacity:0; transform:translateY(22px) scale(0.98); }
-      to   { opacity:1; transform:none; }
-    }
-    .card-label {
-      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em;
-      text-transform: uppercase; color: var(--muted); font-family: var(--mono);
-      display: flex; align-items: center; gap: 8px; margin-bottom: 16px;
-    }
-    .card-label i { color: var(--primary); }
 
-    /* Patient block */
-    .patient-block {
-      display: flex; align-items: center; gap: 13px;
-      padding: 13px; border-radius: 12px;
-      background: var(--bg-raised); border: 1px solid var(--border);
-      margin-bottom: 16px;
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: none; }
     }
-    .patient-avatar {
-      width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
-      background: linear-gradient(135deg, #1e3a5f, #0ea5e9);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 17px; color: rgba(255,255,255,0.9);
-    }
-    .patient-name { font-size: 1rem; font-weight: 700; color: var(--text); }
-    .patient-id   { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); margin-top: 2px; }
 
-    /* Sensor items */
+    .card-title {
+      color: var(--primary);
+      margin-bottom: 18px;
+      font-size: 1.15rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* ── PATIENT ── */
+    .patient-name { font-size: 1.4rem; font-weight: 700; margin-bottom: 4px; }
+    .patient-id   { color: var(--text-muted); font-size: 0.88rem; }
+
+    /* ── SENSOR ITEMS (clickable) ── */
     .sensor-item {
-      display: flex; align-items: center; gap: 13px;
-      padding: 13px 15px; border-radius: 12px;
-      background: var(--bg-raised); border: 1px solid var(--border);
-      margin-bottom: 9px; position: relative; overflow: hidden;
-      transition: all 0.22s;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 14px 0;
+      padding: 16px;
+      border-radius: 14px;
+      background: var(--bg-hover);
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: all 0.3s;
+      user-select: none;
     }
-    .sensor-item::before {
-      content: ''; position: absolute; left: 0; top: 0; bottom: 0;
-      width: 3px; border-radius: 3px 0 0 3px;
-    }
-    .sensor-item.fc::before  { background: var(--red);   box-shadow: 0 0 10px rgba(248,113,113,.5); }
-    .sensor-item.oxi::before { background: var(--blue);  box-shadow: 0 0 10px rgba(96,165,250,.5); }
-    .sensor-item.tmp::before { background: var(--amber); box-shadow: 0 0 10px rgba(251,191,36,.5); }
-    .sensor-item:hover { transform: translateX(4px); border-color: var(--border-hi); }
 
-    .sensor-icon {
-      width: 36px; height: 36px; border-radius: 9px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 14px; flex-shrink: 0;
+    .sensor-item:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
     }
-    .sensor-item.fc  .sensor-icon { background: rgba(248,113,113,0.12); color: var(--red); }
-    .sensor-item.oxi .sensor-icon { background: rgba(96,165,250,0.12);  color: var(--blue); }
-    .sensor-item.tmp .sensor-icon { background: rgba(251,191,36,0.12);  color: var(--amber); }
 
-    .sensor-body { flex: 1; min-width: 0; }
-    .sensor-lbl  { font-size: 0.7rem; color: var(--muted); font-weight: 500; }
-    .sensor-val  {
-      font-family: var(--mono); font-size: 1.3rem; font-weight: 600;
-      line-height: 1.15; margin-top: 1px;
-    }
-    .sensor-item.fc  .sensor-val { color: var(--red); }
-    .sensor-item.oxi .sensor-val { color: var(--blue); }
-    .sensor-item.tmp .sensor-val { color: var(--amber); }
+    .sensor-item.active-heart  { border-color: var(--heart-color); background: rgba(239,68,68,0.12); }
+    .sensor-item.active-oxy    { border-color: var(--oxy-color);   background: rgba(59,130,246,0.12); }
+    .sensor-item.active-temp   { border-color: var(--temp-color);  background: rgba(245,158,11,0.12); }
 
-    /* User block */
-    .user-block {
-      display: flex; align-items: center; gap: 12px;
-      padding: 13px; border-radius: 12px;
-      background: var(--bg-raised); border: 1px solid var(--border);
+    .sensor-label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1rem;
     }
-    .user-avatar {
-      width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;
-      background: linear-gradient(135deg, #0f3025, #059669);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 14px; color: rgba(255,255,255,0.9);
-    }
-    .user-name { font-size: 0.9rem; font-weight: 600; color: var(--text); }
-    .user-role { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); margin-top: 2px; }
 
-    /* Toggle */
+    .sensor-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+    }
+
+    .sensor-value {
+      font-size: 1.55rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .sensor-hint {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .sensor-hint i { font-size: 0.65rem; }
+
+    /* ── STATUS BADGE ── */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .status-badge.normal   { background: rgba(34,197,94,0.15);  color: #22c55e; border: 1px solid rgba(34,197,94,0.3);  }
+    .status-badge.warning  { background: rgba(245,158,11,0.15); color: #f59e0b; border: 1px solid rgba(245,158,11,0.3); }
+    .status-badge.critical { background: rgba(239,68,68,0.15);  color: #ef4444; border: 1px solid rgba(239,68,68,0.3);  }
+
+    /* ── RIGHT COLUMN ── */
     .view-toggle {
-      display: flex; gap: 4px;
-      background: var(--bg-raised); border: 1px solid var(--border);
-      padding: 4px; border-radius: 11px; margin-bottom: 18px;
+      display: flex;
+      gap: 8px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
     }
+
     .toggle-btn {
-      flex: 1; padding: 9px 14px; border-radius: 8px;
-      background: transparent; border: none;
-      color: var(--muted); font-size: 0.85rem; font-family: 'Space Grotesk', sans-serif;
-      font-weight: 600; cursor: pointer;
-      display: flex; align-items: center; justify-content: center; gap: 7px;
-      transition: all 0.2s;
+      flex: 1;
+      min-width: 100px;
+      padding: 10px 14px;
+      background: var(--bg-hover);
+      border: 1px solid var(--border-color);
+      color: var(--text-light);
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.3s;
     }
-    .toggle-btn:hover { color: var(--text); background: rgba(56,189,248,0.06); }
-    .toggle-btn.active {
-      background: var(--primary-glow); color: var(--primary);
-      border: 1px solid rgba(56,189,248,0.22);
+    .toggle-btn:hover { background: rgba(56,189,248,0.1); }
+    .toggle-btn.active { background: var(--primary); color: #020617; border-color: var(--primary); font-weight: 700; }
+
+
+
+    /* ── CHART PANEL ── */
+    .chart-panel {
+      background: linear-gradient(180deg, #090f1f 0%, #070c18 100%);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 14px;
+      padding: 22px 18px 14px 18px;
+      position: relative;
+      box-shadow: 0 4px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04);
     }
 
-    /* Chart */
-    .section-label {
-      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em;
-      text-transform: uppercase; color: var(--muted); font-family: var(--mono);
-      display: flex; align-items: center; gap: 8px; margin-bottom: 14px;
+    /* Valor atual grande */
+    .chart-current {
+      position: absolute;
+      top: 18px;
+      left: 24px;
+      z-index: 10;
+      pointer-events: none;
     }
-    .section-label i { color: var(--primary); }
+    .chart-current-value {
+      font-size: 2.6rem;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -0.03em;
+      text-shadow: 0 0 30px currentColor;
+      opacity: 0.95;
+    }
+    .chart-current-meta {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .chart-current-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #22c55e;
+      animation: pulse-dot 2s infinite;
+    }
+    @keyframes pulse-dot {
+      0%,100% { opacity:1; transform:scale(1); }
+      50%      { opacity:.5; transform:scale(0.7); }
+    }
+
+    /* Legenda direita */
+    .chart-legend-right {
+      position: absolute;
+      top: 24px;
+      right: 22px;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      pointer-events: none;
+      align-items: flex-end;
+    }
+    .chart-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+    }
+    .chart-legend-dash {
+      width: 22px;
+      height: 0;
+      border-top: 2px dashed currentColor;
+      opacity: 0.9;
+    }
+    .chart-legend-line {
+      width: 22px;
+      height: 2px;
+      border-radius: 2px;
+      background: currentColor;
+      opacity: 0.9;
+    }
+
+    /* Container do canvas */
     .chart-container {
-      height: 300px; position: relative;
-      background: var(--bg-raised); border-radius: 12px;
-      border: 1px solid var(--border); padding: 12px;
+      height: 300px;
+      position: relative;
+      margin-top: 58px;
     }
 
-    /* Table */
-    .table-header-row {
-      display: flex; align-items: center; justify-content: space-between;
-      flex-wrap: wrap; gap: 10px; margin-bottom: 14px;
+    /* Rodapé do gráfico */
+    .chart-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+      font-size: 0.71rem;
+      color: #1e3050;
+      letter-spacing: 0.02em;
     }
-    .table-title {
-      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em;
-      text-transform: uppercase; color: var(--muted); font-family: var(--mono);
-      display: flex; align-items: center; gap: 8px;
-    }
-    .table-title i { color: var(--primary); }
 
-    .csv-btn {
-      display: flex; align-items: center; gap: 7px;
-      padding: 8px 16px; border-radius: 9px;
-      background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.3);
-      color: var(--green); font-size: 0.83rem; font-family: 'Space Grotesk', sans-serif;
-      font-weight: 700; cursor: pointer; transition: all 0.2s;
-    }
-    .csv-btn:hover { background: rgba(52,211,153,0.2); box-shadow: 0 4px 16px rgba(52,211,153,0.2); transform: translateY(-1px); }
-    .csv-btn:disabled { opacity: .45; cursor: not-allowed; transform: none; }
+    /* ── TABLE ── */
+    /* ── TABLE ── */
+    .table-responsive { overflow-x: auto; }
 
-    .table-responsive { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
-    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 0.9rem;
+    }
+    .data-table th, .data-table td {
+      padding: 12px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
     .data-table th {
-      padding: 11px 14px; text-align: left;
-      font-family: var(--mono); font-size: 0.67rem; font-weight: 600;
-      letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted);
-      background: rgba(56,189,248,0.05); border-bottom: 1px solid var(--border);
+      background: rgba(56,189,248,0.08);
+      color: var(--primary);
+      font-weight: 600;
       white-space: nowrap;
     }
-    .data-table td {
-      padding: 11px 14px; font-size: 0.85rem;
-      border-bottom: 1px solid rgba(255,255,255,0.04);
-    }
-    .data-table tbody tr:last-child td { border-bottom: none; }
-    .data-table tbody tr:hover td { background: rgba(56,189,248,0.04); }
-    .data-table td:first-child { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); }
-    .td-fc  { font-family: var(--mono); font-weight: 600; color: var(--red); }
-    .td-oxi { font-family: var(--mono); font-weight: 600; color: var(--blue); }
-    .td-tmp { font-family: var(--mono); font-weight: 600; color: var(--amber); }
+    .data-table tbody tr:hover { background: rgba(56,189,248,0.04); }
 
-    /* Status */
-    .status-indicator {
-      display: inline-flex; align-items: center; gap: 5px;
-      padding: 3px 10px; border-radius: 20px;
-      font-size: 0.68rem; font-weight: 700; letter-spacing: 0.04em;
-      text-transform: uppercase; font-family: var(--mono);
-    }
-    .status-indicator i { font-size: 0.52rem; }
-    .status-indicator.normal   { background:rgba(52,211,153,0.12); color:var(--green); border:1px solid rgba(52,211,153,0.2); }
-    .status-indicator.warning  { background:rgba(251,191,36,0.12);  color:var(--amber); border:1px solid rgba(251,191,36,0.2); }
-    .status-indicator.critical { background:rgba(248,113,113,0.12); color:var(--red);   border:1px solid rgba(248,113,113,0.2); animation:blink 1s infinite; }
-    @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:.35;} }
+    /* ── HIDDEN ── */
+    .hidden { display: none !important; }
 
-    .hidden  { display: none !important; }
-    .loading { text-align:center; padding:40px; color:var(--muted); font-family:var(--mono); font-size:0.8rem; }
-
-    /* Footer */
-    .footer {
-      position: relative; z-index: 1;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 13px 28px; border-top: 1px solid var(--border);
-      color: var(--muted); font-size: 0.73rem; font-family: var(--mono);
-      flex-wrap: wrap; gap: 6px;
+    /* ── LAST UPDATE ── */
+    .update-row {
+      text-align: right;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-bottom: 12px;
     }
 
-    @media (max-width: 600px) {
-      .dashboard { padding: 14px; gap: 14px; }
-      .header    { padding: 0 16px; }
-      .clock-badge { display: none; }
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 18px;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--border-color);
+      margin-top: 10px;
+    }
+
+
+    /* ── PERIOD SELECTOR ── */
+    .period-bar {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-bottom: 10px;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      padding: 2px 0;
+    }
+    .period-bar::-webkit-scrollbar { display: none; }
+    .period-btn {
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(15,23,42,0.6);
+      color: #475569;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      user-select: none;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .period-btn:hover { color: #94a3b8; border-color: rgba(255,255,255,0.18); }
+    .period-btn.active {
+      background: rgba(56,189,248,0.15);
+      border-color: rgba(56,189,248,0.5);
+      color: #38bdf8;
+      box-shadow: 0 0 12px rgba(56,189,248,0.15);
+    }
+    .period-count {
+      margin-left: 6px;
+      font-size: 0.7rem;
+      color: #334155;
+      white-space: nowrap;
+      flex-shrink: 0;
     }
   </style>
 </head>
 <body>
-  <div class="glow-top"></div>
-  <div class="glow-bottom"></div>
 
-  <!-- Header -->
-  <header class="header">
-    <div class="header-brand">
-      <div class="header-icon"><i class="fas fa-heart-pulse"></i></div>
-      <h2>EWS<span>Sistema de Monitoramento</span></h2>
+<!-- HEADER -->
+<header class="header">
+  <div class="header-left">
+    <div class="header-title">
+      <i class="fas fa-heart-pulse"></i>
+      EWS
     </div>
-    <div class="header-right">
-      <div class="live-badge"><div class="live-dot"></div>AO VIVO</div>
-      <div class="clock-badge" id="lastUpdate">--:--:--</div>
-      <button class="logout-btn" onclick="logout()">
-        <i class="fas fa-arrow-right-from-bracket"></i> Sair
-      </button>
+    <div class="user-badge" id="userBadge">
+      <i class="fas fa-user-circle"></i>
+      <span id="userName">—</span> &bull; <strong id="userPerfil">—</strong>
     </div>
-  </header>
+    <div class="firebase-status connecting" id="firebaseStatus">
+      <div class="dot"></div>
+      <span id="firebaseStatusText">Conectando...</span>
+    </div>
+  </div>
+  <button class="logout-btn" onclick="logout()">
+    <i class="fas fa-sign-out-alt"></i>
+    Sair
+  </button>
+</header>
 
-  <!-- Dashboard -->
-  <main class="dashboard">
-    <!-- Left Column -->
-    <div class="left-column">
-      <div class="card">
-        <div class="card-label"><i class="fas fa-bed-pulse"></i> Paciente</div>
-        <div class="patient-block">
-          <div class="patient-avatar"><i class="fas fa-user"></i></div>
-          <div>
-            <div class="patient-name" id="patientName">Paciente Monitorado</div>
-            <div class="patient-id" id="patientId">Firebase Realtime DB</div>
-          </div>
+<!-- DASHBOARD -->
+<div class="firebase-error-box" id="firebaseErrorBox">
+  <h4><i class="fas fa-exclamation-triangle"></i> Erro de conexão com o Firebase</h4>
+  <p id="firebaseErrorMsg">Não foi possível conectar ao banco de dados.</p>
+  <p style="margin-top:10px;font-size:0.85rem;">Verifique as <strong>Regras do Realtime Database</strong> no console Firebase e certifique-se de que leitura está permitida:</p>
+  <code>{
+  "rules": {
+    ".read": true,
+    ".write": false
+  }
+}</code>
+</div>
+
+<main class="dashboard">
+
+  <!-- ── COLUNA ESQUERDA ── -->
+  <div class="left-column">
+
+    <!-- Status do Dispositivo -->
+    <div class="card">
+      <h3 class="card-title"><i class="fas fa-microchip"></i> Dispositivo</h3>
+      <div style="display:flex;align-items:center;gap:12px;padding:14px;background:var(--bg-hover);border-radius:12px;">
+        <i class="fas fa-wifi" style="color:var(--primary);font-size:1.3rem;"></i>
+        <div>
+          <div style="font-size:0.85rem;color:var(--text-muted);">Status do sistema</div>
+          <div style="font-weight:700;font-size:1.05rem;" id="deviceStatus">—</div>
         </div>
+      </div>
+    </div>
 
-        <div class="sensor-item fc">
-          <div class="sensor-icon"><i class="fas fa-heart"></i></div>
-          <div class="sensor-body">
-            <div class="sensor-lbl">Frequência Cardíaca</div>
-            <div class="sensor-val" id="heartRate">--</div>
-          </div>
+    <!-- Sensores -->
+    <div class="card">
+      <h3 class="card-title"><i class="fas fa-wave-square"></i> Leitura Atual</h3>
+      <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:12px;">
+        <i class="fas fa-hand-pointer"></i> Clique em um sensor para ver o gráfico
+      </p>
+
+      <!-- Frequência Cardíaca -->
+      <div class="sensor-item" id="card-heart" onclick="selectSensor('heart')">
+        <div class="sensor-label">
+          <i class="fas fa-heart" style="color:var(--heart-color);font-size:1.2rem;"></i>
+          <span>Frequência Cardíaca</span>
         </div>
-
-        <div class="sensor-item oxi">
-          <div class="sensor-icon"><i class="fas fa-droplet"></i></div>
-          <div class="sensor-body">
-            <div class="sensor-lbl">Oxigenação SpO₂</div>
-            <div class="sensor-val" id="oxygenLevel">--</div>
-          </div>
-        </div>
-
-        <div class="sensor-item tmp">
-          <div class="sensor-icon"><i class="fas fa-thermometer-half"></i></div>
-          <div class="sensor-body">
-            <div class="sensor-lbl">Temperatura</div>
-            <div class="sensor-val" id="temperature">--</div>
-          </div>
+        <div class="sensor-right">
+          <div class="sensor-value" id="heartRate">-- <small style="font-size:0.7rem;font-weight:400;">bpm</small></div>
+          <div class="sensor-hint"><i class="fas fa-chart-line"></i> Ver gráfico</div>
         </div>
       </div>
 
-      <div class="card">
-        <div class="card-label"><i class="fas fa-user-shield"></i> Responsável</div>
-        <div id="userInfo">
-          <div class="user-block">
-            <div class="user-avatar"><i class="fas fa-stethoscope"></i></div>
-            <div>
-              <div class="user-name">Carregando...</div>
-              <div class="user-role">—</div>
+      <!-- Oxigenação -->
+      <div class="sensor-item" id="card-oxy" onclick="selectSensor('oxy')">
+        <div class="sensor-label">
+          <i class="fas fa-tint" style="color:var(--oxy-color);font-size:1.2rem;"></i>
+          <span>Oxigenação (SpO₂)</span>
+        </div>
+        <div class="sensor-right">
+          <div class="sensor-value" id="oxygenLevel">-- <small style="font-size:0.7rem;font-weight:400;">%</small></div>
+          <div class="sensor-hint"><i class="fas fa-chart-line"></i> Ver gráfico</div>
+        </div>
+      </div>
+
+      <!-- Temperatura -->
+      <div class="sensor-item" id="card-temp" onclick="selectSensor('temp')">
+        <div class="sensor-label">
+          <i class="fas fa-thermometer-half" style="color:var(--temp-color);font-size:1.2rem;"></i>
+          <span>Temperatura</span>
+        </div>
+        <div class="sensor-right">
+          <div class="sensor-value" id="temperature">-- <small style="font-size:0.7rem;font-weight:400;">°C</small></div>
+          <div class="sensor-hint"><i class="fas fa-chart-line"></i> Ver gráfico</div>
+        </div>
+      </div>
+
+      <div class="update-row">
+        Última leitura: <span id="lastUpdate">--:--:--</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── COLUNA DIREITA ── -->
+  <div class="right-column">
+    <div class="card">
+
+      <!-- Botões Gráfico / Tabela -->
+      <div class="view-toggle">
+        <button class="toggle-btn active" id="btnChart" onclick="switchView('chart')">
+          <i class="fas fa-chart-area"></i> Gráfico
+        </button>
+        <button class="toggle-btn" id="btnTable" onclick="switchView('table')">
+          <i class="fas fa-table"></i> Tabela
+        </button>
+      </div>
+
+      <!-- ── GRÁFICO ── -->
+      <div id="chartView">
+
+        <!-- Seletor de período -->
+        <div class="period-bar" id="periodBar">
+          <button class="period-btn" data-min="1"    onclick="setPeriod(1)">1 min</button>
+          <button class="period-btn" data-min="5"    onclick="setPeriod(5)">5 min</button>
+          <button class="period-btn active" data-min="30" onclick="setPeriod(30)">30 min</button>
+          <button class="period-btn" data-min="60"   onclick="setPeriod(60)">1h</button>
+          <button class="period-btn" data-min="720"  onclick="setPeriod(720)">12h</button>
+          <button class="period-btn" data-min="1440" onclick="setPeriod(1440)">1d</button>
+          <span class="period-count" id="periodCount"></span>
+        </div>
+
+        <!-- Painel do gráfico -->
+        <div class="chart-panel">
+
+          <!-- Valor atual (canto superior esquerdo) -->
+          <div class="chart-current">
+            <div class="chart-current-value" id="chartCurrentVal">—</div>
+            <div class="chart-current-meta">
+              <div class="chart-current-dot"></div>
+              <span id="chartCurrentLabel">Tempo Real</span>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
 
-    <!-- Right Column -->
-    <div class="right-column">
-      <div class="card">
-        <div class="view-toggle">
-          <button class="toggle-btn active" id="btnChart">
-            <i class="fas fa-chart-area"></i> Gráfico
-          </button>
-          <button class="toggle-btn" id="btnTable">
-            <i class="fas fa-table-list"></i> Tabela
-          </button>
-        </div>
+          <!-- Legenda (canto superior direito) -->
+          <div class="chart-legend-right" id="chartLegendRight"></div>
 
-        <!-- Chart View -->
-        <div id="chartView">
-          <div class="section-label"><i class="fas fa-chart-area"></i> Histórico — Últimas leituras</div>
+          <!-- Canvas -->
           <div class="chart-container">
             <canvas id="healthChart"></canvas>
           </div>
-        </div>
 
-        <!-- Table View -->
-        <div id="tableView" class="hidden">
-          <div class="table-header-row">
-            <div class="table-title"><i class="fas fa-list-alt"></i> Histórico Completo</div>
-            <button class="csv-btn" id="csvBtn" onclick="exportarCSV()">
-              <i class="fas fa-file-csv"></i> Exportar CSV
-            </button>
-          </div>
-          <div class="table-responsive">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Data / Hora</th>
-                  <th>FC (bpm)</th>
-                  <th>SpO₂ (%)</th>
-                  <th>Temp (°C)</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody id="historyTableBody">
-                <tr>
-                  <td colspan="5" class="loading">
-                    <i class="fas fa-spinner fa-spin"></i> Carregando dados...
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+          <!-- Rodapé -->
+          <div class="chart-footer">
+            <span>Tempo Real</span>
+            <span id="chartFooterRight">Atualizado às <span id="lastUpdateChart">--:--:--</span></span>
           </div>
         </div>
       </div>
+
+      <!-- ── TABELA ── -->
+      <div id="tableView" class="hidden">
+        <h3 class="card-title"><i class="fas fa-list-alt"></i> Histórico Completo</h3>
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Data / Hora</th>
+                <th><i class="fas fa-heart" style="color:var(--heart-color)"></i> FC (bpm)</th>
+                <th><i class="fas fa-tint" style="color:var(--oxy-color)"></i> SpO₂ (%)</th>
+                <th><i class="fas fa-thermometer-half" style="color:var(--temp-color)"></i> Temp (°C)</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="historyTableBody">
+              <tr>
+                <td colspan="5" style="text-align:center;padding:30px;color:var(--text-muted)">
+                  <i class="fas fa-spinner fa-spin"></i> Carregando...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
     </div>
-  </main>
+  </div>
 
-  <footer class="footer">
-    <span>© 2026 EWS: Sistema de Monitoramento · Sistema de Monitoramento em Tempo Real</span>
-    <span>Atualizado às <span id="footerClock">--:--:--</span></span>
-  </footer>
+</main>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+<footer>
+  © 2024 EWS • Monitoramento em Tempo Real
+</footer>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyDURF1Z7S-O0y1mfc0Sf8sjY9KGLJwkYHY",
-      authDomain: "projeto-integradora-ii.firebaseapp.com",
-      databaseURL: "https://projeto-integradora-ii-default-rtdb.firebaseio.com",
-      projectId: "projeto-integradora-ii",
-      storageBucket: "projeto-integradora-ii.firebasestorage.app",
-      messagingSenderId: "80939508930",
-      appId: "1:80939508930:web:9a2d2f9bf97be9eb98075b"
-    };
+<!-- FIREBASE + LÓGICA -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-    const app = initializeApp(firebaseConfig);
-    const db  = getDatabase(app);
+  const firebaseConfig = {
+    apiKey: "AIzaSyDURF1Z7S-O0y1mfc0Sf8sjY9KGLJwkYHY",
+    authDomain: "projeto-integradora-ii.firebaseapp.com",
+    databaseURL: "https://projeto-integradora-ii-default-rtdb.firebaseio.com",
+    projectId: "projeto-integradora-ii",
+    storageBucket: "projeto-integradora-ii.firebasestorage.app",
+    messagingSenderId: "80939508930",
+    appId: "1:80939508930:web:9a2d2f9bf97be9eb98075b"
+  };
 
-    const elements = {
-      patientName:      document.getElementById('patientName'),
-      patientId:        document.getElementById('patientId'),
-      heartRate:        document.getElementById('heartRate'),
-      oxygenLevel:      document.getElementById('oxygenLevel'),
-      temperature:      document.getElementById('temperature'),
-      userInfo:         document.getElementById('userInfo'),
-      historyTableBody: document.getElementById('historyTableBody'),
-      lastUpdate:       document.getElementById('lastUpdate'),
-      btnChart:         document.getElementById('btnChart'),
-      btnTable:         document.getElementById('btnTable'),
-      chartView:        document.getElementById('chartView'),
-      tableView:        document.getElementById('tableView')
-    };
+  const app = initializeApp(firebaseConfig);
+  const db  = getDatabase(app);
 
-    let healthChart = null;
-    let allRecords  = [];
-    let chartData   = { labels:[], heartRate:[], oxygenLevel:[], temperature:[] };
+  /* ─── Estado ─── */
+  let activeSensor = 'heart';
+  let healthChart  = null;
+  let allRecords   = [];
+  let liveData     = { bpm: null, spo2: null, temp: null };
 
-    // Toggle
-    elements.btnChart.addEventListener('click', () => {
-      elements.btnChart.classList.add('active');
-      elements.btnTable.classList.remove('active');
-      elements.chartView.classList.remove('hidden');
-      elements.tableView.classList.add('hidden');
-      updateChartSize();
-    });
-    elements.btnTable.addEventListener('click', () => {
-      elements.btnTable.classList.add('active');
-      elements.btnChart.classList.remove('active');
-      elements.tableView.classList.remove('hidden');
-      elements.chartView.classList.add('hidden');
-    });
+  const chartData = { labels: [], heartRate: [], oxygenLevel: [], temperature: [] };
 
-    function updateChartSize() {
-      if (healthChart) setTimeout(() => healthChart.resize(), 100);
+  /* ─── Configurações por sensor ─── */
+  const sensorConfig = {
+    heart: {
+      label:    'Frequência Cardíaca',
+      unit:     'bpm',
+      color:    '#f87171',
+      field:    'heartRate',
+      yBounds:  { min: 40, max: 140 },
+      yPad:     2,
+      nameHtml: '<i class="fas fa-heart" style="color:#f87171"></i> Frequência Cardíaca (bpm)',
+      // linhas tracejadas de referência
+      refLines: [
+        { value: 60,  color: 'rgba(248,113,113,0.6)',  label: '<60 bpm',  dash: [6,4] },
+        { value: 100, color: 'rgba(34,197,94,0.5)',    label: 'Normal',   dash: [6,4] },
+      ],
+      // legenda canto direito
+      legendItems: [
+        { color: '#f87171', type: 'dash', label: '<60 ou >100 bpm' },
+        { color: '#22c55e', type: 'line', label: 'Normal' },
+      ],
+      // faixas de fundo
+      zones: [
+        { yMin: 0,   yMax: 60,  color: 'rgba(248,113,113,0.08)', ptColor: '#f87171', icon: '🔴', label: 'Abaixo' },
+        { yMin: 60,  yMax: 100, color: 'rgba(15,23,42,0)',       ptColor: '#22c55e', icon: '🟢', label: 'Normal' },
+        { yMin: 100, yMax: 220, color: 'rgba(248,113,113,0.08)', ptColor: '#f87171', icon: '🔴', label: 'Acima'  },
+      ],
+    },
+    oxy: {
+      label:    'Oxigenação SpO₂',
+      unit:     '%',
+      color:    '#60a5fa',
+      field:    'oxygenLevel',
+      yBounds:  { min: 82, max: 101 },
+      yPad:     0.5,
+      nameHtml: '<i class="fas fa-tint" style="color:#60a5fa"></i> Oxigenação SpO₂ (%)',
+      refLines: [
+        { value: 95, color: 'rgba(96,165,250,0.55)', label: '<95%', dash: [6,4] },
+      ],
+      legendItems: [
+        { color: '#60a5fa', type: 'dash', label: '<95%'   },
+        { color: '#22c55e', type: 'line', label: 'Normal' },
+      ],
+      zones: [
+        { yMin: 0,  yMax: 95,  color: 'rgba(96,165,250,0.08)', ptColor: '#60a5fa', icon: '🟡', label: 'Atenção' },
+        { yMin: 95, yMax: 101, color: 'rgba(15,23,42,0)',       ptColor: '#22c55e', icon: '🟢', label: 'Normal'  },
+      ],
+    },
+    temp: {
+      label:    'Temperatura',
+      unit:     '°C',
+      color:    '#fbbf24',
+      field:    'temperature',
+      yBounds:  { min: 20, max: 42 },
+      yPad:     0.5,
+      nameHtml: '<i class="fas fa-thermometer-half" style="color:#fbbf24"></i> Temperatura (°C)',
+      refLines: [
+        { value: 36,   color: 'rgba(251,191,36,0.55)', label: '<36°C',   dash: [6,4] },
+        { value: 37.5, color: 'rgba(251,191,36,0.55)', label: '>37.5°C', dash: [6,4] },
+      ],
+      legendItems: [
+        { color: '#fbbf24', type: 'dash', label: '<36 ou >37.5°C' },
+        { color: '#22c55e', type: 'line', label: 'Normal' },
+      ],
+      zones: [
+        { yMin: 0,    yMax: 36,   color: 'rgba(251,191,36,0.12)',  ptColor: '#fbbf24', icon: '🟡', label: 'Baixo'  },
+        { yMin: 36,   yMax: 37.5, color: 'rgba(34,197,94,0.05)',   ptColor: '#22c55e', icon: '🟢', label: 'Normal' },
+        { yMin: 37.5, yMax: 99,   color: 'rgba(239,68,68,0.10)',   ptColor: '#f87171', icon: '🔴', label: 'Alto'   },
+      ],
     }
+  };
 
-    function loadUserInfo() {
-      const userData = sessionStorage.getItem('usuarioLogado');
-      if (userData) {
-        const user = JSON.parse(userData);
-        elements.userInfo.innerHTML = `
-          <div class="user-block">
-            <div class="user-avatar"><i class="fas fa-stethoscope"></i></div>
-            <div>
-              <div class="user-name">${user.nome}</div>
-              <div class="user-role">Perfil: ${user.perfil}</div>
-            </div>
-          </div>`;
-      }
-    }
-
-    function initChart() {
-      const ctx = document.getElementById('healthChart').getContext('2d');
-      healthChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: chartData.labels,
-          datasets: [
-            { label:'Freq. Cardíaca (bpm)', data:chartData.heartRate,   borderColor:'#f87171', backgroundColor:'rgba(248,113,113,0.08)', borderWidth:2, tension:0.42, fill:true, pointRadius:2 },
-            { label:'Oxigenação (%)',        data:chartData.oxygenLevel, borderColor:'#60a5fa', backgroundColor:'rgba(96,165,250,0.08)',  borderWidth:2, tension:0.42, fill:true, pointRadius:2 },
-            { label:'Temperatura (°C)',      data:chartData.temperature, borderColor:'#fbbf24', backgroundColor:'rgba(251,191,36,0.08)',  borderWidth:2, tension:0.42, fill:true, pointRadius:2 }
-          ]
-        },
-        options: {
-          responsive:true, maintainAspectRatio:false,
-          animation:{ duration:350 },
-          plugins:{
-            legend:{ position:'top', labels:{ color:'#5e7898', font:{ family:"'JetBrains Mono'",size:11 }, boxWidth:12, padding:16 } },
-            tooltip:{ mode:'index', intersect:false, backgroundColor:'rgba(4,8,15,0.97)', borderColor:'rgba(56,189,248,.2)', borderWidth:1, padding:12, titleColor:'#5e7898', titleFont:{family:"'JetBrains Mono'",size:10}, bodyColor:'#e2eaf6', bodyFont:{family:"'JetBrains Mono'",size:12} }
-          },
-          scales:{
-            x:{ grid:{ color:'rgba(255,255,255,0.04)' }, ticks:{ color:'#3d5470', font:{family:"'JetBrains Mono'",size:9}, maxTicksLimit:8, maxRotation:45 } },
-            y:{ grid:{ color:'rgba(255,255,255,0.05)' }, ticks:{ color:'#5e7898', font:{family:"'JetBrains Mono'",size:10} }, beginAtZero:false }
-          },
-          interaction:{ intersect:false, mode:'nearest' }
-        }
+  /* ─── Plugin: faixas de fundo ─── */
+  const riskZonePlugin = {
+    id: 'riskZones',
+    beforeDraw(chart) {
+      const { ctx, chartArea: ca, scales } = chart;
+      if (!ca || !scales.y) return;
+      const cfg = sensorConfig[activeSensor];
+      if (!cfg?.zones) return;
+      cfg.zones.forEach(z => {
+        const y1 = Math.max(scales.y.getPixelForValue(z.yMax), ca.top);
+        const y2 = Math.min(scales.y.getPixelForValue(z.yMin), ca.bottom);
+        if (y2 <= y1) return;
+        ctx.save();
+        ctx.fillStyle = z.color;
+        ctx.globalAlpha = 0.45;
+        ctx.fillRect(ca.left, y1, ca.width, y2 - y1);
+        ctx.restore();
       });
     }
+  };
 
-    function parseTimestamp(ts) {
-      // formato: "2026-03-09_11-08-52" → "2026-03-09 11:08:52"
-      if (!ts) return NaN;
-      return new Date(ts.replace('_',' ').replace(/(\d{2})-(\d{2})-(\d{2})$/, '$1:$2:$3'));
+  /* ─── Render legenda direita ─── */
+  function renderLegendRight(sensor) {
+    const cfg = sensorConfig[sensor];
+    const el  = document.getElementById('chartLegendRight');
+    if (!el || !cfg?.legendItems) return;
+    el.innerHTML = cfg.legendItems.map(item => {
+      const lineEl = item.type === 'dash'
+        ? `<div class="chart-legend-dash" style="color:${item.color}"></div>`
+        : `<div class="chart-legend-line" style="background:${item.color}"></div>`;
+      return `<div class="chart-legend-item" style="color:${item.color}">${lineEl}<span>${item.label}</span></div>`;
+    }).join('');
+  }
+
+  /* ─── Plugin: linhas tracejadas de referência ─── */
+  const refLinesPlugin = {
+    id: 'refLines',
+    afterDraw(chart) {
+      const { ctx, chartArea: ca, scales } = chart;
+      if (!ca || !scales.y) return;
+      const cfg = sensorConfig[activeSensor];
+      if (!cfg?.refLines) return;
+      cfg.refLines.forEach(rl => {
+        const y = scales.y.getPixelForValue(rl.value);
+        if (y < ca.top || y > ca.bottom) return;
+        ctx.save();
+        ctx.strokeStyle = rl.color;
+        ctx.lineWidth   = 1;
+        ctx.setLineDash([8, 6]);
+        ctx.globalAlpha = 0.55;
+        ctx.beginPath();
+        ctx.moveTo(ca.left,  y);
+        ctx.lineTo(ca.right, y);
+        ctx.stroke();
+        ctx.restore();
+      });
     }
+  };
 
-    function formatLabel(ts) {
-      // mostra apenas o horário HH:MM:SS
-      if (!ts) return '';
-      const parts = ts.split('_');
-      return parts[1] ? parts[1].replace(/-/g,':') : ts;
-    }
+  /* ─── Monta o gráfico ─── */
+  function buildChart() {
+    if (healthChart) { healthChart.destroy(); healthChart = null; }
 
-    function updateChartWithData(records) {
-      const sorted  = [...records].sort((a,b) => parseTimestamp(a.timestamp) - parseTimestamp(b.timestamp));
-      const recent  = sorted.slice(-30);
-      chartData.labels      = recent.map(r => formatLabel(r.timestamp));
-      chartData.heartRate   = recent.map(r => r.freq_cardiaca);
-      chartData.oxygenLevel = recent.map(r => r.oximetria);
-      chartData.temperature = recent.map(r => r.temperatura);
-      if (healthChart) {
-        healthChart.data.labels = chartData.labels;
-        healthChart.data.datasets[0].data = chartData.heartRate;
-        healthChart.data.datasets[1].data = chartData.oxygenLevel;
-        healthChart.data.datasets[2].data = chartData.temperature;
-        healthChart.update('none');
-      } else { initChart(); }
-    }
+    const ctx    = document.getElementById('healthChart').getContext('2d');
+    const cfg    = sensorConfig[activeSensor];
+    const vals   = chartData[cfg.field];
+    const labels = chartData.labels;
 
-    function getStatus(r) {
-      if (r.oximetria < 90) return 'critical';
-      if (r.freq_cardiaca < 60 || r.freq_cardiaca > 100) return 'warning';
-      if (r.temperatura < 36  || r.temperatura > 37.5)   return 'warning';
-      return 'normal';
-    }
-    function getStatusText(s) { return s==='critical'?'Crítico':s==='warning'?'Atenção':'Normal'; }
+    const canvasH = ctx.canvas.parentElement.clientHeight || 280;
 
-    function updateTable(records) {
-      if (!records || records.length === 0) {
-        elements.historyTableBody.innerHTML = `<tr><td colspan="5" class="loading"><i class="fas fa-database" style="display:block;font-size:1.8rem;opacity:.15;margin-bottom:10px"></i>Nenhum registro encontrado</td></tr>`;
-        return;
+    // Gradiente multi-stop elegante
+    const grad = ctx.createLinearGradient(0, 0, 0, canvasH);
+    const [r,g,b] = hexToRgb(cfg.color);
+    grad.addColorStop(0,    `rgba(${r},${g},${b},0.22)`);
+    grad.addColorStop(0.35, `rgba(${r},${g},${b},0.10)`);
+    grad.addColorStop(0.75, `rgba(${r},${g},${b},0.02)`);
+    grad.addColorStop(1,    `rgba(${r},${g},${b},0.00)`);
+
+    // Sem pontos por padrão — gráfico de linha limpo
+    // Pontos aparecem APENAS no hover e em anomalias extremas
+    const ptColors  = vals.map(v => getZoneColor(v, cfg));
+    const ptRadii   = new Array(vals.length).fill(0);   // nunca visível por padrão
+    const ptHover   = new Array(vals.length).fill(5);   // aparece no hover
+    const ptBorderW = new Array(vals.length).fill(0);
+
+    // Eixo Y baseado nos dados reais + garante que linhas clínicas apareçam
+    const clean   = vals.filter(v => v !== null && !isNaN(v));
+    const dataMin = clean.length ? Math.min(...clean) : cfg.yBounds.min;
+    const dataMax = clean.length ? Math.max(...clean) : cfg.yBounds.max;
+    const spread  = Math.max(dataMax - dataMin, 1);
+    const pad     = spread * 0.20;
+
+    // Eixo Y: mostra a faixa dos dados com margem proporcional
+    // Linhas clínicas aparecem SE estiverem dentro de 30% além dos dados
+    const refVals  = (cfg.refLines || []).map(l => l.value);
+    const nearRefs = refVals.filter(rv => rv >= dataMin - spread && rv <= dataMax + spread);
+    const yMinRaw  = Math.min(dataMin - pad, ...nearRefs);
+    const yMaxRaw  = Math.max(dataMax + pad, ...nearRefs);
+    const yMin     = Math.floor(yMinRaw * 2) / 2;
+    const yMax     = Math.ceil( yMaxRaw * 2) / 2;
+
+    healthChart = new Chart(ctx, {
+      type: 'line',
+      plugins: [riskZonePlugin, refLinesPlugin],
+      data: {
+        labels,
+        datasets: [{
+          label: `${cfg.label} (${cfg.unit})`,
+          data:  vals,
+          borderColor: cfg.color,
+          backgroundColor: grad,
+          borderWidth: 1.8,
+          tension: 0.42,
+          fill: true,
+          pointRadius: ptRadii,
+          pointHoverRadius: ptHover,
+          pointBackgroundColor: ptColors,
+          pointBorderColor: '#080e1c',
+          pointBorderWidth: 2,
+          pointHoverBackgroundColor: ptColors,
+          pointHoverBorderColor: 'rgba(255,255,255,0.8)',
+          pointHoverBorderWidth: 1.5,
+          spanGaps: true,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 400, easing: 'easeOutQuart' },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            mode: 'index',
+            intersect: false,
+            backgroundColor: 'rgba(2,6,23,0.97)',
+            borderColor: cfg.color,
+            borderWidth: 1,
+            titleColor: '#475569',
+            bodyColor: '#e2e8f0',
+            padding: 14,
+            cornerRadius: 10,
+            displayColors: false,
+            callbacks: {
+              title: items => `🕐 ${items[0].label}`,
+              label: item => {
+                const v = item.parsed.y;
+                const zone = getZoneName(v, cfg);
+                const fmt = typeof v === 'number' ? (Number.isInteger(v) ? v : v.toFixed(2)) : v;
+                return `  ${cfg.label}: ${fmt} ${cfg.unit}   ${zone}`;
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid:  { color: 'rgba(255,255,255,0.025)', drawTicks: false },
+            border:{ display: false },
+            ticks: {
+              color: '#253345',
+              maxTicksLimit: 6,
+              maxRotation: 0,
+              font: { size: 10, family: "'Segoe UI', sans-serif" },
+              padding: 8,
+            }
+          },
+          y: {
+            min: yMin,
+            max: yMax,
+            grid:  { color: 'rgba(255,255,255,0.03)', drawTicks: false },
+            border:{ display: false },
+            ticks: {
+              color: '#253345',
+              font: { size: 10, family: "'Segoe UI', sans-serif" },
+              maxTicksLimit: 5,
+              padding: 10,
+              callback: v => `${Number.isInteger(v) ? v : v.toFixed(1)} ${cfg.unit}`
+            },
+            position: 'left',
+          }
+        },
+        interaction: { intersect: false, mode: 'index' }
       }
-      elements.historyTableBody.innerHTML = records.map(r => {
-        const [date, rawTime] = (r.timestamp || '').split('_');
-        const time = rawTime ? rawTime.replace(/-/g,':') : '';
-        const st = getStatus(r);
-        return `<tr>
-          <td>${date||''} ${time||''}</td>
-          <td><span class="td-fc">${r.freq_cardiaca}</span></td>
-          <td><span class="td-oxi">${r.oximetria}</span></td>
-          <td><span class="td-tmp">${r.temperatura}</span></td>
-          <td><span class="status-indicator ${st}"><i class="fas fa-circle"></i>${getStatusText(st)}</span></td>
-        </tr>`;
-      }).join('');
+    });
+
+    updateCurrentValue();
+  }
+
+  /* ─── Helpers ─── */
+  function hexToRgb(hex) {
+    const n = parseInt(hex.replace('#',''), 16);
+    return [(n>>16)&255, (n>>8)&255, n&255];
+  }
+
+  function getZoneColor(v, cfg) {
+    for (const z of cfg.zones) if (v >= z.yMin && v < z.yMax) return z.ptColor;
+    return cfg.color;
+  }
+
+  function getZoneName(v, cfg) {
+    for (const z of cfg.zones) if (v >= z.yMin && v < z.yMax) return z.icon + ' ' + z.label;
+    return '';
+  }
+
+  function isAnomaly(v, cfg) {
+    for (const z of cfg.zones) {
+      if (v >= z.yMin && v < z.yMax && z.ptColor !== '#22c55e') return true;
+    }
+    return false;
+  }
+
+  function updateCurrentValue() {
+    const cfg = sensorConfig[activeSensor];
+    const el  = document.getElementById('chartCurrentVal');
+    const lbl = document.getElementById('chartCurrentLabel');
+    if (!el) return;
+
+    // Usa sempre o dado em tempo real do Firebase (atuais)
+    const liveMap = { heart: 'bpm', oxy: 'spo2', temp: 'temp' };
+    const rawVal  = liveData[liveMap[activeSensor]];
+
+    if (rawVal !== null && rawVal !== undefined && !isNaN(rawVal)) {
+      const v = Number(rawVal);
+      const formatted = Number.isInteger(v) ? v : v.toFixed(2);
+      el.textContent = `${formatted} ${cfg.unit}`;
+      el.style.color = getZoneColor(v, cfg);
+    } else {
+      el.textContent = `— ${cfg.unit}`;
+      el.style.color = '#475569';
     }
 
-    function updateLastUpdateTime() {
-      const t = new Date().toLocaleTimeString('pt-BR');
-      if (elements.lastUpdate) elements.lastUpdate.textContent = t;
-      const fc = document.getElementById('footerClock');
-      if (fc) fc.textContent = t;
-    }
+    if (lbl) lbl.textContent = cfg.unit + ' · atual';
+  }
 
-    // Firebase listeners — estrutura real: atuais/{bpm, spo2, temp} e historico/{timestamp}/{bpm, spo2, temp}
-    onValue(ref(db,'atuais'), snap => {
+  /* ─── Muda sensor ativo ─── */
+  window.selectSensor = function(sensor) {
+    activeSensor = sensor;
+
+    // Destaca card lateral ativo
+    document.querySelectorAll('.sensor-item').forEach(el =>
+      el.classList.remove('active-heart','active-oxy','active-temp')
+    );
+    const map = { heart:'active-heart', oxy:'active-oxy', temp:'active-temp' };
+    if (map[sensor]) document.getElementById('card-' + sensor).classList.add(map[sensor]);
+
+    // Atualiza legenda
+    renderLegendRight(sensor);
+
+    // Garante que está na aba gráfico e reconstrói
+    switchView('chart');
+    buildChart();
+    updateCurrentValue();
+  };
+
+  /* ─── Troca entre gráfico e tabela ─── */
+  window.switchView = function(view) {
+    const btnChart = document.getElementById('btnChart');
+    const btnTable = document.getElementById('btnTable');
+    const chartView = document.getElementById('chartView');
+    const tableView = document.getElementById('tableView');
+
+    if (view === 'chart') {
+      btnChart.classList.add('active');
+      btnTable.classList.remove('active');
+      chartView.classList.remove('hidden');
+      tableView.classList.add('hidden');
+      setTimeout(() => { if (healthChart) healthChart.resize(); }, 80);
+    } else {
+      btnTable.classList.add('active');
+      btnChart.classList.remove('active');
+      tableView.classList.remove('hidden');
+      chartView.classList.add('hidden');
+    }
+  };
+
+  /* ─── Atualiza dados do gráfico ─── */
+  // Chave do histórico: "2026-03-09_11-08-52" → ordena como string (já é ISO-like)
+  // Período ativo em minutos (30 = padrão)
+  let activePeriodMin = 30;
+
+  // Converte chave "2026-03-09_00-48-18" → Date local
+  function keyToDate(key) {
+    const parts = key.split('_');
+    if (parts.length < 2) return new Date(key);
+    const [yr, mo, dy] = parts[0].split('-').map(Number);
+    const [h, mi, s]   = parts[1].split('-').map(Number);
+    return new Date(yr, mo - 1, dy, h, mi, s || 0);
+  }
+
+  window.setPeriod = function(minutes) {
+    activePeriodMin = minutes;
+    document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+    const btn = document.querySelector(`.period-btn[data-min="${minutes}"]`);
+    if (btn) btn.classList.add('active');
+    refreshChartData(allRecords);
+  };
+
+  function filterByPeriod(records) {
+    const sorted = [...records].sort((a, b) => a.key.localeCompare(b.key));
+    if (!sorted.length) return sorted;
+
+    // Pega a data do último registro como referência
+    const lastDate = keyToDate(sorted[sorted.length - 1].key);
+    const cutoff   = new Date(lastDate.getTime() - activePeriodMin * 60 * 1000);
+
+    return sorted.filter(r => keyToDate(r.key) >= cutoff);
+  }
+
+  function refreshChartData(records) {
+    const filtered = filterByPeriod(records);
+
+    // Label: períodos curtos (≤ 60 min) → só hora:min:seg | maiores → dd/mm HH:MM
+    chartData.labels = filtered.map(r => {
+      const [datePart, timePart] = r.key.split('_');
+      const t = timePart?.replace(/-/g, ':') || '';
+      if (activePeriodMin <= 60) {
+        // ex: "11:08:52"
+        return t;
+      } else {
+        // ex: "09/03 11:08"
+        const [, mm, dd] = datePart.split('-');
+        const hhmm = t.slice(0, 5);
+        return `${dd}/${mm} ${hhmm}`;
+      }
+    });
+
+    chartData.heartRate   = filtered.map(r => Number(r.bpm));
+    chartData.oxygenLevel = filtered.map(r => Number(r.spo2));
+    chartData.temperature = filtered.map(r => Number(r.temp));
+
+    // Atualiza contador
+    const countEl = document.getElementById('periodCount');
+    if (countEl) countEl.textContent = filtered.length ? `${filtered.length} leituras` : '';
+
+    buildChart();
+  }
+
+  /* ─── Tabela ─── */
+  function updateTable(records) {
+    const tbody = document.getElementById('historyTableBody');
+    if (!records || records.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:30px;color:var(--text-muted)">
+        <i class="fas fa-database"></i> Nenhum registro encontrado</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = records.map(r => {
+      // chave: "2026-03-09_11-08-52"
+      const [date, timeRaw] = r.key.split('_');
+      const time = timeRaw?.replace(/-/g, ':') || '';
+      const status = getStatus(r);
+      return `<tr>
+        <td>${date} ${time}</td>
+        <td>${r.bpm   ?? '--'}</td>
+        <td>${r.spo2  ?? '--'}</td>
+        <td>${typeof r.temp === 'number' ? r.temp.toFixed(2) : (r.temp ?? '--')}</td>
+        <td><span class="status-badge ${status}"><i class="fas fa-circle" style="font-size:0.5rem"></i> ${statusText(status)}</span></td>
+      </tr>`;
+    }).join('');
+  }
+
+  function getStatus(r) {
+    if (r.spo2  < 90)                        return 'critical';
+    if (r.bpm   < 60  || r.bpm  > 100)       return 'warning';
+    if (r.temp  < 36  || r.temp > 37.5)      return 'warning';
+    return 'normal';
+  }
+
+  function statusText(s) {
+    return { critical:'Crítico', warning:'Atenção', normal:'Normal' }[s];
+  }
+
+  /* ─── Helpers de status Firebase ─── */
+  function setFirebaseStatus(state, msg) {
+    const el   = document.getElementById('firebaseStatus');
+    const text = document.getElementById('firebaseStatusText');
+    const box  = document.getElementById('firebaseErrorBox');
+    el.className = 'firebase-status ' + state;
+    text.textContent = msg;
+    box.style.display = state === 'error' ? 'block' : 'none';
+  }
+
+  function showFirebaseError(err) {
+    setFirebaseStatus('error', 'Sem conexão');
+    const msgEl = document.getElementById('firebaseErrorMsg');
+    msgEl.textContent = err?.message || String(err);
+  }
+
+  /* ─── Firebase listeners ─── */
+  let connectedOnce = false;
+
+  // Monitora estado da conexão
+  onValue(ref(db, '.info/connected'), snap => {
+    const connected = snap.val();
+    if (connected) {
+      connectedOnce = true;
+      setFirebaseStatus('connected', 'Conectado');
+    } else if (connectedOnce) {
+      setFirebaseStatus('connecting', 'Reconectando...');
+    }
+  });
+
+  // ── atuais: bpm, spo2, temp ──
+  onValue(ref(db, 'atuais'),
+    snap => {
       const s = snap.val();
       if (s) {
-        elements.heartRate.textContent   = `${s.bpm  != null ? s.bpm  : '--'} bpm`;
-        elements.oxygenLevel.textContent = `${s.spo2 != null ? s.spo2 : '--'} %`;
-        elements.temperature.textContent = `${s.temp != null ? Number(s.temp).toFixed(1) : '--'} °C`;
-        updateLastUpdateTime();
+        liveData = { bpm: s.bpm ?? null, spo2: s.spo2 ?? null, temp: s.temp ?? null };
+        document.getElementById('heartRate'  ).innerHTML = `${s.bpm  ?? '--'} <small style="font-size:.7rem;font-weight:400">bpm</small>`;
+        document.getElementById('oxygenLevel').innerHTML = `${s.spo2 ?? '--'} <small style="font-size:.7rem;font-weight:400">%</small>`;
+        document.getElementById('temperature').innerHTML = `${typeof s.temp === 'number' ? s.temp.toFixed(2) : (s.temp ?? '--')} <small style="font-size:.7rem;font-weight:400">°C</small>`;
+        const t = new Date().toLocaleTimeString('pt-BR');
+        const lu  = document.getElementById('lastUpdate');
+        const luc = document.getElementById('lastUpdateChart');
+        if (lu)  lu.textContent  = t;
+        if (luc) luc.textContent = t;
+        updateCurrentValue();
       }
-    });
+    },
+    err => showFirebaseError(err)
+  );
 
-    onValue(ref(db,'historico'), snap => {
+  // ── historico: chaves "2026-03-09_11-08-52" com bpm, spo2, temp ──
+  onValue(ref(db, 'historico'),
+    snap => {
       const data = snap.val();
       if (data) {
-        // cada chave é um timestamp ex: "2026-03-09_11-08-52"
-        const records = Object.keys(data).map(key => ({
-          timestamp:     key,
-          freq_cardiaca: data[key].bpm,
-          oximetria:     data[key].spo2,
-          temperatura:   data[key].temp,
-          key
-        }));
-        allRecords = records;
-        updateChartWithData(records);
-        updateTable(records.slice(-50).reverse());
+        allRecords = Object.keys(data).map(k => ({ ...data[k], key: k }));
+        refreshChartData(allRecords);
+        const tableRecords = [...allRecords].sort((a,b) => b.key.localeCompare(a.key)).slice(0, 50);
+        updateTable(tableRecords);
       } else {
-        allRecords = [];
         updateTable([]);
       }
-    });
+    },
+    err => showFirebaseError(err)
+  );
 
-    document.addEventListener('DOMContentLoaded', () => {
-      loadUserInfo();
-      updateLastUpdateTime();
-      setInterval(updateLastUpdateTime, 1000);
-    });
-
-    // Exportar CSV
-    window.exportarCSV = function() {
-      const btn = document.getElementById('csvBtn');
-      if (!allRecords || allRecords.length === 0) { alert('Nenhum dado disponível para exportar.'); return; }
-      btn.disabled = true;
-      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Exportando...';
-      try {
-        const sorted = [...allRecords].sort((a,b) => new Date(a.timestamp?.replace('_',' ')) - new Date(b.timestamp?.replace('_',' ')));
-        const header = 'Data/Hora,Frequencia Cardiaca (bpm),Oximetria (%),Temperatura (°C),Status\n';
-        const rows   = sorted.map(r => {
-          const [date,time] = (r.timestamp||'').split('_');
-          return `"${date||''} ${time||''}",${r.freq_cardiaca||''},${r.oximetria||''},${r.temperatura||''},"${getStatusText(getStatus(r))}"`;
-        }).join('\n');
-        const blob = new Blob(['\uFEFF'+header+rows],{type:'text/csv;charset=utf-8;'});
-        const url  = URL.createObjectURL(blob);
-        const a    = document.createElement('a');
-        a.href = url; a.download = `monitormed-${new Date().toISOString().slice(0,10)}.csv`;
-        document.body.appendChild(a); a.click(); document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-file-csv"></i> Exportar CSV';
+  // ── status: boot ──
+  onValue(ref(db, 'status'),
+    snap => {
+      const s = snap.val();
+      const el = document.getElementById('deviceStatus');
+      if (s?.boot) {
+        el.textContent = s.boot;
+        el.style.color = s.boot === 'online' ? '#22c55e' : '#f59e0b';
       }
-    };
+    },
+    err => showFirebaseError(err)
+  );
+  function loadUser() {
+    try {
+      const raw = sessionStorage.getItem('usuarioLogado');
+      if (!raw) return;
+      const u = JSON.parse(raw);
+      document.getElementById('userName'  ).textContent = u.nome   || '—';
+      document.getElementById('userPerfil').textContent = u.perfil || '—';
+    } catch(e) {}
+  }
 
-    window.logout = function() { sessionStorage.clear(); window.location.href = 'index.html'; };
-    window.addEventListener('resize', updateChartSize);
-  </script>
+  /* ─── Logout ─── */
+  window.logout = function() {
+    sessionStorage.clear();
+    window.location.href = 'index.html';
+  };
+
+  /* ─── Init ─── */
+  loadUser();
+  renderLegendRight('heart');
+  selectSensor('heart');
+</script>
 </body>
 </html>
